@@ -9,6 +9,28 @@ public abstract class SailHeroSettings {
 	protected String accessTokenPath;
 	protected String accessToken;
 	
+	protected String apiHost;
+	protected String version;
+	protected String i18n;
+	
+	public String getApiHost() {
+		return apiHost;
+	}
+	public void setApiHost(String apiHost) {
+		this.apiHost = apiHost;
+	}
+	public String getVersion() {
+		return version;
+	}
+	public void setVersion(String version) {
+		this.version = version;
+	}
+	public String getI18n() {
+		return i18n;
+	}
+	public void setI18n(String i18n) {
+		this.i18n = i18n;
+	}
 	public String getAccessToken() {
 		return accessToken;
 	}

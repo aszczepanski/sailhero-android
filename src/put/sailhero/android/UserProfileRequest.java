@@ -4,19 +4,23 @@ import android.net.Uri;
 
 public class UserProfileRequest implements Request {
 	
-	private final static String USER_PROFILE_REQUEST_PATH = "api/v1/en/users/me";
+	private final static String USER_PROFILE_REQUEST_PATH = "users/me";
 	
 	SailHeroService service = SailHeroService.getInstance();
 	SailHeroSettings settings = service.getSettings();
 	
 	@Override
 	public String getUrl() {
-		// String authenticateUserUrl = settings.getApiUrl();
-		Uri uri;
-		uri = new Uri.Builder()
+		final String apiHost = settings.getApiHost();
+		final String version = settings.getVersion();
+		final String i18n = settings.getI18n();
+		
+		Uri uri = new Uri.Builder()
 		.scheme("http")
-		.authority("sailhero-staging.herokuapp.com")
-		.path(USER_PROFILE_REQUEST_PATH)
+		.encodedAuthority(apiHost)
+		.appendPath(version)
+		.appendPath(i18n)
+		.appendEncodedPath(USER_PROFILE_REQUEST_PATH)
 		.appendQueryParameter("access_token", settings.getAccessToken())
 		.build();
 
