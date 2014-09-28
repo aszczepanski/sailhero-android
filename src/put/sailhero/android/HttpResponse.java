@@ -1,5 +1,5 @@
 package put.sailhero.android;
 
-public class Response {
+public class HttpResponse {
 
 }
