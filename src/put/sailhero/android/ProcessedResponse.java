@@ -2,6 +2,7 @@ package put.sailhero.android;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import put.sailhero.android.exception.InvalidClientException;
 import put.sailhero.android.exception.InvalidRequestException;
@@ -10,7 +11,7 @@ import put.sailhero.android.exception.InvalidResponseException;
 import put.sailhero.android.exception.UnsupportedGrantTypeException;
 
 public abstract class ProcessedResponse {
-	public void createFrom(HttpResponse response) throws Exception {
+	public void createFrom(HttpResponse response) throws InvalidResponseException, InvalidClientException, InvalidResourceOwnerException, UnsupportedGrantTypeException, InvalidRequestException {
 		if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
 			processOkStatusCode(response);
 		} else {
@@ -20,10 +21,15 @@ public abstract class ProcessedResponse {
 	
 	protected abstract void processOkStatusCode(HttpResponse response) throws InvalidResponseException;
 	
-	protected void processErrorStatusCode(HttpResponse response) throws Exception {
+	protected void processErrorStatusCode(HttpResponse response) throws InvalidResponseException, InvalidClientException, InvalidResourceOwnerException, UnsupportedGrantTypeException, InvalidRequestException {
 		if (response.getStatusCode() == 401) {
 			JSONParser parser = new JSONParser();
-			JSONObject obj = (JSONObject) parser.parse(response.getBody());
+			JSONObject obj;
+			try {
+				obj = (JSONObject) parser.parse(response.getBody());
+			} catch (ParseException e) {
+				throw new InvalidResponseException(e.getMessage());
+			}
 			String error;
 			String errorMessage;
 			try {
