@@ -7,7 +7,14 @@ public abstract class SailHeroSettings {
 	
 	protected String accessTokenHost;
 	protected String accessTokenPath;
+	protected String accessToken;
 	
+	public String getAccessToken() {
+		return accessToken;
+	}
+	public void setAccessToken(String accessToken) {
+		this.accessToken = accessToken;
+	}
 	public String getAppId() {
 		return appId;
 	}
