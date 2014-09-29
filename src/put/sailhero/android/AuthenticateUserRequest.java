@@ -35,8 +35,7 @@ public class AuthenticateUserRequest implements Request {
 
 	@Override
 	public Header[] getHeaders() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Header[0];
 	}
 
 	@Override

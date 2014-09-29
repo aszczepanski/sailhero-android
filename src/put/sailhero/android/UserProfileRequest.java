@@ -12,12 +12,14 @@ public class UserProfileRequest implements Request {
 	@Override
 	public String getUrl() {
 		final String apiHost = settings.getApiHost();
+		final String apiPath = settings.getApiPath();
 		final String version = settings.getVersion();
 		final String i18n = settings.getI18n();
 		
 		Uri uri = new Uri.Builder()
 		.scheme("http")
 		.encodedAuthority(apiHost)
+		.appendPath(apiPath)
 		.appendPath(version)
 		.appendPath(i18n)
 		.appendEncodedPath(USER_PROFILE_REQUEST_PATH)
@@ -29,7 +31,7 @@ public class UserProfileRequest implements Request {
 
 	@Override
 	public Header[] getHeaders() {
-		return null;
+		return new Header[0];
 	}
 
 	@Override
