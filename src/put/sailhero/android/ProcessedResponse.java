@@ -49,14 +49,14 @@ public abstract class ProcessedResponse {
 					throw new InvalidRequestException(errorMessage);
 				} else {
 					// TODO: throw another exception
-					throw new InvalidRequestException();
+					throw new InvalidRequestException("");
 				}
 			} else {
-				throw new InvalidResponseException();
+				throw new InvalidResponseException("");
 			}
 		} else {
 			// TODO: throw exceptions
-			throw new InvalidRequestException();
+			throw new InvalidRequestException("");
 		}
 	}
 }
