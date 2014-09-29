@@ -6,6 +6,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
@@ -16,6 +17,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
+import put.sailhero.android.Request.Header;
 import put.sailhero.android.exception.InvalidRequestException;
 import put.sailhero.android.exception.TransportException;
 import android.util.Log;
@@ -32,7 +34,12 @@ public class ApacheHttpConnectionTransport implements Transport {
 			HttpUriRequest httpUriRequest = createHttpUriRequestFrom(request);
 
 			Log.d(TAG, "Executing request " + httpUriRequest.getRequestLine());
-
+			
+			org.apache.http.Header[] headers = httpUriRequest.getAllHeaders();
+			for (org.apache.http.Header header : headers) {
+				Log.d(TAG, "(" + header.getName() + ":" + header.getValue() + ")");
+			}
+			
 			response = httpClient.execute(httpUriRequest, new ResponseHandler<HttpResponse>() {
 
 				@Override
@@ -66,20 +73,30 @@ public class ApacheHttpConnectionTransport implements Transport {
 
 		HttpUriRequest httpUriRequest = null;
 
-		// TODO: set headers
-
 		switch (request.getMethod()) {
 		case GET:
 			httpUriRequest = new HttpGet(uri);
-			// httpUriRequest.setHeaders(request.getHeaders());
+			setHeaders(httpUriRequest, request.getHeaders());
 			break;
 		case POST:
 			httpUriRequest = new HttpPost(uri);
-			// httpUriRequest.setHeaders(request.getHeaders());
+			setHeaders(httpUriRequest, request.getHeaders());
 			HttpEntity entity = new StringEntity(request.getBody());
 			((HttpPost) httpUriRequest).setEntity(entity);
+			
+			try {
+				Log.d(TAG, "Request body: " + EntityUtils.toString(((HttpPost) httpUriRequest).getEntity()));
+			} catch (ParseException | IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return httpUriRequest;
+	}
+	
+	private void setHeaders(HttpUriRequest httpUriRequest, Header[] headers) {
+		for (Header header : headers) {
+			httpUriRequest.addHeader(header.getName(), header.getValue());
+		}
 	}
 }
