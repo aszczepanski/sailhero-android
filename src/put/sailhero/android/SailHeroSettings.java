@@ -10,9 +10,18 @@ public abstract class SailHeroSettings {
 	protected String accessToken;
 	
 	protected String apiHost;
+	protected String apiPath;
 	protected String version;
 	protected String i18n;
 	
+	public String getApiPath() {
+		return apiPath;
+	}
+	
+	public void setApiPath(String apiPath) {
+		this.apiPath = apiPath;
+	}
+		
 	public String getApiHost() {
 		return apiHost;
 	}
