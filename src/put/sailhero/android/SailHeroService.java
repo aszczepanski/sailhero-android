@@ -3,6 +3,7 @@ package put.sailhero.android;
 public class SailHeroService {
 	private static SailHeroService instance;
 	private SailHeroSettings settings;
+	private Connection connection = new Connection();
 	
 	public static SailHeroService initialize() {
 		if (instance == null) {
@@ -29,5 +30,13 @@ public class SailHeroService {
 	
 	public SailHeroSettings getSettings() {
 		return settings;
+	}
+
+	public Connection getConnection() {
+		return connection;
+	}
+
+	public void setConnection(Connection connection) {
+		this.connection = connection;
 	}
 }
