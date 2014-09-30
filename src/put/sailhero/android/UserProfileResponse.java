@@ -15,10 +15,10 @@ public class UserProfileResponse extends ProcessedResponse {
 	private User user;
 
 	@Override
-	protected void processOkStatusCode(HttpResponse response) throws InvalidResponseException {
-		int status = response.getStatusCode();
+	public void createFrom(HttpResponse response) throws InvalidResponseException {
+		int statusCode = response.getStatusCode();
 		
-		if (status == 200) {
+		if (statusCode == 200) {
 			try {			
 				JSONParser parser = new JSONParser();
 				JSONObject obj = (JSONObject) parser.parse(response.getBody());

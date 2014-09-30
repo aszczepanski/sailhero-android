@@ -4,6 +4,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import put.sailhero.android.exception.InvalidRequestException;
 import put.sailhero.android.exception.InvalidResponseException;
 
 public class CreateUserResponse extends ProcessedResponse {
@@ -11,11 +12,10 @@ public class CreateUserResponse extends ProcessedResponse {
 	private User user;
 
 	@Override
-	protected void processOkStatusCode(HttpResponse response)
-			throws InvalidResponseException {
-		int status = response.getStatusCode();
+	public void createFrom(HttpResponse response) throws InvalidResponseException, InvalidRequestException {
+		int statusCode = response.getStatusCode();
 		
-		if (status == 201) {
+		if (statusCode == 201) {
 			try {			
 				JSONParser parser = new JSONParser();
 				JSONObject obj = (JSONObject) parser.parse(response.getBody());
@@ -38,6 +38,8 @@ public class CreateUserResponse extends ProcessedResponse {
 			} catch (ParseException e) {
 				throw new InvalidResponseException(e.getMessage());
 			}
+		} else if (statusCode == 422) {
+			throw new InvalidRequestException("");
 		} else {
 			throw new InvalidResponseException("Invalid status code");
 		}
