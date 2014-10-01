@@ -1,5 +1,7 @@
 package put.sailhero.android;
 
+import org.json.simple.JSONObject;
+
 import android.net.Uri;
 
 public class UnauthorizeUserRequest implements Request {
@@ -15,7 +17,7 @@ public class UnauthorizeUserRequest implements Request {
 		.scheme("http")
 		.encodedAuthority(unauthorizeUserHost)
 		.path(unauthorizeUserPath)
-		.appendQueryParameter("token", settings.getAccessToken())
+		// .appendQueryParameter("token", settings.getAccessToken())
 		.build();
 
 		return uri.toString();
@@ -23,12 +25,18 @@ public class UnauthorizeUserRequest implements Request {
 
 	@Override
 	public Header[] getHeaders() {
-		return new Header[0];
+		return new Header[] {
+				new Header("Content-Type", "application/json"),
+				new Header("Authorization", "Bearer " + settings.getAccessToken())
+		};
 	}
 
 	@Override
 	public String getBody() {
-		return "";
+		JSONObject obj = new JSONObject();
+		obj.put("token", settings.getAccessToken());
+		
+		return obj.toString();
 	}
 
 	@Override
