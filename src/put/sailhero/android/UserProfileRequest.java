@@ -1,5 +1,6 @@
 package put.sailhero.android;
 
+import put.sailhero.android.Request.Header;
 import android.net.Uri;
 
 public class UserProfileRequest implements Request {
@@ -23,7 +24,6 @@ public class UserProfileRequest implements Request {
 		.appendPath(version)
 		.appendPath(i18n)
 		.appendEncodedPath(USER_PROFILE_REQUEST_PATH)
-		.appendQueryParameter("access_token", settings.getAccessToken())
 		.build();
 
 		return uri.toString();
@@ -31,7 +31,9 @@ public class UserProfileRequest implements Request {
 
 	@Override
 	public Header[] getHeaders() {
-		return new Header[0];
+		return new Header[] {
+				new Header("Authorization", "Bearer " + settings.getAccessToken())
+		};
 	}
 
 	@Override
