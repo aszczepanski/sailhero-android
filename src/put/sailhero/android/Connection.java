@@ -1,16 +1,14 @@
 package put.sailhero.android;
 
-import put.sailhero.android.exception.InvalidClientException;
-import put.sailhero.android.exception.InvalidRequestException;
 import put.sailhero.android.exception.InvalidResourceOwnerException;
-import put.sailhero.android.exception.InvalidResponseException;
+import put.sailhero.android.exception.SailHeroSystemException;
 import put.sailhero.android.exception.TransportException;
-import put.sailhero.android.exception.UnsupportedGrantTypeException;
+import put.sailhero.android.exception.UnprocessableEntityException;
 
 public class Connection {
 	Transport transport = new ApacheHttpConnectionTransport();
 	
-	public <T extends ProcessedResponse> T send  (Request request, Class<T> cls) throws InvalidRequestException, TransportException, InvalidResponseException, InvalidClientException, InvalidResourceOwnerException, UnsupportedGrantTypeException, InstantiationException, IllegalAccessException {
+	public <T extends ProcessedResponse> T send  (Request request, Class<T> cls) throws TransportException, InvalidResourceOwnerException, SailHeroSystemException, UnprocessableEntityException {
 		HttpResponse httpResponse = transport.doRequest(request);
 		T processedResponse = ResponseCreator.createFrom(httpResponse, cls);
 		return processedResponse;

@@ -7,7 +7,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import put.sailhero.android.exception.InvalidResponseException;
+import put.sailhero.android.exception.SailHeroSystemException;
 
 public class UserProfileResponse extends ProcessedResponse {
 	
@@ -15,7 +15,7 @@ public class UserProfileResponse extends ProcessedResponse {
 	private User user;
 
 	@Override
-	public void createFrom(HttpResponse response) throws InvalidResponseException {
+	public void createFrom(HttpResponse response) throws SailHeroSystemException {
 		int statusCode = response.getStatusCode();
 		
 		if (statusCode == 200) {
@@ -48,14 +48,16 @@ public class UserProfileResponse extends ProcessedResponse {
 				}
 
 			} catch (NullPointerException e) {
-				throw new InvalidResponseException(e.getMessage());
+				throw new SailHeroSystemException("Invalid response - null pointer exception");
 			} catch (NumberFormatException e) {
-				throw new InvalidResponseException(e.getMessage());
+				throw new SailHeroSystemException("Invalid response - number format exception");
 			} catch (ParseException e) {
-				throw new InvalidResponseException(e.getMessage());
+				throw new SailHeroSystemException("Invalid response - parse exception");
 			}
+		} else if (statusCode == 401) {
+			throw new SailHeroSystemException("Unauthorized");
 		} else {
-			throw new InvalidResponseException("Invalid status code");
+			throw new SailHeroSystemException("Invalid status code");
 		}
 		
 	}

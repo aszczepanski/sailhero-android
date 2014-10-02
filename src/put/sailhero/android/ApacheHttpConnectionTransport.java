@@ -18,7 +18,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
 import put.sailhero.android.Request.Header;
-import put.sailhero.android.exception.InvalidRequestException;
+import put.sailhero.android.exception.SailHeroSystemException;
 import put.sailhero.android.exception.TransportException;
 import android.util.Log;
 
@@ -28,7 +28,7 @@ public class ApacheHttpConnectionTransport implements Transport {
 	HttpClient httpClient = new DefaultHttpClient();
 
 	@Override
-	public HttpResponse doRequest(Request request) throws InvalidRequestException, TransportException {
+	public HttpResponse doRequest(Request request) throws TransportException, SailHeroSystemException {
 		HttpResponse response = null;
 		try {
 			HttpUriRequest httpUriRequest = createHttpUriRequestFrom(request);
@@ -57,9 +57,9 @@ public class ApacheHttpConnectionTransport implements Transport {
 			Log.d(TAG, response.getBody());
 
 		} catch (URISyntaxException e) {
-			throw new InvalidRequestException(e.getMessage());
+			throw new SailHeroSystemException(e.getMessage());
 		} catch (UnsupportedEncodingException e) {
-			throw new InvalidRequestException(e.getMessage());
+			throw new SailHeroSystemException(e.getMessage());
 		} catch (ClientProtocolException e) {
 			throw new TransportException(e.getMessage());
 		} catch (IOException e) {

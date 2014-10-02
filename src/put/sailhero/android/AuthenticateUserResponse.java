@@ -4,11 +4,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import put.sailhero.android.exception.InvalidClientException;
-import put.sailhero.android.exception.InvalidRequestException;
 import put.sailhero.android.exception.InvalidResourceOwnerException;
-import put.sailhero.android.exception.InvalidResponseException;
-import put.sailhero.android.exception.UnsupportedGrantTypeException;
+import put.sailhero.android.exception.SailHeroSystemException;
 
 public class AuthenticateUserResponse extends ProcessedResponse {
 	private String accessToken;
@@ -17,7 +14,7 @@ public class AuthenticateUserResponse extends ProcessedResponse {
 	private String refreshToken;
 
 	@Override
-	public void createFrom(HttpResponse response) throws InvalidResponseException, InvalidClientException, InvalidResourceOwnerException, UnsupportedGrantTypeException, InvalidRequestException {
+	public void createFrom(HttpResponse response) throws InvalidResourceOwnerException, SailHeroSystemException {
 		int statusCode = response.getStatusCode();
 
 		if (statusCode == 200) {
@@ -31,9 +28,9 @@ public class AuthenticateUserResponse extends ProcessedResponse {
 				setRefreshToken(obj.get("refresh_token").toString());
 
 			} catch (NullPointerException e) {
-				throw new InvalidResponseException(e.getMessage());
+				throw new SailHeroSystemException(e.getMessage());
 			} catch (ParseException e) {
-				throw new InvalidResponseException(e.getMessage());
+				throw new SailHeroSystemException(e.getMessage());
 			}
 		} else if (statusCode == 401) {
 			JSONParser parser = new JSONParser();
@@ -41,7 +38,7 @@ public class AuthenticateUserResponse extends ProcessedResponse {
 			try {
 				obj = (JSONObject) parser.parse(response.getBody());
 			} catch (ParseException e) {
-				throw new InvalidResponseException(e.getMessage());
+				throw new SailHeroSystemException(e.getMessage());
 			}
 			String error;
 			String errorMessage;
@@ -49,26 +46,19 @@ public class AuthenticateUserResponse extends ProcessedResponse {
 				error = obj.get("error").toString();
 				errorMessage = obj.get("error_description").toString();
 			} catch (NullPointerException e) {
-				throw new InvalidResponseException(e.getMessage());
+				throw new SailHeroSystemException(e.getMessage());
 			}
 			if (!error.isEmpty()) {
-				if (error.equalsIgnoreCase("invalid_client")) {
-					throw new InvalidClientException(errorMessage);
-				} else if (error.equalsIgnoreCase("invalid_resource_owner")) {
+				if (error.equalsIgnoreCase("invalid_resource_owner")) {
 					throw new InvalidResourceOwnerException(errorMessage);
-				} else if (error.equalsIgnoreCase("unsupported_grant_type")) {
-					throw new UnsupportedGrantTypeException(errorMessage);
-				} else if (error.equalsIgnoreCase("invalid_request")) {
-					throw new InvalidRequestException(errorMessage);
 				} else {
-					// TODO: throw another exception
-					throw new InvalidRequestException("");
+					throw new SailHeroSystemException(errorMessage);
 				}
 			} else {
-				throw new InvalidResponseException("");
+				throw new SailHeroSystemException("");
 			}
 		} else {
-			throw new InvalidResponseException("Invalid status code");
+			throw new SailHeroSystemException("Invalid status code");
 		}
 
 	}

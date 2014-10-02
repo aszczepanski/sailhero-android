@@ -4,15 +4,15 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import put.sailhero.android.exception.InvalidRequestException;
-import put.sailhero.android.exception.InvalidResponseException;
+import put.sailhero.android.exception.SailHeroSystemException;
+import put.sailhero.android.exception.UnprocessableEntityException;
 
 public class CreateUserResponse extends ProcessedResponse {
 	
 	private User user;
 
 	@Override
-	public void createFrom(HttpResponse response) throws InvalidResponseException, InvalidRequestException {
+	public void createFrom(HttpResponse response) throws UnprocessableEntityException, SailHeroSystemException {
 		int statusCode = response.getStatusCode();
 		
 		if (statusCode == 201) {
@@ -32,16 +32,16 @@ public class CreateUserResponse extends ProcessedResponse {
 				}
 
 			} catch (NullPointerException e) {
-				throw new InvalidResponseException(e.getMessage());
+				throw new SailHeroSystemException(e.getMessage());
 			} catch (NumberFormatException e) {
-				throw new InvalidResponseException(e.getMessage());
+				throw new SailHeroSystemException(e.getMessage());
 			} catch (ParseException e) {
-				throw new InvalidResponseException(e.getMessage());
+				throw new SailHeroSystemException(e.getMessage());
 			}
 		} else if (statusCode == 422) {
-			throw new InvalidRequestException("");
+			throw new UnprocessableEntityException(response.getBody());
 		} else {
-			throw new InvalidResponseException("Invalid status code");
+			throw new SailHeroSystemException("Invalid status code");
 		}
 	}
 	
