@@ -1,16 +1,16 @@
 package put.sailhero.android;
 
-import put.sailhero.android.exception.SailHeroSystemException;
+import put.sailhero.android.exception.SystemException;
 
 public class UnauthorizeUserResponse extends ProcessedResponse {
 	@Override
-	public void createFrom(HttpResponse response) throws SailHeroSystemException {
+	public void createFrom(HttpResponse response) throws SystemException {
 		int statusCode = response.getStatusCode();
 
 		if (statusCode == 200) {
 			// token revoked
 		} else {
-			throw new SailHeroSystemException("Invalid status code");
+			throw new SystemException("Invalid status code");
 		}
 
 	}

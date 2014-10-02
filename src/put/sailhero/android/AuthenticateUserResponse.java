@@ -5,7 +5,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import put.sailhero.android.exception.InvalidResourceOwnerException;
-import put.sailhero.android.exception.SailHeroSystemException;
+import put.sailhero.android.exception.SystemException;
 
 public class AuthenticateUserResponse extends ProcessedResponse {
 	private String accessToken;
@@ -14,7 +14,7 @@ public class AuthenticateUserResponse extends ProcessedResponse {
 	private String refreshToken;
 
 	@Override
-	public void createFrom(HttpResponse response) throws InvalidResourceOwnerException, SailHeroSystemException {
+	public void createFrom(HttpResponse response) throws InvalidResourceOwnerException, SystemException {
 		int statusCode = response.getStatusCode();
 
 		if (statusCode == 200) {
@@ -28,9 +28,9 @@ public class AuthenticateUserResponse extends ProcessedResponse {
 				setRefreshToken(obj.get("refresh_token").toString());
 
 			} catch (NullPointerException e) {
-				throw new SailHeroSystemException(e.getMessage());
+				throw new SystemException(e.getMessage());
 			} catch (ParseException e) {
-				throw new SailHeroSystemException(e.getMessage());
+				throw new SystemException(e.getMessage());
 			}
 		} else if (statusCode == 401) {
 			JSONParser parser = new JSONParser();
@@ -38,7 +38,7 @@ public class AuthenticateUserResponse extends ProcessedResponse {
 			try {
 				obj = (JSONObject) parser.parse(response.getBody());
 			} catch (ParseException e) {
-				throw new SailHeroSystemException(e.getMessage());
+				throw new SystemException(e.getMessage());
 			}
 			String error;
 			String errorMessage;
@@ -46,19 +46,19 @@ public class AuthenticateUserResponse extends ProcessedResponse {
 				error = obj.get("error").toString();
 				errorMessage = obj.get("error_description").toString();
 			} catch (NullPointerException e) {
-				throw new SailHeroSystemException(e.getMessage());
+				throw new SystemException(e.getMessage());
 			}
 			if (!error.isEmpty()) {
 				if (error.equalsIgnoreCase("invalid_resource_owner")) {
 					throw new InvalidResourceOwnerException(errorMessage);
 				} else {
-					throw new SailHeroSystemException(errorMessage);
+					throw new SystemException(errorMessage);
 				}
 			} else {
-				throw new SailHeroSystemException("");
+				throw new SystemException("");
 			}
 		} else {
-			throw new SailHeroSystemException("Invalid status code");
+			throw new SystemException("Invalid status code");
 		}
 
 	}

@@ -4,7 +4,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import put.sailhero.android.exception.SailHeroSystemException;
+import put.sailhero.android.exception.SystemException;
 import put.sailhero.android.exception.UnprocessableEntityException;
 
 public class CreateUserResponse extends ProcessedResponse {
@@ -12,7 +12,7 @@ public class CreateUserResponse extends ProcessedResponse {
 	private User user;
 
 	@Override
-	public void createFrom(HttpResponse response) throws UnprocessableEntityException, SailHeroSystemException {
+	public void createFrom(HttpResponse response) throws UnprocessableEntityException, SystemException {
 		int statusCode = response.getStatusCode();
 		
 		if (statusCode == 201) {
@@ -32,16 +32,16 @@ public class CreateUserResponse extends ProcessedResponse {
 				}
 
 			} catch (NullPointerException e) {
-				throw new SailHeroSystemException(e.getMessage());
+				throw new SystemException(e.getMessage());
 			} catch (NumberFormatException e) {
-				throw new SailHeroSystemException(e.getMessage());
+				throw new SystemException(e.getMessage());
 			} catch (ParseException e) {
-				throw new SailHeroSystemException(e.getMessage());
+				throw new SystemException(e.getMessage());
 			}
 		} else if (statusCode == 422) {
 			throw new UnprocessableEntityException(response.getBody());
 		} else {
-			throw new SailHeroSystemException("Invalid status code");
+			throw new SystemException("Invalid status code");
 		}
 	}
 	
