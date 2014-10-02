@@ -11,12 +11,14 @@ public class CreateUserRequest implements Request {
 	SailHeroService service = SailHeroService.getInstance();
 	SailHeroSettings settings = service.getSettings();
 	
-	String email, password, passwordConfirmation;
+	String email, password, passwordConfirmation, name, surname;
 	
-	public CreateUserRequest(String username, String password, String passwordConfirmation) {
+	public CreateUserRequest(String username, String password, String passwordConfirmation, String name, String surname) {
 		this.email = username;
 		this.password = password;
 		this.passwordConfirmation = passwordConfirmation;
+		this.name = name;
+		this.surname = surname;
 	}
 	
 	@Override
@@ -54,8 +56,8 @@ public class CreateUserRequest implements Request {
 		userObject.put("email", email);
 		userObject.put("password", password);
 		userObject.put("password_confirmation", passwordConfirmation);
-		userObject.put("name", "name");
-		userObject.put("surname", "surname");
+		userObject.put("name", name);
+		userObject.put("surname", surname);
 		
 		obj.put("user", userObject);
 		
