@@ -14,6 +14,9 @@ public abstract class SailHeroSettings {
 	protected String version;
 	protected String i18n;
 	
+	protected User user;
+	protected Yacht yacht;
+	
 	abstract public void save();
 	abstract public void clear();
 	
@@ -72,6 +75,18 @@ public abstract class SailHeroSettings {
 	}
 	public void setAccessTokenPath(String accessTokenPath) {
 		this.accessTokenPath = accessTokenPath;
+	}
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
+	}
+	public Yacht getYacht() {
+		return yacht;
+	}
+	public void setYacht(Yacht yacht) {
+		this.yacht = yacht;
 	}
 	
 }
