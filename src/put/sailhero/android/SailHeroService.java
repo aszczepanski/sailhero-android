@@ -1,13 +1,15 @@
 package put.sailhero.android;
 
+import android.content.Context;
+
 public class SailHeroService {
 	private static SailHeroService instance;
 	private SailHeroSettings settings;
 	private Connection connection = new Connection();
 	
-	public static SailHeroService initialize() {
+	public static SailHeroService initialize(Context context) {
 		if (instance == null) {
-			SailHeroSettings settings = new SailHeroFileSettings();
+			SailHeroSettings settings = new SailHeroSharedPreferencesSettings(context);
 			SailHeroService service = new SailHeroService(settings);
 			instance = service;
 		}
@@ -32,6 +34,11 @@ public class SailHeroService {
 		return settings;
 	}
 
+	public void reset() {
+		settings.clear();
+		settings.save();
+	}
+	
 	public Connection getConnection() {
 		return connection;
 	}

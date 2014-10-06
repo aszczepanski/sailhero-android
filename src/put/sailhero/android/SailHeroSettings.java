@@ -14,6 +14,9 @@ public abstract class SailHeroSettings {
 	protected String version;
 	protected String i18n;
 	
+	abstract public void save();
+	abstract public void clear();
+	
 	public String getApiPath() {
 		return apiPath;
 	}
