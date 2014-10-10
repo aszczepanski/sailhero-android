@@ -1,12 +1,5 @@
 package put.sailhero.android;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import put.sailhero.android.exception.InvalidResourceOwnerException;
-import put.sailhero.android.exception.SystemException;
-import put.sailhero.android.exception.UnprocessableEntityException;
 
 public class CreateYachtResponse implements ProcessedResponse {
 
