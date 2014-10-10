@@ -16,6 +16,7 @@ public abstract class SailHeroSettings {
 	
 	protected User user;
 	protected Yacht yacht;
+	protected Region region;
 	
 	abstract public void save();
 	abstract public void clear();
@@ -87,6 +88,12 @@ public abstract class SailHeroSettings {
 	}
 	public void setYacht(Yacht yacht) {
 		this.yacht = yacht;
+	}
+	public Region getRegion() {
+		return region;
+	}
+	public void setRegion(Region region) {
+		this.region = region;
 	}
 	
 }
