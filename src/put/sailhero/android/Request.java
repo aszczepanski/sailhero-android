@@ -38,6 +38,7 @@ public interface Request {
 	
 	public enum Method {
 		POST,
+		PUT,
 		GET
 	}
 }
