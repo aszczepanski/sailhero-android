@@ -70,7 +70,8 @@ class AuthenticateUserAsyncTask extends AsyncTask<Void, Void, Void> {
 		} else if (mException instanceof InvalidResourceOwnerException) {
 			Toast.makeText(mContext, mException.getMessage(), Toast.LENGTH_LONG).show();
 		} else if (mException instanceof TransportException) {
-			Toast.makeText(mContext, "Service unavailable, try again later...", Toast.LENGTH_LONG).show();
+			Toast.makeText(mContext, "Service unavailable, try again later...", Toast.LENGTH_LONG)
+					.show();
 		} else {
 			Toast.makeText(mContext, "Unknown error", Toast.LENGTH_LONG).show();
 		}
