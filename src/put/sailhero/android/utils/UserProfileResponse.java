@@ -1,18 +1,17 @@
 package put.sailhero.android.utils;
 
-import java.util.LinkedList;
-
 public class UserProfileResponse implements ProcessedResponse {
-	
-	private LinkedList<Yacht> yachts;
-	private User user;
 
-	public LinkedList<Yacht> getYachts() {
-		return yachts;
+	private User user;
+	private Yacht yacht;
+	private Region region;
+
+	public Yacht getYacht() {
+		return yacht;
 	}
 
-	public void setYachts(LinkedList<Yacht> yachts) {
-		this.yachts = yachts;
+	public void setYacht(Yacht yacht) {
+		this.yacht = yacht;
 	}
 
 	public User getUser() {
@@ -21,5 +20,13 @@ public class UserProfileResponse implements ProcessedResponse {
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	public Region getRegion() {
+		return region;
+	}
+
+	public void setRegion(Region region) {
+		this.region = region;
 	}
 }

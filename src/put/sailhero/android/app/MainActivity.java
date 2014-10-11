@@ -1,38 +1,44 @@
 package put.sailhero.android.app;
 
 import put.sailhero.android.R;
-import put.sailhero.android.R.id;
-import put.sailhero.android.R.layout;
-import put.sailhero.android.R.menu;
+import put.sailhero.android.utils.SailHeroService;
+import put.sailhero.android.utils.SailHeroSettings;
+import put.sailhero.android.utils.UserProfileRequest;
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.widget.Toast;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements
+		GetUserProfileAsyncTask.GetUserProfileListener {
 
+	private SailHeroService mService;
+	private SailHeroSettings mSettings;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		mService = SailHeroService.getInstance();
+		mSettings = mService.getSettings();
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
+	protected void onResume() {
+		GetUserProfileAsyncTask task = new GetUserProfileAsyncTask(new UserProfileRequest(), this,
+				this);
+		task.execute();
+		
+		super.onResume();
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
+	public void onUserProfileReceived() {
+		if (mSettings.getRegion() == null) {
+			Toast.makeText(MainActivity.this, "No region selected", Toast.LENGTH_SHORT).show();
+		} else {
+			Toast.makeText(MainActivity.this, "Using region: " + mSettings.getRegion().getFullName(), Toast.LENGTH_SHORT).show();
 		}
-		return super.onOptionsItemSelected(item);
 	}
+
 }

@@ -27,8 +27,8 @@ public class CreateYachtResponseCreator implements ResponseCreator<CreateYachtRe
 				Yacht yacht = new Yacht();
 				yacht.setId(Integer.valueOf(yachtObject.get("id").toString()));
 				yacht.setName(yachtObject.get("name").toString());
-				yacht.setLength(Integer.valueOf(yachtObject.get("length").toString()));
-				yacht.setWidth(Integer.valueOf(yachtObject.get("width").toString()));
+				yacht.setLength(Float.valueOf(yachtObject.get("length").toString()));
+				yacht.setWidth(Float.valueOf(yachtObject.get("width").toString()));
 				yacht.setCrew(Integer.valueOf(yachtObject.get("yacht_id").toString()));
 				
 				createYachtResponse.setYacht(yacht);

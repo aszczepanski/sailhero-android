@@ -2,10 +2,11 @@ package put.sailhero.android.utils;
 
 public class User {
 	private Integer id;
-	private String createdAt;  // TODO: change to datetime type
+	private String createdAt; // TODO: change to datetime type
 	private String email;
-	private Integer yachId;
-	
+	private String name;
+	private String surname;
+
 	public Integer getId() {
 		return id;
 	}
@@ -30,11 +31,19 @@ public class User {
 		this.email = email;
 	}
 
-	public Integer getYachId() {
-		return yachId;
+	public String getSurname() {
+		return surname;
 	}
 
-	public void setYachId(Integer yachId) {
-		this.yachId = yachId;
+	public void setSurname(String surname) {
+		this.surname = surname;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }

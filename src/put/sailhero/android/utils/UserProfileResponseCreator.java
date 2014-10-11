@@ -1,8 +1,5 @@
 package put.sailhero.android.utils;
 
-import java.util.LinkedList;
-
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -15,43 +12,50 @@ public class UserProfileResponseCreator implements ResponseCreator<UserProfileRe
 
 	@Override
 	public UserProfileResponse createFrom(HttpResponse response)
-			throws InvalidResourceOwnerException, SystemException,
-			UnprocessableEntityException {
+			throws InvalidResourceOwnerException, SystemException, UnprocessableEntityException {
 		int statusCode = response.getStatusCode();
 
 		UserProfileResponse userProfileResponse = new UserProfileResponse();
-		
+
 		if (statusCode == 200) {
-			try {			
+			try {
 				JSONParser parser = new JSONParser();
 				JSONObject obj = (JSONObject) parser.parse(response.getBody());
 
-				JSONArray yachtsArray = (JSONArray) obj.get("yachts");
-				LinkedList<Yacht> yachts = new LinkedList<Yacht>();
-				for (int i=0; i<yachtsArray.size(); i++) {
-					JSONObject yachtObject = (JSONObject) yachtsArray.get(i);
-					Yacht yacht = new Yacht();
-					yacht.setId(Integer.valueOf(yachtObject.get("id").toString()));
-					yacht.setName(yachtObject.get("name").toString());
-					yacht.setLength(Integer.valueOf(yachtObject.get("length").toString()));
-					yacht.setWidth(Integer.valueOf(yachtObject.get("width").toString()));
-					yacht.setCrew(Integer.valueOf(yachtObject.get("crew").toString()));
-					yachts.add(yacht);
-				}
-
-				userProfileResponse.setYachts(yachts);
-				
 				JSONObject userObject = (JSONObject) obj.get("user");
 				User user = new User();
 				user.setId(Integer.valueOf(userObject.get("id").toString()));
 				user.setEmail(userObject.get("email").toString());
+				user.setName(userObject.get("name").toString());
+				user.setSurname(userObject.get("surname").toString());
 				user.setCreatedAt(userObject.get("created_at").toString());
-				if (userObject.get("yacht_id") == null) {
-					user.setYachId(null);
+
+				JSONObject yachtObject = (JSONObject) userObject.get("yacht");
+				if (yachtObject != null) {
+					Yacht yacht = new Yacht();
+					yacht.setId(Integer.valueOf(yachtObject.get("id").toString()));
+					yacht.setName(yachtObject.get("name").toString());
+					yacht.setLength(Float.valueOf(yachtObject.get("length").toString()));
+					yacht.setWidth(Float.valueOf(yachtObject.get("width").toString()));
+					yacht.setCrew(Integer.valueOf(yachtObject.get("crew").toString()));
+
+					userProfileResponse.setYacht(yacht);
 				} else {
-					user.setYachId(Integer.valueOf(userObject.get("yacht_id").toString()));
+					userProfileResponse.setYacht(null);
 				}
-				
+
+				JSONObject regionObject = (JSONObject) userObject.get("region");
+				if (regionObject != null) {
+					Region region = new Region();
+					region.setId(Integer.valueOf(regionObject.get("id").toString()));
+					region.setFullName(regionObject.get("full_name").toString());
+					region.setCodeName(regionObject.get("code_name").toString());
+
+					userProfileResponse.setRegion(region);
+				} else {
+					userProfileResponse.setRegion(null);
+				}
+
 				userProfileResponse.setUser(user);
 
 			} catch (NullPointerException e) {
@@ -66,7 +70,7 @@ public class UserProfileResponseCreator implements ResponseCreator<UserProfileRe
 		} else {
 			throw new SystemException("Invalid status code");
 		}
-		
+
 		return userProfileResponse;
 	}
 

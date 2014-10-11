@@ -1,6 +1,7 @@
 package put.sailhero.android.app;
 
 import put.sailhero.android.R;
+import put.sailhero.android.utils.AuthenticateUserRequest;
 import put.sailhero.android.utils.CreateUserRequest;
 import put.sailhero.android.utils.SailHeroService;
 import put.sailhero.android.utils.SailHeroSettings;
@@ -12,7 +13,8 @@ import android.widget.Button;
 import android.widget.EditText;
 
 public class RegisterUserActivity extends Activity implements
-		RegisterUserAsyncTask.RegisterUserListener {
+		RegisterUserAsyncTask.RegisterUserListener,
+		AuthenticateUserAsyncTask.AuthenticateUserListener {
 
 	private SailHeroService mService;
 	private SailHeroSettings mSettings;
@@ -58,14 +60,17 @@ public class RegisterUserActivity extends Activity implements
 		mCancelButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				finish();
+
 			}
 		});
 	}
 
 	@Override
 	public void onUserRegistered() {
-		finish();
+		AuthenticateUserRequest request = new AuthenticateUserRequest(mEmailEditText.getText()
+				.toString().trim(), mPasswordEditText.getText().toString());
+		AuthenticateUserAsyncTask task = new AuthenticateUserAsyncTask(request, this, this);
+		task.execute();
 	}
 
 	@Override
@@ -88,5 +93,10 @@ public class RegisterUserActivity extends Activity implements
 			mSurnameEditText.setError(errorsHolder.getSurnameErrors().getFirst());
 		}
 
+	}
+
+	@Override
+	public void onUserAuthenticated() {
+		finish();
 	}
 }

@@ -24,12 +24,9 @@ public class CreateUserResponseCreator implements ResponseCreator<CreateUserResp
 				User user = new User();
 				user.setId(Integer.valueOf(userObject.get("id").toString()));
 				user.setEmail(userObject.get("email").toString());
+				user.setName(userObject.get("name").toString());
+				user.setSurname(userObject.get("surname").toString());
 				user.setCreatedAt(userObject.get("created_at").toString());
-				if (userObject.get("yacht_id") == null) {
-					user.setYachId(null);
-				} else {
-					user.setYachId(Integer.valueOf(userObject.get("yacht_id").toString()));
-				}
 				
 				createUserResponse.setUser(user);
 

@@ -3,8 +3,8 @@ package put.sailhero.android.utils;
 public class Yacht {
 	private Integer id;
 	private String name;
-	private Integer length;
-	private Integer width;
+	private Float length;
+	private Float width;
 	private Integer crew;
 
 	public Integer getId() {
@@ -19,16 +19,16 @@ public class Yacht {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public Integer getLength() {
+	public Float getLength() {
 		return length;
 	}
-	public void setLength(Integer length) {
+	public void setLength(Float length) {
 		this.length = length;
 	}
-	public Integer getWidth() {
+	public Float getWidth() {
 		return width;
 	}
-	public void setWidth(Integer width) {
+	public void setWidth(Float width) {
 		this.width = width;
 	}
 	public Integer getCrew() {
