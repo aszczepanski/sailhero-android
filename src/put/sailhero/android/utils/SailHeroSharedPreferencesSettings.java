@@ -12,6 +12,7 @@ public class SailHeroSharedPreferencesSettings extends SailHeroSettings {
 
 		SharedPreferences sharedPref = context.getSharedPreferences("default", Context.MODE_PRIVATE);
 		accessToken = sharedPref.getString("accessToken", null);
+		refreshToken = sharedPref.getString("refreshToken", null);
 	}
 
 	@Override
@@ -19,12 +20,18 @@ public class SailHeroSharedPreferencesSettings extends SailHeroSettings {
 		SharedPreferences sharedPref = context.getSharedPreferences("default", Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
 		editor.putString("accessToken", accessToken);
+		editor.putString("refreshToken", refreshToken);
 		editor.commit();
 	}
 
 	@Override
 	public void clear() {
-		accessToken = null;		
+		accessToken = null;
+		refreshToken = null;
+		
+		user = null;
+		yacht = null;
+		region = null;
 	}
 
 }
