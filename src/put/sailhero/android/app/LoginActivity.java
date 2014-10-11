@@ -46,6 +46,7 @@ public class LoginActivity extends Activity {
 	private SailHeroSettings mSettings;
 
 	private Button mAuthenticateUserButton;
+	private Button mRegisterUserButton;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +79,15 @@ public class LoginActivity extends Activity {
 						.getText().toString().trim(), passwordText.getText().toString());
 				AuthenticateUserTask task = new AuthenticateUserTask(authenticateUserRequest);
 				task.execute();
+			}
+		});
+		
+		mRegisterUserButton = (Button) findViewById(R.id.ActivityLoginRegisterUserButton);
+		mRegisterUserButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent registerUserIntent = new Intent(LoginActivity.this, RegisterUserActivity.class);
+				startActivity(registerUserIntent);
 			}
 		});
 	}

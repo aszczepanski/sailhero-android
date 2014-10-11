@@ -28,6 +28,10 @@
             android:name=".app.MainActivity"
             android:label="@string/title_activity_main" >
         </activity>
+        <activity
+            android:name="put.sailhero.android.app.RegisterUserActivity"
+            android:label="@string/title_activity_register_user" >
+        </activity>
     </application>
 
 </manifest>
