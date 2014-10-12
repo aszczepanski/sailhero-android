@@ -1,5 +1,7 @@
 package put.sailhero.android.utils;
 
+import java.util.AbstractList;
+
 public abstract class SailHeroSettings {
 
 	protected String appId;
@@ -18,6 +20,8 @@ public abstract class SailHeroSettings {
 	protected User user;
 	protected Yacht yacht;
 	protected Region region;
+
+	protected AbstractList<Region> regionsList;
 
 	abstract public void save();
 
@@ -62,11 +66,11 @@ public abstract class SailHeroSettings {
 	public void setAccessToken(String accessToken) {
 		this.accessToken = accessToken;
 	}
-	
+
 	public String getRefreshToken() {
 		return refreshToken;
 	}
-	
+
 	public void setRefreshToken(String refreshToken) {
 		this.refreshToken = refreshToken;
 	}
@@ -125,6 +129,14 @@ public abstract class SailHeroSettings {
 
 	public void setRegion(Region region) {
 		this.region = region;
+	}
+
+	public AbstractList<Region> getRegionsList() {
+		return regionsList;
+	}
+
+	public void setRegionsList(AbstractList<Region> regionsList) {
+		this.regionsList = regionsList;
 	}
 
 }
