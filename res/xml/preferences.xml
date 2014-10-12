@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory
+        android:key="general_preference_category"
+        android:title="General" >
+        <Preference
+            android:key="alert_radius_preference"
+            android:summary="Select alert radius"
+            android:title="Alert radius" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="user_settings_preference_category"
+        android:title="User settings" >
+        <ListPreference
+            android:dialogTitle="Select a region"
+            android:key="region_list_preference"
+            android:summary="Selected region"
+            android:title="Region" />
+
+        <PreferenceScreen
+            android:key="yacht_preference_screen"
+            android:summary="Insert yacht parameters"
+            android:title="Yacht" >
+        </PreferenceScreen>
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="account_settings_preference_category"
+        android:title="Account settings" >
+        <Preference
+            android:key="deactivate_account_preference"
+            android:title="Deactivate account" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

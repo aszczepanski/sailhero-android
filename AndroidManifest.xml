@@ -29,8 +29,12 @@
             android:label="@string/title_activity_main" >
         </activity>
         <activity
-            android:name="put.sailhero.android.app.RegisterUserActivity"
+            android:name=".app.RegisterUserActivity"
             android:label="@string/title_activity_register_user" >
+        </activity>
+        <activity
+            android:name="put.sailhero.android.app.PreferenceActivity"
+            android:label="@string/title_activity_preference" >
         </activity>
     </application>
 
