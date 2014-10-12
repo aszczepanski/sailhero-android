@@ -6,8 +6,11 @@ import put.sailhero.android.utils.SailHeroService;
 import put.sailhero.android.utils.SailHeroSettings;
 import put.sailhero.android.utils.UserProfileRequest;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements
@@ -28,10 +31,37 @@ public class MainActivity extends Activity implements
 	}
 
 	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.action_settings:
+			Intent intent = new Intent(MainActivity.this, PreferenceActivity.class);
+			startActivity(intent);
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
+	@Override
 	protected void onResume() {
-		GetUserProfileAsyncTask task = new GetUserProfileAsyncTask(new UserProfileRequest(), this,
-				this);
-		task.execute();
+		GetUserProfileAsyncTask getUserProfileTask = new GetUserProfileAsyncTask(
+				new UserProfileRequest(), this, this);
+		getUserProfileTask.execute();
+
+		GetRegionsAsyncTask getRegionsTask = new GetRegionsAsyncTask(new GetRegionsRequest(), this,
+				new GetRegionsAsyncTask.GetRegionsListener() {
+					@Override
+					public void onRegionsReceived() {
+						Log.d(TAG, "Regions received (" + mSettings.getRegionsList().size() + ")");
+					}
+				});
+		getRegionsTask.execute();
 
 		super.onResume();
 	}
@@ -39,14 +69,7 @@ public class MainActivity extends Activity implements
 	@Override
 	public void onUserProfileReceived() {
 		if (mSettings.getRegion() == null) {
-			GetRegionsAsyncTask task = new GetRegionsAsyncTask(new GetRegionsRequest(), this,
-					new GetRegionsAsyncTask.GetRegionsListener() {
-						@Override
-						public void onRegionsReceived() {
-							Log.d(TAG, "Regions received (" + mSettings.getRegionsList().size() + ")");
-						}
-					});
-			task.execute();
+
 		} else {
 			Toast.makeText(MainActivity.this,
 					"Using region: " + mSettings.getRegion().getFullName(), Toast.LENGTH_SHORT)
