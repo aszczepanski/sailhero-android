@@ -10,10 +10,10 @@ public class SelectRegionRequest implements Request {
 	private SailHeroService service = SailHeroService.getInstance();
 	private SailHeroSettings settings = service.getSettings();
 
-	private Region region;
+	private Integer regionId;
 
-	public SelectRegionRequest(Region region) {
-		this.region = region;
+	public SelectRegionRequest(Integer regionId) {
+		this.regionId = regionId;
 	}
 
 	@Override
@@ -26,7 +26,7 @@ public class SelectRegionRequest implements Request {
 		Uri uri = new Uri.Builder().scheme("http").encodedAuthority(apiHost)
 				.appendPath(apiPath).appendPath(version).appendPath(i18n)
 				.appendEncodedPath(REGIONS_PATH)
-				.appendEncodedPath(region.getId().toString())
+				.appendEncodedPath(regionId.toString())
 				.appendEncodedPath(SELECT_PATH).build();
 
 		return uri.toString();
