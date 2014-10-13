@@ -13,6 +13,7 @@ import put.sailhero.android.utils.SailHeroSettings;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Toast;
 
 class CreateAlertAsyncTask extends AsyncTask<Void, Void, Void> {
@@ -49,10 +50,8 @@ class CreateAlertAsyncTask extends AsyncTask<Void, Void, Void> {
 		CreateAlertResponse createAlertResponse;
 		try {
 			createAlertResponse = connection.send(request, new CreateAlertResponseCreator());
-			// mSettings.setYacht(createAlertResponse.getYacht());
 			mSettings.save();
-			// Log.d(TAG, "created yach with id " +
-			// mSettings.getYacht().getId());
+			Log.d(TAG, "created yach with id " + createAlertResponse.getAlert().getId());
 		} catch (Exception e) {
 			mException = e;
 			e.printStackTrace();
@@ -67,8 +66,9 @@ class CreateAlertAsyncTask extends AsyncTask<Void, Void, Void> {
 		if (mException == null) {
 			mCreateAlertListener.onAlertCreated();
 		} else if (mException instanceof UnprocessableEntityException) {
-			// mCreateAlertListener.onUnprocessableEntityException(new YachtParametersErrorsHolder(
-			//		mException.getMessage()));
+			// mCreateAlertListener.onUnprocessableEntityException(new
+			// YachtParametersErrorsHolder(
+			// mException.getMessage()));
 		} else if (mException instanceof InvalidResourceOwnerException) {
 			Toast.makeText(mContext, mException.getMessage(), Toast.LENGTH_LONG).show();
 		} else if (mException instanceof TransportException) {

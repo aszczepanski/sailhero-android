@@ -6,6 +6,7 @@ import org.json.simple.parser.ParseException;
 
 import put.sailhero.android.exception.SystemException;
 import put.sailhero.android.exception.UnprocessableEntityException;
+import android.location.Location;
 
 public class CreateAlertResponseCreator implements ResponseCreator<CreateAlertResponse> {
 
@@ -19,17 +20,21 @@ public class CreateAlertResponseCreator implements ResponseCreator<CreateAlertRe
 			try {			
 				JSONParser parser = new JSONParser();
 				JSONObject obj = (JSONObject) parser.parse(response.getBody());
-/*
-				JSONObject userObject = (JSONObject) obj.get("user");
-				User user = new User();
-				user.setId(Integer.valueOf(userObject.get("id").toString()));
-				user.setEmail(userObject.get("email").toString());
-				user.setName(userObject.get("name").toString());
-				user.setSurname(userObject.get("surname").toString());
-				user.setCreatedAt(userObject.get("created_at").toString());
+
+				JSONObject alertObject = (JSONObject) obj.get("alert");
+				Alert alert = new Alert();
+				alert.setId(Integer.valueOf(alertObject.get("id").toString()));
+				alert.setAlertType(alertObject.get("alert_type").toString());
+				alert.setAdditionalInfo(alertObject.get("additional_info").toString());
+				alert.setCredibility(Integer.valueOf(alertObject.get("credibility").toString()));
 				
-				createUserResponse.setUser(user);
-*/
+				Location alertLocation = new Location("sailhero");
+				alertLocation.setLatitude(Double.valueOf(alertObject.get("latitude").toString()));
+				alertLocation.setLongitude(Double.valueOf(alertObject.get("longitude").toString()));		
+				alert.setLocation(alertLocation);
+				
+				createAlertResponse.setAlert(alert);
+
 			} catch (NullPointerException e) {
 				throw new SystemException(e.getMessage());
 			} catch (NumberFormatException e) {
@@ -45,5 +50,4 @@ public class CreateAlertResponseCreator implements ResponseCreator<CreateAlertRe
 		
 		return createAlertResponse;
 	}
-
 }
