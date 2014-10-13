@@ -22,6 +22,7 @@
             android:key="yacht_preference_screen"
             android:summary="Insert yacht parameters"
             android:title="Yacht" >
+            <intent android:action="android.sailhero.YACHT" />
         </PreferenceScreen>
     </PreferenceCategory>
     <PreferenceCategory

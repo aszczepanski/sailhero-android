@@ -33,8 +33,17 @@
             android:label="@string/title_activity_register_user" >
         </activity>
         <activity
-            android:name="put.sailhero.android.app.PreferenceActivity"
+            android:name=".app.PreferenceActivity"
             android:label="@string/title_activity_preference" >
+        </activity>
+        <activity
+            android:name=".app.YachtActivity"
+            android:label="@string/title_activity_yacht" >
+            <intent-filter>
+                <action android:name="android.sailhero.YACHT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
     </application>
 

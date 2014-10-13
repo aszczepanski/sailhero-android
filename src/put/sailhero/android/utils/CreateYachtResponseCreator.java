@@ -12,25 +12,24 @@ public class CreateYachtResponseCreator implements ResponseCreator<CreateYachtRe
 
 	@Override
 	public CreateYachtResponse createFrom(HttpResponse response)
-			throws InvalidResourceOwnerException, SystemException,
-			UnprocessableEntityException {
+			throws InvalidResourceOwnerException, SystemException, UnprocessableEntityException {
 		int statusCode = response.getStatusCode();
-		
+
 		CreateYachtResponse createYachtResponse = new CreateYachtResponse();
-		
+
 		if (statusCode == 201) {
-			try {			
+			try {
 				JSONParser parser = new JSONParser();
 				JSONObject obj = (JSONObject) parser.parse(response.getBody());
-				
+
 				JSONObject yachtObject = (JSONObject) obj.get("yacht");
 				Yacht yacht = new Yacht();
 				yacht.setId(Integer.valueOf(yachtObject.get("id").toString()));
 				yacht.setName(yachtObject.get("name").toString());
 				yacht.setLength(Float.valueOf(yachtObject.get("length").toString()));
 				yacht.setWidth(Float.valueOf(yachtObject.get("width").toString()));
-				yacht.setCrew(Integer.valueOf(yachtObject.get("yacht_id").toString()));
-				
+				yacht.setCrew(Integer.valueOf(yachtObject.get("crew").toString()));
+
 				createYachtResponse.setYacht(yacht);
 
 			} catch (NullPointerException e) {
@@ -45,7 +44,7 @@ public class CreateYachtResponseCreator implements ResponseCreator<CreateYachtRe
 		} else {
 			throw new SystemException("Invalid status code");
 		}
-		
+
 		return createYachtResponse;
 	}
 

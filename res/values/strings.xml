@@ -8,5 +8,6 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_register_user">RegisterUserActivity</string>
     <string name="title_activity_preference">PreferenceActivity</string>
+    <string name="title_activity_yacht">YachtActivity</string>
 
 </resources>

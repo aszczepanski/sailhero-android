@@ -46,6 +46,7 @@ public class PreferenceActivity extends Activity {
 			addPreferencesFromResource(R.xml.preferences);
 
 			final AbstractList<Region> regions = mSettings.getRegionsList();
+			assert(regions != null);
 			final Region userRegion = mSettings.getRegion();
 			CharSequence[] regionsEntries = new CharSequence[regions.size()];
 			CharSequence[] regionsEntryValues = new CharSequence[regions.size()];
