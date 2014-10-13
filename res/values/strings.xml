@@ -5,9 +5,18 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_login">Login</string>
     <string name="action_settings">Settings</string>
+    <string name="action_alerts">Alerts</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_register_user">RegisterUserActivity</string>
     <string name="title_activity_preference">PreferenceActivity</string>
     <string name="title_activity_yacht">YachtActivity</string>
+
+    <string-array name="alert_names">
+        <item>Bad weather conditions</item>
+        <item>Closed area</item>
+        <item>Yacht failure</item>
+    </string-array>
+
+    <string name="title_activity_alert">AlertActivity</string>
 
 </resources>

@@ -45,6 +45,10 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="put.sailhero.android.app.AlertActivity"
+            android:label="@string/title_activity_alert" >
+        </activity>
     </application>
 
 </manifest>

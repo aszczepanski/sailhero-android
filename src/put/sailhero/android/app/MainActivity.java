@@ -38,9 +38,14 @@ public class MainActivity extends Activity implements
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Intent intent = null;
 		switch (item.getItemId()) {
 		case R.id.action_settings:
-			Intent intent = new Intent(MainActivity.this, PreferenceActivity.class);
+			intent = new Intent(MainActivity.this, PreferenceActivity.class);
+			startActivity(intent);
+			return true;
+		case R.id.action_alert:
+			intent = new Intent(MainActivity.this, AlertActivity.class);
 			startActivity(intent);
 			return true;
 		default:
