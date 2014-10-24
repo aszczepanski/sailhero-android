@@ -22,7 +22,7 @@ public abstract class SailHeroSettings {
 	protected Region region;
 
 	protected AbstractList<Alert> alerts;
-
+	protected AbstractList<Port> ports;
 	protected AbstractList<Region> regionsList;
 
 	abstract public void save();
@@ -147,6 +147,14 @@ public abstract class SailHeroSettings {
 
 	public void setAlerts(AbstractList<Alert> alerts) {
 		this.alerts = alerts;
+	}
+
+	public AbstractList<Port> getPorts() {
+		return ports;
+	}
+
+	public void setPorts(AbstractList<Port> ports) {
+		this.ports = ports;
 	}
 
 }
