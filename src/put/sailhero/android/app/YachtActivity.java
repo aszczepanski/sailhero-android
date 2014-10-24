@@ -2,8 +2,17 @@ package put.sailhero.android.app;
 
 import put.sailhero.android.R;
 import put.sailhero.android.utils.CreateYachtRequest;
+import put.sailhero.android.utils.ProcessedResponse;
+import put.sailhero.android.utils.SailHeroService;
+import put.sailhero.android.utils.SailHeroSettings;
+import put.sailhero.android.utils.UpdateYachtRequest;
+import put.sailhero.android.utils.Yacht;
+import put.sailhero.android.utils.YachtRequest;
+import put.sailhero.android.utils.YachtResponse;
+import put.sailhero.android.utils.YachtResponseCreator;
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -12,6 +21,8 @@ import android.widget.Toast;
 
 public class YachtActivity extends Activity {
 
+	public final static String TAG = "sailhero";
+
 	private EditText mNameEditText;
 	private EditText mLengthEditText;
 	private EditText mWidthEditText;
@@ -19,20 +30,38 @@ public class YachtActivity extends Activity {
 
 	private Button mSendButton;
 
+	private SailHeroService mService;
+	private SailHeroSettings mSettings;
+
+	private Yacht mCurrentYacht;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_yacht);
+
+		mService = SailHeroService.getInstance();
+		mSettings = mService.getSettings();
+
+		mCurrentYacht = mSettings.getYacht();
 
 		mNameEditText = (EditText) findViewById(R.id.ActivityYachtNameEditText);
 		mLengthEditText = (EditText) findViewById(R.id.ActivityYachtLengthEditText);
 		mWidthEditText = (EditText) findViewById(R.id.ActivityYachtWidthEditText);
 		mCrewEditText = (EditText) findViewById(R.id.ActivityYachtCrewEditText);
 
-		mNameEditText.setText("Tango");
-		mLengthEditText.setText("780");
-		mWidthEditText.setText("350");
-		mCrewEditText.setText("7");
+		if (mCurrentYacht != null) {
+			mNameEditText.setText(mCurrentYacht.getName());
+			mLengthEditText.setText(mCurrentYacht.getLength().toString());
+			mWidthEditText.setText(mCurrentYacht.getWidth().toString());
+			mCrewEditText.setText(mCurrentYacht.getCrew().toString());
+		} else {
+			// TODO:
+			mNameEditText.setText("Tango");
+			mLengthEditText.setText("780");
+			mWidthEditText.setText("350");
+			mCrewEditText.setText("7");
+		}
 
 		mSendButton = (Button) findViewById(R.id.ActivityYachtSendButton);
 		mSendButton.setOnClickListener(new OnClickListener() {
@@ -59,18 +88,35 @@ public class YachtActivity extends Activity {
 				}
 
 				if (length != null && width != null && crew != null) {
-					CreateYachtRequest request = new CreateYachtRequest(name, length, width, crew);
-					CreateYachtAsyncTask task = new CreateYachtAsyncTask(request,
-							YachtActivity.this, new CreateYachtAsyncTask.CreateYachtListener() {
+					YachtRequest request;
+					if (mCurrentYacht != null) {
+						request = new UpdateYachtRequest(mCurrentYacht.getId(), name, length,
+								width, crew);
+					} else {
+						request = new CreateYachtRequest(name, length, width, crew);
+					}
+					RequestAsyncTask task = new RequestAsyncTask(request,
+							new YachtResponseCreator(), YachtActivity.this,
+							new RequestAsyncTask.AsyncRequestListener() {
 								@Override
-								public void onYachtCreated() {
-									Toast.makeText(YachtActivity.this, "Yacht has been saved", Toast.LENGTH_SHORT).show();
+								public void onSuccess(ProcessedResponse processedResponse) {
+									YachtResponse yachtResponse = (YachtResponse) processedResponse;
+									mSettings.setYacht(yachtResponse.getYacht());
+									mSettings.save();
+									Log.d(TAG, "created yacht with id "
+											+ mSettings.getYacht().getId());
+
+									Toast.makeText(YachtActivity.this, "Yacht has been saved",
+											Toast.LENGTH_SHORT).show();
 									finish();
 								}
 
+								// TODO: onYachtAlreadyCreated
+								
 								@Override
-								public void onUnprocessableEntityException(
-										YachtParametersErrorsHolder errorsHolder) {
+								public void onUnprocessableEntityException(String entityErrorsJson) {
+									YachtParametersErrorsHolder errorsHolder = new YachtParametersErrorsHolder(
+											entityErrorsJson);
 									if (!errorsHolder.getNameErrors().isEmpty()) {
 										mNameEditText.setError(errorsHolder.getNameErrors()
 												.getFirst());
@@ -88,6 +134,7 @@ public class YachtActivity extends Activity {
 												.getFirst());
 									}
 								}
+
 							});
 					task.execute();
 				}

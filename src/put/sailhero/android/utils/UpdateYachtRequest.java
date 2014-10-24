@@ -4,19 +4,21 @@ import org.json.simple.JSONObject;
 
 import android.net.Uri;
 
-public class CreateYachtRequest extends YachtRequest {
+public class UpdateYachtRequest extends YachtRequest {
 
-	private final static String CREATE_YACHT_REQUEST_PATH = "yachts";
+	private final static String UPDATE_YACHT_REQUEST_PATH = "yachts";
 
 	SailHeroService service = SailHeroService.getInstance();
 	SailHeroSettings settings = service.getSettings();
 
+	private Integer id;
 	private String name;
 	private Integer length;
 	private Integer width;
 	private Integer crew;
 
-	public CreateYachtRequest(String name, Integer length, Integer width, Integer crew) {
+	public UpdateYachtRequest(Integer id, String name, Integer length, Integer width, Integer crew) {
+		this.id = id;
 		this.name = name;
 		this.length = length;
 		this.width = width;
@@ -31,8 +33,8 @@ public class CreateYachtRequest extends YachtRequest {
 		final String i18n = settings.getI18n();
 
 		Uri uri = new Uri.Builder().scheme("http").encodedAuthority(apiHost).appendPath(apiPath)
-				.appendPath(version).appendPath(i18n).appendEncodedPath(CREATE_YACHT_REQUEST_PATH)
-				.build();
+				.appendPath(version).appendPath(i18n).appendEncodedPath(UPDATE_YACHT_REQUEST_PATH)
+				.appendPath(id.toString()).build();
 
 		return uri.toString();
 	}
@@ -60,7 +62,7 @@ public class CreateYachtRequest extends YachtRequest {
 
 	@Override
 	public Method getMethod() {
-		return Method.POST;
+		return Method.PUT;
 	}
 
 }

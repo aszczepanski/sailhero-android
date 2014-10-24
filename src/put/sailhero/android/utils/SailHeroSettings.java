@@ -21,6 +21,8 @@ public abstract class SailHeroSettings {
 	protected Yacht yacht;
 	protected Region region;
 
+	protected AbstractList<Alert> alerts;
+
 	protected AbstractList<Region> regionsList;
 
 	abstract public void save();
@@ -137,6 +139,14 @@ public abstract class SailHeroSettings {
 
 	public void setRegionsList(AbstractList<Region> regionsList) {
 		this.regionsList = regionsList;
+	}
+
+	public AbstractList<Alert> getAlerts() {
+		return alerts;
+	}
+
+	public void setAlerts(AbstractList<Alert> alerts) {
+		this.alerts = alerts;
 	}
 
 }

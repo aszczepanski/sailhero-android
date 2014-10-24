@@ -7,7 +7,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public class YachtParametersErrorsHolder {
+public class YachtParametersErrorsHolder extends EntityErrorsHolder {
 
 	private LinkedList<String> mNameErrors = new LinkedList<String>();
 	private LinkedList<String> mLengthErrors = new LinkedList<String>();
@@ -27,21 +27,6 @@ public class YachtParametersErrorsHolder {
 			}
 		} catch (ParseException e) {
 			e.printStackTrace();
-		}
-	}
-
-	private void addJsonArrayErrorsToLinkedList(JSONArray array, LinkedList<String> list) {
-		if (list == null) {
-			list = new LinkedList<String>();
-		}
-
-		if (array != null && !array.isEmpty()) {
-			for (int i = 0; i < array.size(); i++) {
-				Object error = array.get(i);
-				if (error != null) {
-					list.add(error.toString());
-				}
-			}
 		}
 	}
 

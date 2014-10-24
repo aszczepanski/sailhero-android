@@ -2,9 +2,14 @@ package put.sailhero.android.app;
 
 import put.sailhero.android.R;
 import put.sailhero.android.utils.GetRegionsRequest;
+import put.sailhero.android.utils.GetRegionsResponse;
+import put.sailhero.android.utils.GetRegionsResponseCreator;
+import put.sailhero.android.utils.ProcessedResponse;
 import put.sailhero.android.utils.SailHeroService;
 import put.sailhero.android.utils.SailHeroSettings;
 import put.sailhero.android.utils.UserProfileRequest;
+import put.sailhero.android.utils.UserProfileResponse;
+import put.sailhero.android.utils.UserProfileResponseCreator;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,8 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-public class MainActivity extends Activity implements
-		GetUserProfileAsyncTask.GetUserProfileListener {
+public class MainActivity extends Activity {
 
 	public final static String TAG = "sailhero";
 
@@ -48,6 +52,10 @@ public class MainActivity extends Activity implements
 			intent = new Intent(MainActivity.this, AlertActivity.class);
 			startActivity(intent);
 			return true;
+		case R.id.action_test_map:
+			intent = new Intent(MainActivity.this, TestMapActivity.class);
+			startActivity(intent);
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -55,14 +63,28 @@ public class MainActivity extends Activity implements
 
 	@Override
 	protected void onResume() {
-		GetUserProfileAsyncTask getUserProfileTask = new GetUserProfileAsyncTask(
-				new UserProfileRequest(), this, this);
+		RequestAsyncTask getUserProfileTask = new RequestAsyncTask(new UserProfileRequest(),
+				new UserProfileResponseCreator(), this, new RequestAsyncTask.AsyncRequestListener() {
+					@Override
+					public void onSuccess(ProcessedResponse processedResponse) {
+						UserProfileResponse userProfileResponse = (UserProfileResponse) processedResponse;
+
+						mSettings.setUser(userProfileResponse.getUser());
+						mSettings.setYacht(userProfileResponse.getYacht());
+						mSettings.setRegion(userProfileResponse.getRegion());
+
+						onUserProfileReceived();
+					}
+				});
 		getUserProfileTask.execute();
 
-		GetRegionsAsyncTask getRegionsTask = new GetRegionsAsyncTask(new GetRegionsRequest(), this,
-				new GetRegionsAsyncTask.GetRegionsListener() {
+		RequestAsyncTask getRegionsTask = new RequestAsyncTask(new GetRegionsRequest(),
+				new GetRegionsResponseCreator(), this, new RequestAsyncTask.AsyncRequestListener() {
 					@Override
-					public void onRegionsReceived() {
+					public void onSuccess(ProcessedResponse processedResponse) {
+						GetRegionsResponse getRegionsResponse = (GetRegionsResponse) processedResponse;
+
+						mSettings.setRegionsList(getRegionsResponse.getRegions());
 						Log.d(TAG, "Regions received (" + mSettings.getRegionsList().size() + ")");
 					}
 				});
@@ -71,7 +93,6 @@ public class MainActivity extends Activity implements
 		super.onResume();
 	}
 
-	@Override
 	public void onUserProfileReceived() {
 		if (mSettings.getRegion() == null) {
 

@@ -1,7 +1,7 @@
 package put.sailhero.android.utils;
 
 
-public class CreateYachtResponse implements ProcessedResponse {
+public class YachtResponse implements ProcessedResponse {
 
 	private Yacht yacht;
 	

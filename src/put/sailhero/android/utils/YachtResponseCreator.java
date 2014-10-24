@@ -8,16 +8,16 @@ import put.sailhero.android.exception.InvalidResourceOwnerException;
 import put.sailhero.android.exception.SystemException;
 import put.sailhero.android.exception.UnprocessableEntityException;
 
-public class CreateYachtResponseCreator implements ResponseCreator<CreateYachtResponse> {
+public class YachtResponseCreator implements ResponseCreator<YachtResponse> {
 
 	@Override
-	public CreateYachtResponse createFrom(HttpResponse response)
+	public YachtResponse createFrom(HttpResponse response)
 			throws InvalidResourceOwnerException, SystemException, UnprocessableEntityException {
 		int statusCode = response.getStatusCode();
 
-		CreateYachtResponse createYachtResponse = new CreateYachtResponse();
+		YachtResponse createYachtResponse = new YachtResponse();
 
-		if (statusCode == 201) {
+		if (statusCode == 200 || statusCode == 201) {
 			try {
 				JSONParser parser = new JSONParser();
 				JSONObject obj = (JSONObject) parser.parse(response.getBody());

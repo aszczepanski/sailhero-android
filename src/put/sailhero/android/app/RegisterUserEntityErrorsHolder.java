@@ -7,7 +7,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public class RegisterUserEntityErrorsHolder {
+public class RegisterUserEntityErrorsHolder extends EntityErrorsHolder {
 
 	private LinkedList<String> mEmailErrors = new LinkedList<String>();
 	private LinkedList<String> mPasswordErrors = new LinkedList<String>();
@@ -29,21 +29,6 @@ public class RegisterUserEntityErrorsHolder {
 			}
 		} catch (ParseException e) {
 			e.printStackTrace();
-		}
-	}
-
-	private void addJsonArrayErrorsToLinkedList(JSONArray array, LinkedList<String> list) {
-		if (list == null) {
-			list = new LinkedList<String>();
-		}
-
-		if (array != null && !array.isEmpty()) {
-			for (int i = 0; i < array.size(); i++) {
-				Object error = array.get(i);
-				if (error != null) {
-					list.add(error.toString());
-				}
-			}
 		}
 	}
 
