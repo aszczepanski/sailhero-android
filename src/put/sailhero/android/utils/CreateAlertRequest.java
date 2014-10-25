@@ -9,17 +9,16 @@ public class CreateAlertRequest implements Request {
 	
 	private final static String CREATE_ALERT_REQUEST_PATH = "alerts";
 	
-	SailHeroService service = SailHeroService.getInstance();
-	SailHeroSettings settings = service.getSettings();
+	private SailHeroService service = SailHeroService.getInstance();
+	private SailHeroSettings settings = service.getSettings();
 	
-	String alertType;
-	Location location;
-	String additionalInfo;
-	
+	private Alert alert;
+
 	public CreateAlertRequest(String alertType, Location location, String additionalInfo) {
-		this.alertType = alertType;
-		this.location = location;
-		this.additionalInfo = additionalInfo;
+		alert = new Alert();
+		alert.setAlertType(alertType);
+		alert.setLocation(location);
+		alert.setAdditionalInfo(additionalInfo);
 	}
 	
 	@Override
@@ -50,16 +49,12 @@ public class CreateAlertRequest implements Request {
 		return headers;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public String getBody() {
 		JSONObject obj = new JSONObject();
 		
-		JSONObject alertObject = new JSONObject();
-		alertObject.put("alert_type", alertType);
-		alertObject.put("latitude", location.getLatitude());
-		alertObject.put("longitude", location.getLongitude());
-		alertObject.put("additional_info", additionalInfo);
-		
+		JSONObject alertObject = alert.toJSONObject();		
 		obj.put("alert", alertObject);
 		
 		return obj.toString();

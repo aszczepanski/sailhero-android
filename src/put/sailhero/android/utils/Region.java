@@ -13,7 +13,7 @@ public class Region {
 
 	public Region(JSONObject regionObject) {
 		this();
-		
+
 		setId(Integer.valueOf(regionObject.get("id").toString()));
 		setFullName(regionObject.get("full_name").toString());
 		setCodeName(regionObject.get("code_name").toString());
