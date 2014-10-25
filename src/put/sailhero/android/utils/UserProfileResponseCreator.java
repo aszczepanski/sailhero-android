@@ -23,22 +23,12 @@ public class UserProfileResponseCreator implements ResponseCreator<UserProfileRe
 				JSONObject obj = (JSONObject) parser.parse(response.getBody());
 
 				JSONObject userObject = (JSONObject) obj.get("user");
-				User user = new User();
-				user.setId(Integer.valueOf(userObject.get("id").toString()));
-				user.setEmail(userObject.get("email").toString());
-				user.setName(userObject.get("name").toString());
-				user.setSurname(userObject.get("surname").toString());
-				user.setCreatedAt(userObject.get("created_at").toString());
-
+				User user = new User(userObject);				
+				userProfileResponse.setUser(user);
+				
 				JSONObject yachtObject = (JSONObject) userObject.get("yacht");
 				if (yachtObject != null) {
-					Yacht yacht = new Yacht();
-					yacht.setId(Integer.valueOf(yachtObject.get("id").toString()));
-					yacht.setName(yachtObject.get("name").toString());
-					yacht.setLength(Integer.valueOf(yachtObject.get("length").toString()));
-					yacht.setWidth(Integer.valueOf(yachtObject.get("width").toString()));
-					yacht.setCrew(Integer.valueOf(yachtObject.get("crew").toString()));
-
+					Yacht yacht = new Yacht(yachtObject);
 					userProfileResponse.setYacht(yacht);
 				} else {
 					userProfileResponse.setYacht(null);
@@ -46,17 +36,11 @@ public class UserProfileResponseCreator implements ResponseCreator<UserProfileRe
 
 				JSONObject regionObject = (JSONObject) userObject.get("region");
 				if (regionObject != null) {
-					Region region = new Region();
-					region.setId(Integer.valueOf(regionObject.get("id").toString()));
-					region.setFullName(regionObject.get("full_name").toString());
-					region.setCodeName(regionObject.get("code_name").toString());
-
+					Region region = new Region(regionObject);
 					userProfileResponse.setRegion(region);
 				} else {
 					userProfileResponse.setRegion(null);
 				}
-
-				userProfileResponse.setUser(user);
 
 			} catch (NullPointerException e) {
 				throw new SystemException("Invalid response - null pointer exception");

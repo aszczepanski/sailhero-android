@@ -1,11 +1,24 @@
 package put.sailhero.android.utils;
 
+import org.json.simple.JSONObject;
+
 public class User {
 	private Integer id;
-	private String createdAt; // TODO: change to datetime type
 	private String email;
 	private String name;
 	private String surname;
+
+	public User() {
+	}
+
+	public User(JSONObject userObject) {
+		this();
+
+		setId(Integer.valueOf(userObject.get("id").toString()));
+		setEmail(userObject.get("email").toString());
+		setName(userObject.get("name").toString());
+		setSurname(userObject.get("surname").toString());
+	}
 
 	public Integer getId() {
 		return id;
@@ -13,14 +26,6 @@ public class User {
 
 	public void setId(Integer id) {
 		this.id = id;
-	}
-
-	public String getCreatedAt() {
-		return createdAt;
-	}
-
-	public void setCreatedAt(String createdAt) {
-		this.createdAt = createdAt;
 	}
 
 	public String getEmail() {
