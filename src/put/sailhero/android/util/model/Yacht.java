@@ -27,9 +27,9 @@ public class Yacht {
 		JSONObject yachtObject = new JSONObject();
 		
 		yachtObject.put("name", name);
-		yachtObject.put("length", length.toString());
-		yachtObject.put("width", width.toString());
-		yachtObject.put("crew", crew.toString());
+		yachtObject.put("length", length);
+		yachtObject.put("width", width);
+		yachtObject.put("crew", crew);
 		
 		return yachtObject;
 	}

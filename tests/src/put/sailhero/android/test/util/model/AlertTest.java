@@ -33,6 +33,7 @@ public class AlertTest extends AndroidTestCase {
 
 		alert = new Alert(alertObject);
 
+		assertNotNull(alert);
 		assertEquals((int) alert.getId(), 1);
 		assertEquals("CLOSED_AREA", alert.getAlertType());
 		assertEquals("", alert.getAdditionalInfo());
