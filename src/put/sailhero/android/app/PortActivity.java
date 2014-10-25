@@ -36,8 +36,8 @@ public class PortActivity extends Activity {
 		mSettings = mService.getSettings();
 
 		int portId = getIntent().getIntExtra("port_id", -1);
-		assert(portId != -1);
-		
+		assert (portId != -1);
+
 		AbstractList<Port> ports = mSettings.getPorts();
 		for (Port port : ports) {
 			if (port.getId() == portId) {
@@ -103,8 +103,8 @@ public class PortActivity extends Activity {
 			mTelephoneTextView.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Intent telephoneIntent = new Intent("android.intent.action.CALL", Uri
-							.parse("tel:" + mPort.getTelephone()));
+					Intent telephoneIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:"
+							+ mPort.getTelephone()));
 					startActivity(telephoneIntent);
 				}
 			});
