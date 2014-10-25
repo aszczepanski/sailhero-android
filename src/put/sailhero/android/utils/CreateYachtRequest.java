@@ -8,19 +8,17 @@ public class CreateYachtRequest extends YachtRequest {
 
 	private final static String CREATE_YACHT_REQUEST_PATH = "yachts";
 
-	SailHeroService service = SailHeroService.getInstance();
-	SailHeroSettings settings = service.getSettings();
+	private SailHeroService service = SailHeroService.getInstance();
+	private SailHeroSettings settings = service.getSettings();
 
-	private String name;
-	private Integer length;
-	private Integer width;
-	private Integer crew;
+	private Yacht yacht;
 
 	public CreateYachtRequest(String name, Integer length, Integer width, Integer crew) {
-		this.name = name;
-		this.length = length;
-		this.width = width;
-		this.crew = crew;
+		yacht = new Yacht();
+		yacht.setName(name);
+		yacht.setLength(length);
+		yacht.setWidth(width);
+		yacht.setCrew(crew);
 	}
 
 	@Override
@@ -43,16 +41,12 @@ public class CreateYachtRequest extends YachtRequest {
 				new Header("Content-Type", "application/json") };
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public String getBody() {
 		JSONObject obj = new JSONObject();
 
-		JSONObject yachtObject = new JSONObject();
-		yachtObject.put("name", name);
-		yachtObject.put("length", length.toString());
-		yachtObject.put("width", width.toString());
-		yachtObject.put("crew", crew.toString());
-
+		JSONObject yachtObject = yacht.toJSONObject();
 		obj.put("yacht", yachtObject);
 
 		return obj.toString();

@@ -11,8 +11,8 @@ import put.sailhero.android.exception.UnprocessableEntityException;
 public class YachtResponseCreator implements ResponseCreator<YachtResponse> {
 
 	@Override
-	public YachtResponse createFrom(HttpResponse response)
-			throws InvalidResourceOwnerException, SystemException, UnprocessableEntityException {
+	public YachtResponse createFrom(HttpResponse response) throws InvalidResourceOwnerException,
+			SystemException, UnprocessableEntityException {
 		int statusCode = response.getStatusCode();
 
 		YachtResponse createYachtResponse = new YachtResponse();
@@ -23,12 +23,7 @@ public class YachtResponseCreator implements ResponseCreator<YachtResponse> {
 				JSONObject obj = (JSONObject) parser.parse(response.getBody());
 
 				JSONObject yachtObject = (JSONObject) obj.get("yacht");
-				Yacht yacht = new Yacht();
-				yacht.setId(Integer.valueOf(yachtObject.get("id").toString()));
-				yacht.setName(yachtObject.get("name").toString());
-				yacht.setLength(Integer.valueOf(yachtObject.get("length").toString()));
-				yacht.setWidth(Integer.valueOf(yachtObject.get("width").toString()));
-				yacht.setCrew(Integer.valueOf(yachtObject.get("crew").toString()));
+				Yacht yacht = new Yacht(yachtObject);
 
 				createYachtResponse.setYacht(yacht);
 

@@ -11,18 +11,15 @@ public class UpdateYachtRequest extends YachtRequest {
 	SailHeroService service = SailHeroService.getInstance();
 	SailHeroSettings settings = service.getSettings();
 
-	private Integer id;
-	private String name;
-	private Integer length;
-	private Integer width;
-	private Integer crew;
+	private Yacht yacht;
 
 	public UpdateYachtRequest(Integer id, String name, Integer length, Integer width, Integer crew) {
-		this.id = id;
-		this.name = name;
-		this.length = length;
-		this.width = width;
-		this.crew = crew;
+		yacht = new Yacht();
+		yacht.setId(id);
+		yacht.setName(name);
+		yacht.setLength(length);
+		yacht.setWidth(width);
+		yacht.setCrew(crew);
 	}
 
 	@Override
@@ -34,7 +31,7 @@ public class UpdateYachtRequest extends YachtRequest {
 
 		Uri uri = new Uri.Builder().scheme("http").encodedAuthority(apiHost).appendPath(apiPath)
 				.appendPath(version).appendPath(i18n).appendEncodedPath(UPDATE_YACHT_REQUEST_PATH)
-				.appendPath(id.toString()).build();
+				.appendPath(yacht.getId().toString()).build();
 
 		return uri.toString();
 	}
@@ -45,16 +42,12 @@ public class UpdateYachtRequest extends YachtRequest {
 				new Header("Content-Type", "application/json") };
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public String getBody() {
 		JSONObject obj = new JSONObject();
 
-		JSONObject yachtObject = new JSONObject();
-		yachtObject.put("name", name);
-		yachtObject.put("length", length.toString());
-		yachtObject.put("width", width.toString());
-		yachtObject.put("crew", crew.toString());
-
+		JSONObject yachtObject = yacht.toJSONObject();
 		obj.put("yacht", yachtObject);
 
 		return obj.toString();
