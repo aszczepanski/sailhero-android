@@ -1,5 +1,7 @@
 package put.sailhero.android.utils;
 
+import org.json.simple.JSONObject;
+
 import android.location.Location;
 
 public class Port {
@@ -35,6 +37,51 @@ public class Port {
 	private Float priceWashingMachine;
 	private Float priceEmptyingChemicalToilet;
 	private Float priceParking;
+
+	public Port() {
+	}
+
+	public Port(JSONObject portObject) {
+		this();
+
+		setId(Integer.valueOf(portObject.get("id").toString()));
+		setName(portObject.get("name").toString());
+		Location portLocation = new Location("sailhero");
+		portLocation.setLatitude(Double.valueOf(portObject.get("latitude").toString()));
+		portLocation.setLongitude(Double.valueOf(portObject.get("longitude").toString()));
+		setLocation(portLocation);
+		setWebsite(portObject.get("website").toString());
+		setCity(portObject.get("city").toString());
+		setStreet(portObject.get("street").toString());
+		setTelephone(portObject.get("telephone").toString());
+		setAdditionalInfo(portObject.get("additional_info").toString());
+		setSpots(Integer.valueOf(portObject.get("spots").toString()));
+		setDepth(Integer.valueOf(portObject.get("depth").toString()));
+		setHasPowerConnection(Boolean.valueOf(portObject.get("has_power_connection").toString()));
+		setHasWC(Boolean.valueOf(portObject.get("has_wc").toString()));
+		setHasShower(Boolean.valueOf(portObject.get("has_shower").toString()));
+		setHasWashbasin(Boolean.valueOf(portObject.get("has_washbasin").toString()));
+		setHasDishes(Boolean.valueOf(portObject.get("has_dishes").toString()));
+		setHasWifi(Boolean.valueOf(portObject.get("has_wifi").toString()));
+		setHasParking(Boolean.valueOf(portObject.get("has_parking").toString()));
+		setHasSlip(Boolean.valueOf(portObject.get("has_slip").toString()));
+		setHasWashingMachine(Boolean.valueOf(portObject.get("has_washing_machine").toString()));
+		setHasFuelStation(Boolean.valueOf(portObject.get("has_fuel_station").toString()));
+		setHasEmptyingChemicalToilet(Boolean.valueOf(portObject.get("has_emptying_chemical_toilet")
+				.toString()));
+		setPricePerPerson(Float.valueOf(portObject.get("price_per_person").toString()));
+		setPricePowerConnection(Float.valueOf(portObject.get("price_power_connection").toString()));
+		setPriceWC(Float.valueOf(portObject.get("price_wc").toString()));
+		setPriceShower(Float.valueOf(portObject.get("price_shower").toString()));
+		setPriceWashbasin(Float.valueOf(portObject.get("price_washbasin").toString()));
+		setPriceDishes(Float.valueOf(portObject.get("price_dishes").toString()));
+		setPriceWifi(Float.valueOf(portObject.get("price_wifi").toString()));
+		setPriceWashingMachine(Float.valueOf(portObject.get("price_washing_machine").toString()));
+		setPriceEmptyingChemicalToilet(Float.valueOf(portObject.get(
+				"price_emptying_chemical_toilet").toString()));
+		setPriceParking(Float.valueOf(portObject.get("price_parking").toString()));
+
+	}
 
 	public Integer getId() {
 		return id;
