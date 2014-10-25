@@ -11,35 +11,30 @@ import put.sailhero.android.exception.InvalidResourceOwnerException;
 import put.sailhero.android.exception.SystemException;
 import put.sailhero.android.exception.UnprocessableEntityException;
 
-public class GetRegionsResponseCreator implements
-		ResponseCreator<GetRegionsResponse> {
+public class GetRegionsResponseCreator implements ResponseCreator<GetRegionsResponse> {
 
 	@Override
 	public GetRegionsResponse createFrom(HttpResponse response)
-			throws InvalidResourceOwnerException, SystemException,
-			UnprocessableEntityException {
+			throws InvalidResourceOwnerException, SystemException, UnprocessableEntityException {
 		int statusCode = response.getStatusCode();
-		
+
 		GetRegionsResponse getRegionsResponse = new GetRegionsResponse();
-		
+
 		if (statusCode == 200) {
-			try {			
+			try {
 				JSONParser parser = new JSONParser();
 				JSONObject obj = (JSONObject) parser.parse(response.getBody());
 
 				LinkedList<Region> regions = new LinkedList<Region>();
-				
+
 				JSONArray regionsArray = (JSONArray) obj.get("regions");
-				for (int i=0; i<regionsArray.size(); i++) {
+				for (int i = 0; i < regionsArray.size(); i++) {
 					JSONObject regionObject = (JSONObject) regionsArray.get(i);
-					Region region = new Region();
-					region.setId(Integer.valueOf(regionObject.get("id").toString()));
-					region.setFullName(regionObject.get("full_name").toString());
-					region.setCodeName(regionObject.get("code_name").toString());
-					
+					Region region = new Region(regionObject);
+
 					regions.addLast(region);
 				}
-				
+
 				getRegionsResponse.setRegions(regions);
 
 			} catch (NullPointerException e) {
@@ -50,7 +45,7 @@ public class GetRegionsResponseCreator implements
 				throw new SystemException(e.getMessage());
 			}
 		} else if (statusCode == 401) {
-			
+
 		} else {
 			throw new SystemException("Invalid status code");
 		}

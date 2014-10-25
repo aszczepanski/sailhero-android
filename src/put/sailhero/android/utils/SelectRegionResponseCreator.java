@@ -8,13 +8,11 @@ import put.sailhero.android.exception.InvalidResourceOwnerException;
 import put.sailhero.android.exception.SystemException;
 import put.sailhero.android.exception.UnprocessableEntityException;
 
-public class SelectRegionResponseCreator implements
-		ResponseCreator<SelectRegionResponse> {
+public class SelectRegionResponseCreator implements ResponseCreator<SelectRegionResponse> {
 
 	@Override
 	public SelectRegionResponse createFrom(HttpResponse response)
-			throws InvalidResourceOwnerException, SystemException,
-			UnprocessableEntityException {
+			throws InvalidResourceOwnerException, SystemException, UnprocessableEntityException {
 		int statusCode = response.getStatusCode();
 
 		SelectRegionResponse selectRegionResponse = new SelectRegionResponse();
@@ -24,12 +22,8 @@ public class SelectRegionResponseCreator implements
 				JSONParser parser = new JSONParser();
 				JSONObject obj = (JSONObject) parser.parse(response.getBody());
 
-				Region region = new Region();
-
 				JSONObject regionObject = (JSONObject) obj.get("region");
-				region.setId(Integer.valueOf(regionObject.get("id").toString()));
-				region.setFullName(regionObject.get("full_name").toString());
-				region.setCodeName(regionObject.get("code_name").toString());
+				Region region = new Region(regionObject);
 
 				selectRegionResponse.setRegion(region);
 
