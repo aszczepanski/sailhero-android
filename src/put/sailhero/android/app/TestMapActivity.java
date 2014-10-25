@@ -1,51 +1,98 @@
 package put.sailhero.android.app;
 
+import java.util.AbstractList;
+import java.util.HashMap;
+
 import put.sailhero.android.R;
+import put.sailhero.android.utils.Port;
+import put.sailhero.android.utils.SailHeroService;
+import put.sailhero.android.utils.SailHeroSettings;
 import android.app.Activity;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 public class TestMapActivity extends Activity {
 
-	MapFragment mMapFragment;
-	GoogleMap mGoogleMap;
+	public final String TAG = "sailhero";
 
+	private SailHeroService mService;
+	private SailHeroSettings mSettings;
+
+	private MapFragment mMapFragment;
+	private GoogleMap mGoogleMap;
+
+	private HashMap<Marker, Port> markerPortMap;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_test_map);
+
+		mService = SailHeroService.getInstance();
+		mSettings = mService.getSettings();
+
 		if (savedInstanceState == null) {
 
 			// getFragmentManager().beginTransaction()
 			// .add(R.id.ActivityTestMapContainer, new
-			// AlertsMapFragment()).commit();
+			// PortsMapFragment()).commit();
 
 			GoogleMapOptions googleMapOptions = new GoogleMapOptions();
 			googleMapOptions.compassEnabled(true);
+
+			googleMapOptions.camera(new CameraPosition(new LatLng(54.043302, 21.738819), 10, 0, 0));
 			
 			mMapFragment = MapFragment.newInstance(googleMapOptions);
 			FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
 			fragmentTransaction.add(R.id.ActivityTestMapContainer, mMapFragment);
 			fragmentTransaction.commit();
 
-			
-
 		}
 	}
 
 	@Override
 	protected void onResume() {
-		// mGoogleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
 		mGoogleMap = mMapFragment.getMap();
+		mGoogleMap.clear();
 		mGoogleMap.setMyLocationEnabled(true);
 		
+		AbstractList<Port> ports = mSettings.getPorts();
+		markerPortMap = new HashMap<Marker, Port>();
+		
+		for (Port port : ports) {
+			LatLng pos = new LatLng(port.getLocation().getLatitude(), port.getLocation()
+					.getLongitude());
+			Marker marker = mGoogleMap.addMarker(new MarkerOptions().position(pos).title(
+					port.getName()));
+			markerPortMap.put(marker, port);
+		}
+		
+		mGoogleMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
+			@Override
+			public void onInfoWindowClick(Marker marker) {
+				Port port = markerPortMap.get(marker);
+				Toast.makeText(TestMapActivity.this, "city: " + port.getCity(), Toast.LENGTH_SHORT).show();
+				
+				Intent intent = new Intent(TestMapActivity.this, PortActivity.class);
+				intent.putExtra("port_id", port.getId());
+				startActivity(intent);
+			}
+		});
+
 		super.onResume();
 	}
 
@@ -55,9 +102,9 @@ public class TestMapActivity extends Activity {
 		super.onPause();
 	}
 
-	public static class AlertsMapFragment extends MapFragment {
+	public static class PortsMapFragment extends MapFragment {
 
-		public AlertsMapFragment() {
+		public PortsMapFragment() {
 		}
 
 		@Override

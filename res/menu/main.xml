@@ -13,5 +13,11 @@
         android:showAsAction="never"
         android:title="@string/action_alerts">
     </item>
+    <item
+        android:id="@+id/action_test_map"
+        android:orderInCategory="300"
+        android:showAsAction="never"
+        android:title="Test map">
+    </item>
 
 </menu>

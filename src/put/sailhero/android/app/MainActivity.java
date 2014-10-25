@@ -1,6 +1,9 @@
 package put.sailhero.android.app;
 
 import put.sailhero.android.R;
+import put.sailhero.android.utils.GetPortsRequest;
+import put.sailhero.android.utils.GetPortsResponse;
+import put.sailhero.android.utils.GetPortsResponseCreator;
 import put.sailhero.android.utils.GetRegionsRequest;
 import put.sailhero.android.utils.GetRegionsResponse;
 import put.sailhero.android.utils.GetRegionsResponseCreator;
@@ -64,7 +67,8 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onResume() {
 		RequestAsyncTask getUserProfileTask = new RequestAsyncTask(new UserProfileRequest(),
-				new UserProfileResponseCreator(), this, new RequestAsyncTask.AsyncRequestListener() {
+				new UserProfileResponseCreator(), this,
+				new RequestAsyncTask.AsyncRequestListener() {
 					@Override
 					public void onSuccess(ProcessedResponse processedResponse) {
 						UserProfileResponse userProfileResponse = (UserProfileResponse) processedResponse;
@@ -89,6 +93,18 @@ public class MainActivity extends Activity {
 					}
 				});
 		getRegionsTask.execute();
+
+		RequestAsyncTask getPortsTask = new RequestAsyncTask(new GetPortsRequest(),
+				new GetPortsResponseCreator(), this, new RequestAsyncTask.AsyncRequestListener() {
+					@Override
+					public void onSuccess(ProcessedResponse processedResponse) {
+						GetPortsResponse getPortsResponse = (GetPortsResponse) processedResponse;
+						
+						mSettings.setPorts(getPortsResponse.getPorts());
+						Log.d(TAG, "Ports received (" + mSettings.getPorts().size() + ")");
+					}
+				});
+		getPortsTask.execute();
 
 		super.onResume();
 	}

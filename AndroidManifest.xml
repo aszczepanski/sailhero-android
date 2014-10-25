@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -61,8 +62,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="put.sailhero.android.app.AlertActivity"
+            android:name=".app.AlertActivity"
             android:label="@string/title_activity_alert" >
+        </activity>
+        <activity
+            android:name=".app.TestMapActivity"
+            android:label="@string/title_activity_test_map" >
+        </activity>
+        <activity
+            android:name="put.sailhero.android.app.PortActivity"
+            android:label="@string/title_activity_port"
+            android:parentActivityName=".app.TestMapActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="put.sailhero.android.app.TestMapActivity" />
         </activity>
     </application>
 
