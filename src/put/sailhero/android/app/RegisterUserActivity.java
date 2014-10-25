@@ -1,14 +1,14 @@
 package put.sailhero.android.app;
 
 import put.sailhero.android.R;
-import put.sailhero.android.utils.AuthenticateUserRequest;
-import put.sailhero.android.utils.AuthenticateUserResponseCreator;
-import put.sailhero.android.utils.CreateUserRequest;
-import put.sailhero.android.utils.CreateUserResponse;
-import put.sailhero.android.utils.CreateUserResponseCreator;
-import put.sailhero.android.utils.ProcessedResponse;
-import put.sailhero.android.utils.SailHeroService;
-import put.sailhero.android.utils.SailHeroSettings;
+import put.sailhero.android.util.AuthenticateUserRequest;
+import put.sailhero.android.util.AuthenticateUserResponseCreator;
+import put.sailhero.android.util.CreateUserRequest;
+import put.sailhero.android.util.CreateUserResponse;
+import put.sailhero.android.util.CreateUserResponseCreator;
+import put.sailhero.android.util.ProcessedResponse;
+import put.sailhero.android.util.SailHeroService;
+import put.sailhero.android.util.SailHeroSettings;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;

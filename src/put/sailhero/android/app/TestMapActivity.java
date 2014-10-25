@@ -4,9 +4,9 @@ import java.util.AbstractList;
 import java.util.HashMap;
 
 import put.sailhero.android.R;
-import put.sailhero.android.utils.Port;
-import put.sailhero.android.utils.SailHeroService;
-import put.sailhero.android.utils.SailHeroSettings;
+import put.sailhero.android.util.SailHeroService;
+import put.sailhero.android.util.SailHeroSettings;
+import put.sailhero.android.util.model.Port;
 import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Intent;

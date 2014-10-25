@@ -3,9 +3,9 @@ package put.sailhero.android.app;
 import java.util.AbstractList;
 
 import put.sailhero.android.R;
-import put.sailhero.android.utils.Port;
-import put.sailhero.android.utils.SailHeroService;
-import put.sailhero.android.utils.SailHeroSettings;
+import put.sailhero.android.util.SailHeroService;
+import put.sailhero.android.util.SailHeroSettings;
+import put.sailhero.android.util.model.Port;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;

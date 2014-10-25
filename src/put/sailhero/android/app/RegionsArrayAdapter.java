@@ -3,7 +3,7 @@ package put.sailhero.android.app;
 import java.util.ArrayList;
 
 import put.sailhero.android.R;
-import put.sailhero.android.utils.Region;
+import put.sailhero.android.util.model.Region;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;

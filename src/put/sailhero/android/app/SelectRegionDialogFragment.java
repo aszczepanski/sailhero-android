@@ -2,9 +2,9 @@ package put.sailhero.android.app;
 
 import java.util.ArrayList;
 
-import put.sailhero.android.utils.Region;
-import put.sailhero.android.utils.SailHeroService;
-import put.sailhero.android.utils.SailHeroSettings;
+import put.sailhero.android.util.SailHeroService;
+import put.sailhero.android.util.SailHeroSettings;
+import put.sailhero.android.util.model.Region;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;

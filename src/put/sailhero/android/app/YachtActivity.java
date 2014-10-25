@@ -1,15 +1,15 @@
 package put.sailhero.android.app;
 
 import put.sailhero.android.R;
-import put.sailhero.android.utils.CreateYachtRequest;
-import put.sailhero.android.utils.ProcessedResponse;
-import put.sailhero.android.utils.SailHeroService;
-import put.sailhero.android.utils.SailHeroSettings;
-import put.sailhero.android.utils.UpdateYachtRequest;
-import put.sailhero.android.utils.Yacht;
-import put.sailhero.android.utils.YachtRequest;
-import put.sailhero.android.utils.YachtResponse;
-import put.sailhero.android.utils.YachtResponseCreator;
+import put.sailhero.android.util.CreateYachtRequest;
+import put.sailhero.android.util.ProcessedResponse;
+import put.sailhero.android.util.SailHeroService;
+import put.sailhero.android.util.SailHeroSettings;
+import put.sailhero.android.util.UpdateYachtRequest;
+import put.sailhero.android.util.YachtRequest;
+import put.sailhero.android.util.YachtResponse;
+import put.sailhero.android.util.YachtResponseCreator;
+import put.sailhero.android.util.model.Yacht;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
