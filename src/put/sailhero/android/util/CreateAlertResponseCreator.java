@@ -5,6 +5,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import put.sailhero.android.exception.SystemException;
+import put.sailhero.android.exception.UnauthorizedException;
 import put.sailhero.android.exception.UnprocessableEntityException;
 import put.sailhero.android.util.model.Alert;
 
@@ -12,7 +13,7 @@ public class CreateAlertResponseCreator implements ResponseCreator<CreateAlertRe
 
 	@Override
 	public CreateAlertResponse createFrom(HttpResponse response) throws SystemException,
-			UnprocessableEntityException {
+			UnprocessableEntityException, UnauthorizedException {
 		CreateAlertResponse createAlertResponse = new CreateAlertResponse();
 
 		int statusCode = response.getStatusCode();
@@ -34,6 +35,8 @@ public class CreateAlertResponseCreator implements ResponseCreator<CreateAlertRe
 			} catch (ParseException e) {
 				throw new SystemException(e.getMessage());
 			}
+		} else if (statusCode == 401) {
+			throw new UnauthorizedException();
 		} else if (statusCode == 422) {
 			throw new UnprocessableEntityException(response.getBody());
 		} else {

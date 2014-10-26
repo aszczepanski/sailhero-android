@@ -6,6 +6,7 @@ import org.json.simple.parser.ParseException;
 
 import put.sailhero.android.exception.InvalidResourceOwnerException;
 import put.sailhero.android.exception.SystemException;
+import put.sailhero.android.exception.UnauthorizedException;
 import put.sailhero.android.exception.UnprocessableEntityException;
 import put.sailhero.android.util.model.Region;
 import put.sailhero.android.util.model.User;
@@ -15,7 +16,8 @@ public class UserProfileResponseCreator implements ResponseCreator<UserProfileRe
 
 	@Override
 	public UserProfileResponse createFrom(HttpResponse response)
-			throws InvalidResourceOwnerException, SystemException, UnprocessableEntityException {
+			throws InvalidResourceOwnerException, SystemException, UnprocessableEntityException,
+			UnauthorizedException {
 		int statusCode = response.getStatusCode();
 
 		UserProfileResponse userProfileResponse = new UserProfileResponse();
@@ -53,7 +55,7 @@ public class UserProfileResponseCreator implements ResponseCreator<UserProfileRe
 				throw new SystemException("Invalid response - parse exception");
 			}
 		} else if (statusCode == 401) {
-			throw new SystemException("Unauthorized");
+			throw new UnauthorizedException();
 		} else {
 			throw new SystemException("Invalid status code");
 		}

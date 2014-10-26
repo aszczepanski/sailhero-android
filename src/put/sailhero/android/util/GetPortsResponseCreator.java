@@ -9,6 +9,7 @@ import org.json.simple.parser.ParseException;
 
 import put.sailhero.android.exception.InvalidResourceOwnerException;
 import put.sailhero.android.exception.SystemException;
+import put.sailhero.android.exception.UnauthorizedException;
 import put.sailhero.android.exception.UnprocessableEntityException;
 import put.sailhero.android.util.model.Port;
 
@@ -18,7 +19,7 @@ public class GetPortsResponseCreator implements ResponseCreator<GetPortsResponse
 
 	@Override
 	public GetPortsResponse createFrom(HttpResponse response) throws InvalidResourceOwnerException,
-			SystemException, UnprocessableEntityException {
+			SystemException, UnprocessableEntityException, UnauthorizedException {
 		int statusCode = response.getStatusCode();
 
 		if (statusCode == 200) {
@@ -46,7 +47,7 @@ public class GetPortsResponseCreator implements ResponseCreator<GetPortsResponse
 				throw new SystemException(e.getMessage());
 			}
 		} else if (statusCode == 401) {
-
+			throw new UnauthorizedException();
 		} else {
 			throw new SystemException("Invalid status code");
 		}

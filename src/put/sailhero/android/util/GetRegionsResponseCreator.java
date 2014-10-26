@@ -9,6 +9,7 @@ import org.json.simple.parser.ParseException;
 
 import put.sailhero.android.exception.InvalidResourceOwnerException;
 import put.sailhero.android.exception.SystemException;
+import put.sailhero.android.exception.UnauthorizedException;
 import put.sailhero.android.exception.UnprocessableEntityException;
 import put.sailhero.android.util.model.Region;
 
@@ -16,7 +17,8 @@ public class GetRegionsResponseCreator implements ResponseCreator<GetRegionsResp
 
 	@Override
 	public GetRegionsResponse createFrom(HttpResponse response)
-			throws InvalidResourceOwnerException, SystemException, UnprocessableEntityException {
+			throws InvalidResourceOwnerException, SystemException, UnprocessableEntityException,
+			UnauthorizedException {
 		int statusCode = response.getStatusCode();
 
 		GetRegionsResponse getRegionsResponse = new GetRegionsResponse();
@@ -46,7 +48,7 @@ public class GetRegionsResponseCreator implements ResponseCreator<GetRegionsResp
 				throw new SystemException(e.getMessage());
 			}
 		} else if (statusCode == 401) {
-
+			throw new UnauthorizedException();
 		} else {
 			throw new SystemException("Invalid status code");
 		}

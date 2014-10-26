@@ -3,6 +3,7 @@ package put.sailhero.android.app;
 import put.sailhero.android.exception.InvalidResourceOwnerException;
 import put.sailhero.android.exception.SystemException;
 import put.sailhero.android.exception.TransportException;
+import put.sailhero.android.exception.UnauthorizedException;
 import put.sailhero.android.exception.UnprocessableEntityException;
 import put.sailhero.android.util.Connection;
 import put.sailhero.android.util.ProcessedResponse;
@@ -73,6 +74,9 @@ public class RequestAsyncTask extends AsyncTask<Void, Void, Void> {
 		} else if (mException instanceof SystemException) {
 			Log.e(TAG, "system exception");
 			mAsyncRequestListener.onSystemException();
+		} else if (mException instanceof UnauthorizedException) {
+			Log.e(TAG, "unauthorized error");
+			mAsyncRequestListener.onUnauthorizedException();
 		} else {
 			Log.e(TAG, "unknown error");
 			assert (false);
@@ -95,6 +99,10 @@ public class RequestAsyncTask extends AsyncTask<Void, Void, Void> {
 		}
 
 		public void onSystemException() {
+			Log.e(TAG, "unexpected error");
+		}
+		
+		public void onUnauthorizedException() {
 			Log.e(TAG, "unexpected error");
 		}
 	}
