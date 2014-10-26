@@ -10,6 +10,8 @@ import put.sailhero.android.util.GetRegionsResponseCreator;
 import put.sailhero.android.util.ProcessedResponse;
 import put.sailhero.android.util.SailHeroService;
 import put.sailhero.android.util.SailHeroSettings;
+import put.sailhero.android.util.UnauthorizeUserRequest;
+import put.sailhero.android.util.UnauthorizeUserResponseCreator;
 import put.sailhero.android.util.UserProfileRequest;
 import put.sailhero.android.util.UserProfileResponse;
 import put.sailhero.android.util.UserProfileResponseCreator;
@@ -59,6 +61,9 @@ public class MainActivity extends Activity {
 			intent = new Intent(MainActivity.this, TestMapActivity.class);
 			startActivity(intent);
 			return true;
+		case R.id.action_logout:
+			logout();
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -99,7 +104,7 @@ public class MainActivity extends Activity {
 					@Override
 					public void onSuccess(ProcessedResponse processedResponse) {
 						GetPortsResponse getPortsResponse = (GetPortsResponse) processedResponse;
-						
+
 						mSettings.setPorts(getPortsResponse.getPorts());
 						Log.d(TAG, "Ports received (" + mSettings.getPorts().size() + ")");
 					}
@@ -119,4 +124,20 @@ public class MainActivity extends Activity {
 		}
 	}
 
+	public void logout() {
+		RequestAsyncTask logoutTask = new RequestAsyncTask(new UnauthorizeUserRequest(),
+				new UnauthorizeUserResponseCreator(), this,
+				new RequestAsyncTask.AsyncRequestListener() {
+					@Override
+					public void onSuccess(ProcessedResponse processedResponse) {
+						mSettings.clear();
+						mSettings.save();
+						Log.d(TAG, "Token revoked");
+						Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
+						startActivity(loginIntent);
+						finish();
+					}
+				});
+		logoutTask.execute();
+	}
 }
