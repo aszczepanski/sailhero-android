@@ -57,6 +57,10 @@ public class MainActivity extends Activity {
 			intent = new Intent(MainActivity.this, AlertActivity.class);
 			startActivity(intent);
 			return true;
+		case R.id.action_alert_map:
+			intent = new Intent(MainActivity.this, AlertMapActivity.class);
+			startActivity(intent);
+			return true;
 		case R.id.action_test_map:
 			intent = new Intent(MainActivity.this, TestMapActivity.class);
 			startActivity(intent);

@@ -70,12 +70,16 @@
             android:label="@string/title_activity_test_map" >
         </activity>
         <activity
-            android:name="put.sailhero.android.app.PortActivity"
+            android:name=".app.PortActivity"
             android:label="@string/title_activity_port"
             android:parentActivityName=".app.TestMapActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="put.sailhero.android.app.TestMapActivity" />
+        </activity>
+        <activity
+            android:name="put.sailhero.android.app.AlertMapActivity"
+            android:label="@string/title_activity_alert_map" >
         </activity>
     </application>
 

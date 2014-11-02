@@ -20,5 +20,6 @@
     <string name="title_activity_alert">AlertActivity</string>
     <string name="title_activity_test_map">TestMapActivity</string>
     <string name="title_activity_port">PortActivity</string>
+    <string name="title_activity_alert_map">AlertMapActivity</string>
 
 </resources>

@@ -23,8 +23,8 @@ public class LoginActivity extends Activity {
 
 	private final static String APPLICATION_ID = "f69eaae2c402d352f15e57d928f839486232ffbafcb283f96b5a645e5db6e4b9";
 	private final static String APPLICATION_SECRET = "0dc726a7ae4534274edd6d4ab8add076a25e488ebbba1ef99333bb18f909a186";
-	private final static String ACCESS_TOKEN_HOST = "192.168.0.103:3000";
-	private final static String API_HOST = "192.168.0.103:3000";
+	private final static String ACCESS_TOKEN_HOST = "192.168.0.106:3000";
+	private final static String API_HOST = "192.168.0.106:3000";
 
 	/*
 	 * private final static String APPLICATION_ID =
