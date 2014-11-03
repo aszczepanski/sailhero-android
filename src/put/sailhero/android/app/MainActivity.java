@@ -10,6 +10,8 @@ import put.sailhero.android.util.GetRegionsRequest;
 import put.sailhero.android.util.GetRegionsResponse;
 import put.sailhero.android.util.GetRegionsResponseCreator;
 import put.sailhero.android.util.ProcessedResponse;
+import put.sailhero.android.util.RegisterGcmRequest;
+import put.sailhero.android.util.RegisterGcmResponseCreator;
 import put.sailhero.android.util.SailHeroService;
 import put.sailhero.android.util.SailHeroSettings;
 import put.sailhero.android.util.UnauthorizeUserRequest;
@@ -18,10 +20,13 @@ import put.sailhero.android.util.UserProfileRequest;
 import put.sailhero.android.util.UserProfileResponse;
 import put.sailhero.android.util.UserProfileResponseCreator;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -49,6 +54,9 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		Log.w(TAG, "BRAND: " + Build.BRAND);
+		Log.w(TAG, "MODEL: " + Build.MODEL);
+
 		mService = SailHeroService.getInstance();
 		mSettings = mService.getSettings();
 
@@ -60,42 +68,101 @@ public class MainActivity extends Activity {
 		}
 	}
 
+	@Override
+	public void onBackPressed() {
+		new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_alert)
+				.setTitle("Closing Activity")
+				.setMessage("Are you sure you want to exit SailHero?")
+				.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						finish();
+					}
+
+				})
+				.setNegativeButton("No", null)
+				.show();
+	}
+
+	@Override
+	protected void onStart() {
+		Log.d(TAG, "MainActivity::onStart");
+		super.onStart();
+	}
+
+	@Override
+	protected void onPause() {
+		Log.d(TAG, "MainActivity::onPause");
+		super.onPause();
+	}
+
+	@Override
+	protected void onStop() {
+		Log.d(TAG, "MainActivity::onStop");
+		super.onStop();
+	}
+
+	@Override
+	protected void onDestroy() {
+		Log.d(TAG, "MainActivity::onDestroy");
+		super.onDestroy();
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		Log.d(TAG, "MainActivity::onSaveInstanceState");
+		super.onSaveInstanceState(outState);
+	}
+
 	private void registerInBackground() {
 		new AsyncTask<Void, Void, String>() {
+
+			private Exception exception;
+
 			@Override
 			protected String doInBackground(Void... params) {
-				String msg = "";
+				// String msg = "";
 				try {
 					if (gcm == null) {
 						gcm = GoogleCloudMessaging.getInstance(context);
 					}
 					regId = gcm.register(SENDER_ID);
-					msg = "Device registered, registration ID=" + regId;
+					// msg = "Device registered, registration ID=" + regId;
 
-					sendRegistrationIdToBackend();
+					// sendRegistrationIdToBackend(regId);
 
 					storeRegistrationId(context, regId);
 				} catch (IOException ex) {
-					msg = "Error: " + ex.getMessage();
-					// If there is an error, don't just keep trying to register.
-					// Require the user to click a button again, or perform
-					// exponential back-off.
+					exception = ex;
 				}
-				return msg;
+				return regId;
 			}
 
 			@Override
-			protected void onPostExecute(String msg) {
-				Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
-				super.onPostExecute(msg);
+			protected void onPostExecute(String registrationId) {
+				if (exception == null) {
+					sendRegistrationIdToBackend(registrationId);
+				} else {
+					Toast.makeText(context, "Error: " + exception.getMessage(), Toast.LENGTH_LONG)
+							.show();
+				}
+
+				super.onPostExecute(registrationId);
 			}
 
 		}.execute(null, null, null);
-		// ...
 	}
 
-	private void sendRegistrationIdToBackend() {
-		// Your implementation here.
+	private void sendRegistrationIdToBackend(String registrationId) {
+		RequestAsyncTask registerGcmTask = new RequestAsyncTask(new RegisterGcmRequest(
+				registrationId), new RegisterGcmResponseCreator(), this,
+				new RequestAsyncTask.AsyncRequestListener() {
+					@Override
+					public void onSuccess(ProcessedResponse processedResponse) {
+						Log.d(TAG, "Gcm registered on SailHero server.");
+					}
+				});
+		registerGcmTask.execute();
 	}
 
 	private String getRegistrationId(Context context) {
@@ -104,6 +171,8 @@ public class MainActivity extends Activity {
 		if (registrationId.isEmpty()) {
 			Log.i(TAG, "Registration not found.");
 			return "";
+		} else {
+			Log.i(TAG, "Registration id: " + registrationId);
 		}
 
 		// Check if app was updated; if so, it must clear the registration ID
