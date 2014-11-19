@@ -25,7 +25,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class TestMapActivity extends Activity {
+public class TestMapActivity extends BaseActivity {
 
 	public final String TAG = "sailhero";
 
@@ -38,7 +38,7 @@ public class TestMapActivity extends Activity {
 	private HashMap<Marker, Port> markerPortMap;
 	
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_test_map);
 
@@ -58,10 +58,17 @@ public class TestMapActivity extends Activity {
 			
 			mMapFragment = MapFragment.newInstance(googleMapOptions);
 			FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-			fragmentTransaction.add(R.id.ActivityTestMapContainer, mMapFragment);
+			fragmentTransaction.add(R.id.main_content, mMapFragment);
 			fragmentTransaction.commit();
 
 		}
+		
+		super.overridePendingTransition(0,0);
+	}
+	
+	@Override
+	protected int getSelfNavDrawerItem() {
+		return NAVDRAWER_ITEM_MAP;
 	}
 
 	@Override

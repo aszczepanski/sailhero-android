@@ -6,8 +6,8 @@ public class AuthenticateUserRequest implements Request {
 	SailHeroService service = SailHeroService.getInstance();
 	SailHeroSettings settings = service.getSettings();
 	
-	private String username;
-	private String password;
+	public String username;
+	public String password;
 	
 	public AuthenticateUserRequest(String username, String password) {
 		this.username = username;

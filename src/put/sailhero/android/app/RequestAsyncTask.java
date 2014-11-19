@@ -61,7 +61,7 @@ public class RequestAsyncTask extends AsyncTask<Void, Void, Void> {
 	protected void onPostExecute(Void result) {
 		mProgressDialog.dismiss();
 		if (mException == null) {
-			mAsyncRequestListener.onSuccess(mProcessedResponse);
+			mAsyncRequestListener.onSuccess(mProcessedResponse, mRequest);
 		} else if (mException instanceof UnprocessableEntityException) {
 			Log.e(TAG, "unprocessable entity exception");
 			mAsyncRequestListener.onUnprocessableEntityException(mException.getMessage());
@@ -84,7 +84,7 @@ public class RequestAsyncTask extends AsyncTask<Void, Void, Void> {
 	}
 
 	public static abstract class AsyncRequestListener {
-		public abstract void onSuccess(ProcessedResponse processedResponse);
+		public abstract void onSuccess(ProcessedResponse processedResponse, Request request);
 
 		public void onUnprocessableEntityException(String entityErrorsJson) {
 			Log.e(TAG, "unexpected error");
@@ -101,7 +101,7 @@ public class RequestAsyncTask extends AsyncTask<Void, Void, Void> {
 		public void onSystemException() {
 			Log.e(TAG, "unexpected error");
 		}
-		
+
 		public void onUnauthorizedException() {
 			Log.e(TAG, "unexpected error");
 		}

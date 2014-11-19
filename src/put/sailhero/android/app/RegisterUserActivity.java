@@ -7,6 +7,7 @@ import put.sailhero.android.util.CreateUserRequest;
 import put.sailhero.android.util.CreateUserResponse;
 import put.sailhero.android.util.CreateUserResponseCreator;
 import put.sailhero.android.util.ProcessedResponse;
+import put.sailhero.android.util.Request;
 import put.sailhero.android.util.SailHeroService;
 import put.sailhero.android.util.SailHeroSettings;
 import android.app.Activity;
@@ -73,18 +74,18 @@ public class RegisterUserActivity extends Activity {
 
 	private RequestAsyncTask.AsyncRequestListener registerUserListener = new RequestAsyncTask.AsyncRequestListener() {
 		@Override
-		public void onSuccess(ProcessedResponse processedResponse) {
+		public void onSuccess(ProcessedResponse processedResponse, Request request) {
 			CreateUserResponse createUserResponse = (CreateUserResponse) processedResponse;
 			Log.d(TAG, "Created user with id: " + createUserResponse.getUser().getId());
 
-			AuthenticateUserRequest request = new AuthenticateUserRequest(mEmailEditText.getText()
+			AuthenticateUserRequest authenticateUserRequest = new AuthenticateUserRequest(mEmailEditText.getText()
 					.toString().trim(), mPasswordEditText.getText().toString());
 
 			RequestAsyncTask task = new RequestAsyncTask(request,
 					new AuthenticateUserResponseCreator(), RegisterUserActivity.this,
 					new RequestAsyncTask.AsyncRequestListener() {
 						@Override
-						public void onSuccess(ProcessedResponse processedResponse) {
+						public void onSuccess(ProcessedResponse processedResponse, Request request) {
 							finish();
 						}
 					});

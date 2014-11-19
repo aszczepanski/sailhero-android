@@ -8,11 +8,15 @@ import put.sailhero.android.util.CreateAlertRequest;
 import put.sailhero.android.util.CreateAlertResponse;
 import put.sailhero.android.util.CreateAlertResponseCreator;
 import put.sailhero.android.util.ProcessedResponse;
+import put.sailhero.android.util.Request;
 import put.sailhero.android.util.SailHeroService;
 import put.sailhero.android.util.SailHeroSettings;
 import put.sailhero.android.util.model.Alert;
+import android.accounts.Account;
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,7 +35,7 @@ import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 
-public class AlertActivity extends Activity implements
+public class AlertActivity extends BaseActivity implements
 		GooglePlayServicesClient.ConnectionCallbacks,
 		GooglePlayServicesClient.OnConnectionFailedListener, LocationListener {
 
@@ -53,22 +57,29 @@ public class AlertActivity extends Activity implements
 	private static LocationRequest mLocationRequest;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_alert);
 		if (savedInstanceState == null) {
-			getFragmentManager().beginTransaction().add(R.id.container, new AlertFragment())
+			getFragmentManager().beginTransaction()
+					.add(R.id.main_content, new AlertFragment())
 					.commit();
 		}
 
 		mService = SailHeroService.getInstance();
 		mSettings = mService.getSettings();
 
+		overridePendingTransition(0,0);
+		
 		mLocationClient = new LocationClient(this, this, this);
 		mLocationRequest = LocationRequest.create();
 		mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 		mLocationRequest.setInterval(UPDATE_INTERVAL);
 		mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
+	}
+
+	protected int getSelfNavDrawerItem() {
+		return NAVDRAWER_ITEM_ALERT;
 	}
 
 	@Override
@@ -90,11 +101,15 @@ public class AlertActivity extends Activity implements
 
 		final static String TAG = "sailhero";
 
+		private Context mContext;
+
 		private SailHeroService mService;
 		private SailHeroSettings mSettings;
 
 		private Spinner mSpinner;
 		private Button mSubmitAlertButton;
+
+		//		private ThrottledContentObserver mAlertsObserver;
 
 		public AlertFragment() {
 		}
@@ -113,8 +128,7 @@ public class AlertActivity extends Activity implements
 			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 			mSpinner.setAdapter(adapter);
 
-			mSubmitAlertButton = (Button) rootView
-					.findViewById(R.id.FragmentAlertSubmitAlertButton);
+			mSubmitAlertButton = (Button) rootView.findViewById(R.id.FragmentAlertSubmitAlertButton);
 			mSubmitAlertButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -122,13 +136,14 @@ public class AlertActivity extends Activity implements
 
 					final Location currentLocation = mLocationClient.getLastLocation();
 
-					CreateAlertRequest request = new CreateAlertRequest(
+					CreateAlertRequest request = new CreateAlertRequest(mContext,
 							getAlertTypeFromString(selectedAlert), currentLocation, "");
 					RequestAsyncTask task = new RequestAsyncTask(request,
 							new CreateAlertResponseCreator(), getActivity(),
 							new RequestAsyncTask.AsyncRequestListener() {
 								@Override
-								public void onSuccess(ProcessedResponse processedResponse) {
+								public void onSuccess(ProcessedResponse processedResponse,
+										Request request) {
 									CreateAlertResponse createAlertResponse = (CreateAlertResponse) processedResponse;
 
 									AbstractList<Alert> alerts = mSettings.getAlerts();
@@ -166,6 +181,48 @@ public class AlertActivity extends Activity implements
 				return "";
 			}
 		}
+
+		private void onAlertsChanged() {
+			Toast.makeText(mContext, "onAlertsChanged()", Toast.LENGTH_SHORT).show();
+			Log.d(TAG, "onAlertsChanged()");
+		}
+
+		@Override
+		public void onResume() {
+			super.onResume();
+
+			//			ContentResolver.requestSync(new Account("name", "com.put.sailhero.alerts.account"),
+			//					"com.put.sailhero.alerts", new Bundle());
+		}
+
+		@Override
+		public void onAttach(Activity activity) {
+			super.onAttach(activity);
+
+			Log.d(TAG, "onAttach()");
+
+			mContext = getActivity().getApplicationContext();
+
+			//			mAlertsObserver = new ThrottledContentObserver(
+			//					new ThrottledContentObserver.Callbacks() {
+			//						@Override
+			//						public void onThrottledContentObserverFired() {
+			//							onAlertsChanged();
+			//						}
+			//					});
+			//
+			//			activity.getContentResolver().registerContentObserver(
+			//					Uri.parse("content://com.put.sailhero.alerts"), true, mAlertsObserver);
+
+		}
+
+		@Override
+		public void onDetach() {
+			super.onDetach();
+
+			//			getActivity().getContentResolver().unregisterContentObserver(mAlertsObserver);
+		}
+
 	}
 
 	@Override

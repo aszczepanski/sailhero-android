@@ -3,6 +3,7 @@ package put.sailhero.android.app;
 import put.sailhero.android.R;
 import put.sailhero.android.util.CreateYachtRequest;
 import put.sailhero.android.util.ProcessedResponse;
+import put.sailhero.android.util.Request;
 import put.sailhero.android.util.SailHeroService;
 import put.sailhero.android.util.SailHeroSettings;
 import put.sailhero.android.util.UpdateYachtRequest;
@@ -10,8 +11,8 @@ import put.sailhero.android.util.YachtRequest;
 import put.sailhero.android.util.YachtResponse;
 import put.sailhero.android.util.YachtResponseCreator;
 import put.sailhero.android.util.model.Yacht;
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -19,9 +20,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class YachtActivity extends Activity {
+public class YachtActivity extends BaseActivity {
 
 	public final static String TAG = "sailhero";
+
+	private ActionBar mActionBar;
 
 	private EditText mNameEditText;
 	private EditText mLengthEditText;
@@ -36,7 +39,7 @@ public class YachtActivity extends Activity {
 	private Yacht mCurrentYacht;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_yacht);
 
@@ -44,6 +47,10 @@ public class YachtActivity extends Activity {
 		mSettings = mService.getSettings();
 
 		mCurrentYacht = mSettings.getYacht();
+
+		mActionBar = getSupportActionBar();
+		mActionBar.setTitle("Update your yacht");
+		mActionBar.setDisplayHomeAsUpEnabled(true);
 
 		mNameEditText = (EditText) findViewById(R.id.ActivityYachtNameEditText);
 		mLengthEditText = (EditText) findViewById(R.id.ActivityYachtLengthEditText);
@@ -90,16 +97,18 @@ public class YachtActivity extends Activity {
 				if (length != null && width != null && crew != null) {
 					YachtRequest request;
 					if (mCurrentYacht != null) {
-						request = new UpdateYachtRequest(mCurrentYacht.getId(), name, length,
-								width, crew);
+						request = new UpdateYachtRequest(getApplicationContext(),
+								mCurrentYacht.getId(), name, length, width, crew);
 					} else {
-						request = new CreateYachtRequest(name, length, width, crew);
+						request = new CreateYachtRequest(getApplicationContext(), name, length,
+								width, crew);
 					}
 					RequestAsyncTask task = new RequestAsyncTask(request,
 							new YachtResponseCreator(), YachtActivity.this,
 							new RequestAsyncTask.AsyncRequestListener() {
 								@Override
-								public void onSuccess(ProcessedResponse processedResponse) {
+								public void onSuccess(ProcessedResponse processedResponse,
+										Request request) {
 									YachtResponse yachtResponse = (YachtResponse) processedResponse;
 									mSettings.setYacht(yachtResponse.getYacht());
 									mSettings.save();
@@ -112,7 +121,7 @@ public class YachtActivity extends Activity {
 								}
 
 								// TODO: onYachtAlreadyCreated
-								
+
 								@Override
 								public void onUnprocessableEntityException(String entityErrorsJson) {
 									YachtParametersErrorsHolder errorsHolder = new YachtParametersErrorsHolder(

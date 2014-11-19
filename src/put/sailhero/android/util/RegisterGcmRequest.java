@@ -1,7 +1,15 @@
 package put.sailhero.android.util;
 
+import java.io.IOException;
+
 import org.json.simple.JSONObject;
 
+import put.sailhero.android.AccountUtils;
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 
@@ -12,11 +20,14 @@ public class RegisterGcmRequest implements Request {
 	SailHeroService service = SailHeroService.getInstance();
 	SailHeroSettings settings = service.getSettings();
 
+	private Context mContext;
+
 	String registrationId;
 	String brand = Build.BRAND;
 	String model = Build.MODEL;
 
-	public RegisterGcmRequest(String registrationId) {
+	public RegisterGcmRequest(Context context, String registrationId) {
+		mContext = context;
 		this.registrationId = registrationId;
 	}
 
@@ -40,8 +51,18 @@ public class RegisterGcmRequest implements Request {
 
 	@Override
 	public Header[] getHeaders() {
-		Header[] headers = new Header[] {
-				new Header("Authorization", "Bearer " + settings.getAccessToken()),
+		Account account = AccountUtils.getActiveAccount(mContext);
+		AccountManager accountManager = AccountManager.get(mContext);
+
+		String accessToken = "";
+		try {
+			accessToken = accountManager.blockingGetAuthToken(account,
+					AccountUtils.ACCESS_TOKEN_TYPE, true);
+		} catch (OperationCanceledException | AuthenticatorException | IOException e) {
+			e.printStackTrace();
+		}
+
+		Header[] headers = new Header[] { new Header("Authorization", "Bearer " + accessToken),
 				new Header("Content-Type", "application/json") };
 		return headers;
 	}

@@ -6,11 +6,11 @@ import put.sailhero.android.R;
 import put.sailhero.android.util.SailHeroService;
 import put.sailhero.android.util.SailHeroSettings;
 import put.sailhero.android.util.model.Port;
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -18,7 +18,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-public class PortActivity extends Activity {
+public class PortActivity extends BaseActivity {
 
 	public final static String TAG = "sailhero";
 
@@ -28,7 +28,7 @@ public class PortActivity extends Activity {
 	private Port mPort;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_port);
 
@@ -47,8 +47,15 @@ public class PortActivity extends Activity {
 		}
 
 		if (savedInstanceState == null) {
-			getFragmentManager().beginTransaction().add(R.id.container, new PortFragment(mPort))
+			getFragmentManager().beginTransaction()
+					.add(R.id.main_content, new PortFragment(mPort))
 					.commit();
+		}
+
+		ActionBar actionBar = getSupportActionBar();
+		if (actionBar != null) {
+			actionBar.setDisplayHomeAsUpEnabled(true);
+			actionBar.setTitle(mPort.getName());
 		}
 	}
 
@@ -94,8 +101,8 @@ public class PortActivity extends Activity {
 			mWebsiteTextView.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(mPort
-							.getWebsite()));
+					Intent browserIntent = new Intent(Intent.ACTION_VIEW,
+							Uri.parse(mPort.getWebsite()));
 					startActivity(browserIntent);
 				}
 			});
@@ -109,8 +116,7 @@ public class PortActivity extends Activity {
 				}
 			});
 
-			mHasPowerConnectionCheckBox = (CheckBox) rootView
-					.findViewById(R.id.hasPowerConnectionCheckBox);
+			mHasPowerConnectionCheckBox = (CheckBox) rootView.findViewById(R.id.hasPowerConnectionCheckBox);
 			mHasFuelStationCheckBox = (CheckBox) rootView.findViewById(R.id.hasFuelStationCheckBox);
 
 			mHasPowerConnectionCheckBox.setChecked(mPort.isHasPowerConnection());

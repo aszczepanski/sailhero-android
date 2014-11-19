@@ -1,46 +1,90 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/ActivityLoginLinearLayout1"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="put.sailhero.android.app.LoginActivity" >
 
-    <EditText
-        android:id="@+id/ActivityLoginEmailEditText"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="email"
-        android:inputType="textEmailAddress" >
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#e5e5e5" >
 
-        <requestFocus />
-    </EditText>
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
 
-    <EditText
-        android:id="@+id/ActivityLoginPasswordEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="password"
-        android:inputType="textPassword" />
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:paddingBottom="16dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="80dp" >
 
-    <Button
-        android:id="@+id/ActivityLoginAuthenticateUserButton"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Login" />
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="#fff"
+                    app:cardCornerRadius="@dimen/card_corner_radius"
+                    app:cardElevation="@dimen/card_elevation"
+                    app:cardPreventCornerOverlap="false" >
 
-    <Button
-        android:id="@+id/ActivityLoginRegisterUserButton"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Register User" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:padding="24dp" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Welcome to the SailHero app!"
+                            android:textColor="@color/theme_primary"
+                            android:textSize="@dimen/text_size_xlarge" />
+
+                        <EditText
+                            android:id="@+id/ActivityLoginEmailEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="30dp"
+                            android:ems="10"
+                            android:hint="email"
+                            android:inputType="textEmailAddress" >
+
+                            <requestFocus />
+                        </EditText>
+
+                        <EditText
+                            android:id="@+id/ActivityLoginPasswordEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:ems="10"
+                            android:hint="password"
+                            android:inputType="textPassword" />
+
+                        <Button
+                            android:id="@+id/ActivityLoginAuthenticateUserButton"
+                            style="?android:attr/buttonStyleSmall"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:text="Login" />
+
+                        <Button
+                            android:id="@+id/ActivityLoginRegisterUserButton"
+                            style="?android:attr/buttonStyleSmall"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Register User" />
+                    </LinearLayout>
+                </android.support.v7.widget.CardView>
+            </FrameLayout>
+        </ScrollView>
+    </FrameLayout>
 
 </LinearLayout>

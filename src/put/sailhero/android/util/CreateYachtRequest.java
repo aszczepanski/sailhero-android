@@ -1,8 +1,16 @@
 package put.sailhero.android.util;
 
+import java.io.IOException;
+
 import org.json.simple.JSONObject;
 
+import put.sailhero.android.AccountUtils;
 import put.sailhero.android.util.model.Yacht;
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
+import android.content.Context;
 import android.net.Uri;
 
 public class CreateYachtRequest extends YachtRequest {
@@ -12,9 +20,12 @@ public class CreateYachtRequest extends YachtRequest {
 	private SailHeroService service = SailHeroService.getInstance();
 	private SailHeroSettings settings = service.getSettings();
 
+	private Context mContext;
+
 	private Yacht yacht;
 
-	public CreateYachtRequest(String name, Integer length, Integer width, Integer crew) {
+	public CreateYachtRequest(Context context, String name, Integer length, Integer width,
+			Integer crew) {
 		yacht = new Yacht();
 		yacht.setName(name);
 		yacht.setLength(length);
@@ -29,8 +40,12 @@ public class CreateYachtRequest extends YachtRequest {
 		final String version = settings.getVersion();
 		final String i18n = settings.getI18n();
 
-		Uri uri = new Uri.Builder().scheme("http").encodedAuthority(apiHost).appendPath(apiPath)
-				.appendPath(version).appendPath(i18n).appendEncodedPath(CREATE_YACHT_REQUEST_PATH)
+		Uri uri = new Uri.Builder().scheme("http")
+				.encodedAuthority(apiHost)
+				.appendPath(apiPath)
+				.appendPath(version)
+				.appendPath(i18n)
+				.appendEncodedPath(CREATE_YACHT_REQUEST_PATH)
 				.build();
 
 		return uri.toString();
@@ -38,7 +53,17 @@ public class CreateYachtRequest extends YachtRequest {
 
 	@Override
 	public Header[] getHeaders() {
-		return new Header[] { new Header("Authorization", "Bearer " + settings.getAccessToken()),
+		Account account = AccountUtils.getActiveAccount(mContext);
+		AccountManager accountManager = AccountManager.get(mContext);
+
+		String accessToken = "";
+		try {
+			accessToken = accountManager.blockingGetAuthToken(account, "access", true);
+		} catch (OperationCanceledException | AuthenticatorException | IOException e) {
+			e.printStackTrace();
+		}
+
+		return new Header[] { new Header("Authorization", "Bearer " + accessToken),
 				new Header("Content-Type", "application/json") };
 	}
 

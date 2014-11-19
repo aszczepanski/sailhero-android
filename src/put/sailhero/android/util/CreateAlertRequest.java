@@ -1,8 +1,16 @@
 package put.sailhero.android.util;
 
+import java.io.IOException;
+
 import org.json.simple.JSONObject;
 
+import put.sailhero.android.AccountUtils;
 import put.sailhero.android.util.model.Alert;
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
+import android.content.Context;
 import android.location.Location;
 import android.net.Uri;
 
@@ -13,9 +21,13 @@ public class CreateAlertRequest implements Request {
 	private SailHeroService service = SailHeroService.getInstance();
 	private SailHeroSettings settings = service.getSettings();
 	
+	private Context mContext;
+	
 	private Alert alert;
-
-	public CreateAlertRequest(String alertType, Location location, String additionalInfo) {
+	
+	public CreateAlertRequest(Context context, String alertType, Location location, String additionalInfo) {
+		mContext = context;
+		
 		alert = new Alert();
 		alert.setAlertType(alertType);
 		alert.setLocation(location);
@@ -43,8 +55,18 @@ public class CreateAlertRequest implements Request {
 	
 	@Override
 	public Header[] getHeaders() {
+		Account account = AccountUtils.getActiveAccount(mContext);
+		AccountManager accountManager = AccountManager.get(mContext);
+		
+		String accessToken = "";
+		try {
+			accessToken = accountManager.blockingGetAuthToken(account, AccountUtils.ACCESS_TOKEN_TYPE, true);
+		} catch (OperationCanceledException | AuthenticatorException | IOException e) {
+			e.printStackTrace();
+		}
+		
 		Header[] headers = new Header[] {
-				new Header("Authorization", "Bearer " + settings.getAccessToken()),
+				new Header("Authorization", "Bearer " + accessToken),
 				new Header("Content-Type", "application/json")
 				};
 		return headers;

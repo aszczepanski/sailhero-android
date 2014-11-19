@@ -15,8 +15,6 @@ public abstract class SailHeroSettings {
 
 	protected String accessTokenHost;
 	protected String accessTokenPath;
-	protected String accessToken;
-	protected String refreshToken;
 
 	protected String apiHost;
 	protected String apiPath;
@@ -65,22 +63,6 @@ public abstract class SailHeroSettings {
 
 	public void setI18n(String i18n) {
 		this.i18n = i18n;
-	}
-
-	public String getAccessToken() {
-		return accessToken;
-	}
-
-	public void setAccessToken(String accessToken) {
-		this.accessToken = accessToken;
-	}
-
-	public String getRefreshToken() {
-		return refreshToken;
-	}
-
-	public void setRefreshToken(String refreshToken) {
-		this.refreshToken = refreshToken;
 	}
 
 	public String getAppId() {
