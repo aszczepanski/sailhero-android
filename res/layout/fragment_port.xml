@@ -10,7 +10,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:shrinkColumns="*"
     android:stretchColumns="*"
-    tools:context="put.sailhero.android.PortActivity$PlaceholderFragment" >
+    tools:context="put.sailhero.PortActivity$PlaceholderFragment" >
 
     <TableRow
         android:id="@+id/basicSectionTableRow"

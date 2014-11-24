@@ -3,7 +3,7 @@ package put.sailhero.android.test.util.model;
 import org.json.simple.JSONObject;
 import org.junit.Test;
 
-import put.sailhero.android.util.model.Port;
+import put.sailhero.model.Port;
 import android.location.Location;
 import android.test.AndroidTestCase;
 

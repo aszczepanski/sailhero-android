@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="put.sailhero.android.app.MainActivity" >
+    tools:context="put.sailhero.ui.MainActivity" >
 
     <android.support.v4.widget.DrawerLayout
         android:id="@+id/drawer_layout"

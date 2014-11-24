@@ -1,0 +1,102 @@
+package put.sailhero.ui;
+
+import put.sailhero.exception.InvalidResourceOwnerException;
+import put.sailhero.exception.SystemException;
+import put.sailhero.exception.TransportException;
+import put.sailhero.exception.UnauthorizedException;
+import put.sailhero.exception.UnprocessableEntityException;
+import put.sailhero.sync.RequestHelper;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
+
+public class RequestHelperAsyncTask extends AsyncTask<Void, Void, Void> {
+
+	public static final String TAG = "sailhero";
+
+	private Context mContext;
+
+	private RequestHelper mRequestHelper;
+	private Exception mException;
+
+	private ProgressDialog mProgressDialog;
+
+	private AsyncRequestListener mAsyncRequestListener;
+
+	public RequestHelperAsyncTask(Context context, RequestHelper requestHelper,
+			AsyncRequestListener asyncRequestListener) {
+		mContext = context;
+		mRequestHelper = requestHelper;
+		mAsyncRequestListener = asyncRequestListener;
+	}
+
+	@Override
+	protected void onPreExecute() {
+		mProgressDialog = ProgressDialog.show(mContext, "", "Executing request...");
+	}
+
+	@Override
+	protected Void doInBackground(Void... params) {
+		try {
+			mRequestHelper.doRequest();
+			mRequestHelper.storeData();
+		} catch (Exception e) {
+			mException = e;
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	@Override
+	protected void onPostExecute(Void result) {
+		mProgressDialog.dismiss();
+		if (mException == null) {
+			mAsyncRequestListener.onSuccess(mRequestHelper);
+		} else if (mException instanceof UnprocessableEntityException) {
+			Log.e(TAG, "unprocessable entity exception");
+			mAsyncRequestListener.onUnprocessableEntityException(mRequestHelper, mException.getMessage());
+		} else if (mException instanceof InvalidResourceOwnerException) {
+			Log.e(TAG, mException.getMessage());
+			mAsyncRequestListener.onInvalidResourceOwnerException(mRequestHelper);
+		} else if (mException instanceof TransportException) {
+			Log.e(TAG, "transport exception");
+			mAsyncRequestListener.onTransportException(mRequestHelper);
+		} else if (mException instanceof SystemException) {
+			Log.e(TAG, "system exception");
+			mAsyncRequestListener.onSystemException(mRequestHelper);
+		} else if (mException instanceof UnauthorizedException) {
+			Log.e(TAG, "unauthorized error");
+			mAsyncRequestListener.onUnauthorizedException(mRequestHelper);
+		} else {
+			Log.e(TAG, "unknown error");
+			assert false;
+		}
+	}
+
+	public static abstract class AsyncRequestListener {
+		public abstract void onSuccess(RequestHelper requestHelper);
+
+		public void onUnprocessableEntityException(RequestHelper requestHelper, String entityErrorsJson) {
+			Log.e(TAG, "unexpected error");
+		}
+
+		public void onInvalidResourceOwnerException(RequestHelper requestHelper) {
+			Log.e(TAG, "unexpected error");
+		}
+
+		public void onTransportException(RequestHelper requestHelper) {
+			Log.e(TAG, "unexpected error");
+		}
+
+		public void onSystemException(RequestHelper requestHelper) {
+			Log.e(TAG, "unexpected error");
+		}
+
+		public void onUnauthorizedException(RequestHelper requestHelper) {
+			Log.e(TAG, "unexpected error");
+		}
+	}
+
+}

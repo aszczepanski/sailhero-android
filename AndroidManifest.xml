@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_SYNC_STATS" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
@@ -43,11 +44,11 @@
             android:value="AIzaSyC5bxeX8oAkoKdjBKyFXB_1nfptL6SKQfY" />
 
         <activity
-            android:name=".app.LoginActivity"
+            android:name="put.sailhero.ui.LoginActivity"
             android:label="@string/title_activity_login" >
         </activity>
         <activity
-            android:name=".app.MainActivity"
+            android:name="put.sailhero.ui.MainActivity"
             android:label="@string/title_activity_main" >
             <intent-filter android:label="@string/app_name" >
                 <action android:name="android.intent.action.MAIN" />
@@ -56,17 +57,17 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".app.RegisterUserActivity"
+            android:name="put.sailhero.ui.RegisterUserActivity"
             android:label="@string/title_activity_register_user" >
         </activity>
         <activity
-            android:name=".app.PreferenceActivity"
+            android:name="put.sailhero.ui.PreferenceActivity"
             android:label="@string/title_activity_preference" >
         </activity>
         <activity
-            android:name=".app.YachtActivity"
+            android:name="put.sailhero.ui.YachtActivity"
             android:label="@string/title_activity_yacht"
-            android:parentActivityName=".app.TestMapActivity" >
+            android:parentActivityName="put.sailhero.ui.TestMapActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="put.sailhero.android.app.TestMapActivity" />
@@ -78,28 +79,28 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".app.AlertActivity"
+            android:name="put.sailhero.ui.AlertActivity"
             android:label="@string/title_activity_alert" >
         </activity>
         <activity
-            android:name=".app.TestMapActivity"
+            android:name="put.sailhero.ui.TestMapActivity"
             android:label="@string/title_activity_test_map" >
         </activity>
         <activity
-            android:name=".app.PortActivity"
+            android:name="put.sailhero.ui.PortActivity"
             android:label="@string/title_activity_port"
-            android:parentActivityName=".app.TestMapActivity" >
+            android:parentActivityName="put.sailhero.ui.TestMapActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="put.sailhero.android.app.TestMapActivity" />
         </activity>
         <activity
-            android:name=".app.AlertMapActivity"
+            android:name="put.sailhero.ui.AlertMapActivity"
             android:label="@string/title_activity_alert_map" >
         </activity>
 
         <receiver
-            android:name=".GcmBroadcastReceiver"
+            android:name="put.sailhero.gcm.GcmBroadcastReceiver"
             android:enabled="true"
             android:exported="true"
             android:permission="com.google.android.c2dm.permission.SEND" >
@@ -111,11 +112,11 @@
         </receiver>
 
         <service
-            android:name=".GcmIntentService"
+            android:name="put.sailhero.gcm.GcmIntentService"
             android:exported="false" >
         </service>
         <service
-            android:name=".AuthenticatorService"
+            android:name="put.sailhero.account.AuthenticatorService"
             android:exported="false" >
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
@@ -125,6 +126,25 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
+        <service
+            android:name="put.sailhero.sync.SyncService"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/syncadapter" />
+        </service>
+
+        <provider
+            android:name="put.sailhero.provider.SailHeroContentProvider"
+            android:authorities="put.sailhero"
+            android:enabled="true"
+            android:exported="false" >
+        </provider>
     </application>
 
 </manifest>

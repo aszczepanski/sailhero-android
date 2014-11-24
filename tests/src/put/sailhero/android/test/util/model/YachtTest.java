@@ -3,7 +3,7 @@ package put.sailhero.android.test.util.model;
 import org.json.simple.JSONObject;
 import org.junit.Test;
 
-import put.sailhero.android.util.model.Yacht;
+import put.sailhero.model.Yacht;
 import android.test.AndroidTestCase;
 
 public class YachtTest extends AndroidTestCase {

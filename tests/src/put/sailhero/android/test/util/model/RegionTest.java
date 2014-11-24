@@ -3,7 +3,7 @@ package put.sailhero.android.test.util.model;
 import org.json.simple.JSONObject;
 import org.junit.Test;
 
-import put.sailhero.android.util.model.Region;
+import put.sailhero.model.Region;
 import android.test.AndroidTestCase;
 
 public class RegionTest extends AndroidTestCase {
