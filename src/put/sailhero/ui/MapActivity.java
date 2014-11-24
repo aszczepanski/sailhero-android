@@ -31,7 +31,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class TestMapActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MapActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
 	public final String TAG = "sailhero";
 
@@ -48,9 +48,9 @@ public class TestMapActivity extends BaseActivity implements LoaderManager.Loade
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_test_map);
+		setContentView(R.layout.activity_map);
 
-		mContext = TestMapActivity.this;
+		mContext = MapActivity.this;
 
 		if (savedInstanceState == null) {
 
@@ -110,7 +110,7 @@ public class TestMapActivity extends BaseActivity implements LoaderManager.Loade
 			public void onInfoWindowClick(Marker marker) {
 				//				Port port = markerPortMap.get(marker);
 
-				Intent intent = new Intent(TestMapActivity.this, PortActivity.class);
+				Intent intent = new Intent(MapActivity.this, PortActivity.class);
 				intent.putExtra("port_id", markerPortIdMap.get(marker));
 				startActivity(intent);
 			}
@@ -129,7 +129,7 @@ public class TestMapActivity extends BaseActivity implements LoaderManager.Loade
 		Toast.makeText(mContext, "onPortsChanged()", Toast.LENGTH_SHORT).show();
 		Log.d(TAG, "onPortsChanged()");
 
-		getLoaderManager().restartLoader(1, null, TestMapActivity.this);
+		getLoaderManager().restartLoader(1, null, MapActivity.this);
 	}
 
 	@Override

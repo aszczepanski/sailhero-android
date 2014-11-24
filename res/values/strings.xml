@@ -15,9 +15,8 @@
     <string name="title_activity_preference">PreferenceActivity</string>
     <string name="title_activity_yacht">YachtActivity</string>
     <string name="title_activity_alert">AlertActivity</string>
-    <string name="title_activity_test_map">TestMapActivity</string>
+    <string name="title_activity_map">Map</string>
     <string name="title_activity_port">PortActivity</string>
-    <string name="title_activity_alert_map">AlertMapActivity</string>
 
     <string-array name="alert_names">
         <item>Bad weather conditions</item>
@@ -28,7 +27,7 @@
     <!-- navdrawer items -->
     <string name="navdrawer_item_dashboard">Dashboard</string>
     <string name="navdrawer_item_alert">Alert</string>
-    <string name="navdrawer_item_map">Ports map</string>
+    <string name="navdrawer_item_map">Map</string>
     <string name="navdrawer_item_weather">Weather</string>
     <string name="navdrawer_item_people">People</string>
     <string name="navdrawer_item_messages">Messages</string>

@@ -280,7 +280,7 @@ public class BaseActivity extends ActionBarActivity {
 			intent = new Intent(this, AlertActivity.class);
 			break;
 		case NAVDRAWER_ITEM_MAP:
-			intent = new Intent(this, TestMapActivity.class);
+			intent = new Intent(this, MapActivity.class);
 			break;
 		case NAVDRAWER_ITEM_SETTINGS:
 			intent = new Intent(this, PreferenceActivity.class);
