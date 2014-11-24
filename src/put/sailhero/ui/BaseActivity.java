@@ -3,6 +3,7 @@ package put.sailhero.ui;
 import java.util.ArrayList;
 
 import put.sailhero.account.AccountUtils;
+import put.sailhero.android.DashboardActivity;
 import put.sailhero.android.R;
 import put.sailhero.util.PrefUtils;
 import android.accounts.Account;
@@ -25,28 +26,37 @@ public class BaseActivity extends ActionBarActivity {
 
 	public final static String TAG = "sailhero";
 
-	protected static final int NAVDRAWER_ITEM_MAIN = 0;
+	protected static final int NAVDRAWER_ITEM_DASHBOARD = 0;
 	protected static final int NAVDRAWER_ITEM_ALERT = 1;
 	protected static final int NAVDRAWER_ITEM_MAP = 2;
 	protected static final int NAVDRAWER_ITEM_WEATHER = 3;
-	protected static final int NAVDRAWER_ITEM_SETTINGS = 4;
+	protected static final int NAVDRAWER_ITEM_PEOPLE = 4;
+	protected static final int NAVDRAWER_ITEM_MESSAGES = 5;
+	protected static final int NAVDRAWER_ITEM_SETTINGS = 6;
+	protected static final int NAVDRAWER_ITEM_HELP = 7;
 	protected static final int NAVDRAWER_ITEM_INVALID = -1;
 	protected static final int NAVDRAWER_ITEM_SEPARATOR = -2;
 
 	private static final int[] NAVDRAWER_TITLE_RES_ID = new int[] {
-			R.string.navdrawer_item_main,
+			R.string.navdrawer_item_dashboard,
 			R.string.navdrawer_item_alert,
 			R.string.navdrawer_item_map,
 			R.string.navdrawer_item_weather,
-			R.string.navdrawer_item_settings
+			R.string.navdrawer_item_people,
+			R.string.navdrawer_item_messages,
+			R.string.navdrawer_item_settings,
+			R.string.navdrawer_item_help
 	};
 
 	private static final int[] NAVDRAWER_ICON_RES_ID = new int[] {
 			R.drawable.ic_launcher,
 			R.drawable.ic_launcher,
+			R.drawable.ic_drawer_map,
 			R.drawable.ic_launcher,
-			R.drawable.ic_launcher,
-			R.drawable.ic_drawer_settings
+			R.drawable.ic_drawer_people_met,
+			R.drawable.ic_drawer_social,
+			R.drawable.ic_drawer_settings,
+			R.drawable.ic_launcher
 	};
 
 	private static final int NAVDRAWER_LAUNCH_DELAY = 250;
@@ -198,17 +208,20 @@ public class BaseActivity extends ActionBarActivity {
 	private void populateNavDrawer() {
 		mNavDrawerItems.clear();
 
-		mNavDrawerItems.add(NAVDRAWER_ITEM_MAIN);
-
-		mNavDrawerItems.add(NAVDRAWER_ITEM_SEPARATOR);
-
+		mNavDrawerItems.add(NAVDRAWER_ITEM_DASHBOARD);
 		mNavDrawerItems.add(NAVDRAWER_ITEM_ALERT);
 		mNavDrawerItems.add(NAVDRAWER_ITEM_MAP);
 		mNavDrawerItems.add(NAVDRAWER_ITEM_WEATHER);
 
 		mNavDrawerItems.add(NAVDRAWER_ITEM_SEPARATOR);
 
+		mNavDrawerItems.add(NAVDRAWER_ITEM_PEOPLE);
+		mNavDrawerItems.add(NAVDRAWER_ITEM_MESSAGES);
+
+		mNavDrawerItems.add(NAVDRAWER_ITEM_SEPARATOR);
+
 		mNavDrawerItems.add(NAVDRAWER_ITEM_SETTINGS);
+		mNavDrawerItems.add(NAVDRAWER_ITEM_HELP);
 
 		createNavDrawerItems();
 	}
@@ -260,10 +273,9 @@ public class BaseActivity extends ActionBarActivity {
 	private void goToNavDrawerItem(int item) {
 		Intent intent = null;
 		switch (item) {
-		case NAVDRAWER_ITEM_MAIN:
-			intent = new Intent(this, MainActivity.class);
+		case NAVDRAWER_ITEM_DASHBOARD:
+			intent = new Intent(this, DashboardActivity.class);
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-			break;
 		case NAVDRAWER_ITEM_ALERT:
 			intent = new Intent(this, AlertActivity.class);
 			break;
@@ -277,9 +289,9 @@ public class BaseActivity extends ActionBarActivity {
 			return;
 		}
 
-//		intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+		//		intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 
-		if (getSelfNavDrawerItem() != NAVDRAWER_ITEM_MAIN && !isSpecialItem(item)) {
+		if (getSelfNavDrawerItem() != NAVDRAWER_ITEM_DASHBOARD && !isSpecialItem(item)) {
 			finish();
 		}
 		startActivity(intent);

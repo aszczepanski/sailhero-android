@@ -1,6 +1,7 @@
 package put.sailhero.ui;
 
 import put.sailhero.account.AccountUtils;
+import put.sailhero.android.DashboardActivity;
 import put.sailhero.android.R;
 import put.sailhero.sync.CreateUserRequestHelper;
 import put.sailhero.sync.LogInRequestHelper;
@@ -123,7 +124,7 @@ public class RegisterUserActivity extends Activity {
 	}
 
 	private void onUserAuthenticated() {
-		Intent intent = new Intent(RegisterUserActivity.this, MainActivity.class);
+		Intent intent = new Intent(RegisterUserActivity.this, DashboardActivity.class);
 		startActivity(intent);
 		finish();
 	}

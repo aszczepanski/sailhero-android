@@ -9,7 +9,7 @@
     <string name="action_alerts">Alerts</string>
 
     <!-- activities titles -->
-    <string name="title_activity_main">@string/app_name</string>
+    <string name="title_activity_dashboard">SailHero</string>
     <string name="title_activity_login">Login</string>
     <string name="title_activity_register_user">Register user</string>
     <string name="title_activity_preference">PreferenceActivity</string>
@@ -26,10 +26,13 @@
     </string-array>
 
     <!-- navdrawer items -->
-    <string name="navdrawer_item_main">Main</string>
+    <string name="navdrawer_item_dashboard">Dashboard</string>
     <string name="navdrawer_item_alert">Alert</string>
     <string name="navdrawer_item_map">Ports map</string>
     <string name="navdrawer_item_weather">Weather</string>
+    <string name="navdrawer_item_people">People</string>
+    <string name="navdrawer_item_messages">Messages</string>
     <string name="navdrawer_item_settings">Settings</string>
+    <string name="navdrawer_item_help">Help</string>
 
 </resources>
