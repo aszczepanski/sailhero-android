@@ -1,7 +1,6 @@
 package put.sailhero.ui;
 
 import put.sailhero.account.AccountUtils;
-import put.sailhero.android.DashboardActivity;
 import put.sailhero.android.R;
 import put.sailhero.sync.CreateUserRequestHelper;
 import put.sailhero.sync.LogInRequestHelper;

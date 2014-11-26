@@ -1,12 +1,11 @@
-package put.sailhero.android;
+package put.sailhero.ui;
 
 import put.sailhero.account.AccountUtils;
+import put.sailhero.android.R;
 import put.sailhero.model.Region;
 import put.sailhero.provider.SailHeroContract;
 import put.sailhero.sync.RequestHelper;
 import put.sailhero.sync.RetrieveUserRequestHelper;
-import put.sailhero.ui.BaseActivity;
-import put.sailhero.ui.RequestHelperAsyncTask;
 import put.sailhero.util.PrefUtils;
 import android.accounts.Account;
 import android.app.AlertDialog;

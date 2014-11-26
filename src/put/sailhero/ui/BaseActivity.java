@@ -3,8 +3,8 @@ package put.sailhero.ui;
 import java.util.ArrayList;
 
 import put.sailhero.account.AccountUtils;
-import put.sailhero.android.DashboardActivity;
 import put.sailhero.android.R;
+import put.sailhero.model.User;
 import put.sailhero.util.PrefUtils;
 import android.accounts.Account;
 import android.content.Intent;
@@ -180,6 +180,7 @@ public class BaseActivity extends ActionBarActivity {
 
 		populateNavDrawer();
 
+		// TODO:
 		// When the user runs the app for the first time, we want to land them with the
 		// navigation drawer open. But just the first time.
 		if (!PrefUtils.isWelcomeDone(this)) {
@@ -187,6 +188,24 @@ public class BaseActivity extends ActionBarActivity {
 			PrefUtils.markWelcomeDone(this);
 			mDrawerLayout.openDrawer(Gravity.START);
 		}
+	}
+
+	public void setupAccountBox() {
+		TextView nameTextView = (TextView) findViewById(R.id.profile_name_text);
+		TextView emailTextView = (TextView) findViewById(R.id.profile_email_text);
+
+		User currentUser = PrefUtils.getUser(getApplicationContext());
+		if (currentUser == null) {
+			nameTextView.setVisibility(View.GONE);
+			emailTextView.setVisibility(View.GONE);
+		} else {
+			nameTextView.setVisibility(View.VISIBLE);
+			nameTextView.setText(currentUser.getName() + " " + currentUser.getSurname());
+
+			emailTextView.setVisibility(View.VISIBLE);
+			emailTextView.setText(currentUser.getEmail());
+		}
+
 	}
 
 	@Override
@@ -266,6 +285,7 @@ public class BaseActivity extends ActionBarActivity {
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
 		setupNavDrawer();
+		setupAccountBox();
 
 		// TODO: setup other things
 	}
@@ -275,7 +295,8 @@ public class BaseActivity extends ActionBarActivity {
 		switch (item) {
 		case NAVDRAWER_ITEM_DASHBOARD:
 			intent = new Intent(this, DashboardActivity.class);
-			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+			// intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+			break;
 		case NAVDRAWER_ITEM_ALERT:
 			intent = new Intent(this, AlertActivity.class);
 			break;

@@ -15,6 +15,7 @@
     <dimen name="navdrawer_width">240dp</dimen>
     <dimen name="navdrawer_margin_top">8dp</dimen>
     <dimen name="navdrawer_margin_bottom">8dp</dimen>
+    <dimen name="navdrawer_account_box_height">140dp</dimen>
 
     <!-- body content -->
     <dimen name="element_spacing_normal">8dp</dimen>
@@ -24,7 +25,7 @@
     <dimen name="text_size_medium">14sp</dimen>
     <dimen name="text_size_large">18sp</dimen>
     <dimen name="text_size_xlarge">20sp</dimen>
-    
+
     <!-- cardview -->
     <dimen name="card_elevation">2dp</dimen>
     <dimen name="card_corner_radius">2dp</dimen>
