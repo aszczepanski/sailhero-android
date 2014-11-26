@@ -191,6 +191,10 @@ public class BaseActivity extends ActionBarActivity {
 	}
 
 	public void setupAccountBox() {
+		if (mDrawerLayout == null) {
+			return;
+		}
+
 		TextView nameTextView = (TextView) findViewById(R.id.profile_name_text);
 		TextView emailTextView = (TextView) findViewById(R.id.profile_email_text);
 
