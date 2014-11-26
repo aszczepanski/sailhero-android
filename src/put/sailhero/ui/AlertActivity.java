@@ -335,6 +335,12 @@ public class AlertActivity extends BaseActivity implements GooglePlayServicesCli
 
 		float minDistance = Float.MAX_VALUE;
 
+		if (location.hasSpeed()) {
+			Toast.makeText(AlertActivity.this, "Speed: " + location.getSpeed(), Toast.LENGTH_SHORT).show();
+		} else {
+			Toast.makeText(AlertActivity.this, "No speed attached.", Toast.LENGTH_SHORT).show();
+		}
+
 		/*
 				AbstractList<Alert> alerts = mSettings.getAlerts();
 				if (alerts != null) {
