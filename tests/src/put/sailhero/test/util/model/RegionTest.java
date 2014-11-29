@@ -1,4 +1,4 @@
-package put.sailhero.android.test.util.model;
+package put.sailhero.test.util.model;
 
 import org.json.simple.JSONObject;
 import org.junit.Test;

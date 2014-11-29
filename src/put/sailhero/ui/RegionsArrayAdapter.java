@@ -2,7 +2,7 @@ package put.sailhero.ui;
 
 import java.util.ArrayList;
 
-import put.sailhero.android.R;
+import put.sailhero.R;
 import put.sailhero.model.Region;
 import android.content.Context;
 import android.view.LayoutInflater;

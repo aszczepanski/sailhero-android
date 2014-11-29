@@ -3,7 +3,7 @@ package put.sailhero.ui;
 import java.util.ArrayList;
 
 import put.sailhero.account.AccountUtils;
-import put.sailhero.android.R;
+import put.sailhero.R;
 import put.sailhero.model.User;
 import put.sailhero.util.PrefUtils;
 import android.accounts.Account;
@@ -306,6 +306,9 @@ public class BaseActivity extends ActionBarActivity {
 			break;
 		case NAVDRAWER_ITEM_MAP:
 			intent = new Intent(this, MapActivity.class);
+			break;
+		case NAVDRAWER_ITEM_PEOPLE:
+			intent = new Intent(this, PeopleActivity.class);
 			break;
 		case NAVDRAWER_ITEM_SETTINGS:
 			intent = new Intent(this, PreferenceActivity.class);

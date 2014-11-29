@@ -1,6 +1,6 @@
 package put.sailhero.ui;
 
-import put.sailhero.android.R;
+import put.sailhero.R;
 import put.sailhero.model.Port;
 import put.sailhero.provider.SailHeroContract;
 import android.app.Fragment;

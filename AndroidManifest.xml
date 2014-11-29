@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="put.sailhero.android"
+    package="put.sailhero"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -141,6 +141,11 @@
             android:enabled="true"
             android:exported="false" >
         </provider>
+
+        <activity
+            android:name="put.sailhero.ui.PeopleActivity"
+            android:label="@string/title_activity_people" >
+        </activity>
     </application>
 
 </manifest>

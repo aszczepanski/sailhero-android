@@ -1,7 +1,7 @@
 package put.sailhero.ui;
 
 import put.sailhero.account.AccountUtils;
-import put.sailhero.android.R;
+import put.sailhero.R;
 import put.sailhero.model.Alert;
 import put.sailhero.provider.SailHeroContract;
 import put.sailhero.sync.CreateAlertRequestHelper;

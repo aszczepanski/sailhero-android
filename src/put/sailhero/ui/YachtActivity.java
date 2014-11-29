@@ -1,6 +1,6 @@
 package put.sailhero.ui;
 
-import put.sailhero.android.R;
+import put.sailhero.R;
 import put.sailhero.model.Yacht;
 import put.sailhero.sync.CreateYachtRequestHelper;
 import put.sailhero.sync.RequestHelper;

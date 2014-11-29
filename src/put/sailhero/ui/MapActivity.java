@@ -2,7 +2,7 @@ package put.sailhero.ui;
 
 import java.util.HashMap;
 
-import put.sailhero.android.R;
+import put.sailhero.R;
 import android.app.FragmentManager;
 import android.os.Bundle;
 
