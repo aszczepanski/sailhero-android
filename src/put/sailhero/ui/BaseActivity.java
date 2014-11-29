@@ -299,7 +299,7 @@ public class BaseActivity extends ActionBarActivity {
 		switch (item) {
 		case NAVDRAWER_ITEM_DASHBOARD:
 			intent = new Intent(this, DashboardActivity.class);
-			// intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 			break;
 		case NAVDRAWER_ITEM_ALERT:
 			intent = new Intent(this, AlertActivity.class);

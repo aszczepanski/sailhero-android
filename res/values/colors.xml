@@ -20,6 +20,9 @@
     
     <color name="gray_background">#e5e5e5</color>
     <color name="dark_divider">#32000000</color>
+    
+    <color name="tab_background">@color/theme_primary</color>
+    <color name="tab_selected_strip">@color/theme_accent_1</color>
 
     <color name="navdrawer_background">#ffffffff</color>
     <color name="navdrawer_text_color">@color/body_text_1</color>

@@ -46,7 +46,7 @@
 
     <style name="ActionBarThemeOverlay" parent="">
         <item name="android:textColorPrimary">#fff</item>
-        <item name="android:background">@color/theme_primary</item>
+        <item name="android:background">@color/tab_background</item>
         <!-- <item name="colorControlNormal">?actionBarIconColor</item> -->
         <item name="colorControlNormal">#fff</item>
         <item name="colorControlHighlight">#3fff</item>
@@ -93,5 +93,7 @@
         <item name="android:divider">@null</item>
         <item name="android:dividerHeight">0dp</item>
     </style>
+
+    <style name="TabIndicator" />
 
 </resources>

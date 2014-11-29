@@ -1,7 +1,7 @@
 package put.sailhero.ui;
 
 import put.sailhero.account.AccountUtils;
-import put.sailhero.android.R;
+import put.sailhero.R;
 import put.sailhero.model.Region;
 import put.sailhero.provider.SailHeroContract;
 import put.sailhero.sync.RequestHelper;
@@ -13,14 +13,18 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-public class DashboardActivity extends BaseActivity {
+public class DashboardActivity extends BaseActivity implements SwipeRefreshLayout.OnRefreshListener {
 
-	Context mContext;
+	private Context mContext;
+
+	private SwipeRefreshLayout mSwipeRefreshLayout;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -28,6 +32,11 @@ public class DashboardActivity extends BaseActivity {
 		setContentView(R.layout.activity_dashboard);
 
 		mContext = DashboardActivity.this;
+
+		mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+		mSwipeRefreshLayout.setOnRefreshListener(this);
+		mSwipeRefreshLayout.setColorSchemeResources(R.color.refresh_progress_1, R.color.refresh_progress_2,
+				R.color.refresh_progress_3);
 
 		overridePendingTransition(0, 0);
 
@@ -145,5 +154,18 @@ public class DashboardActivity extends BaseActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public void onRefresh() {
+		Toast.makeText(mContext, "Refresh", Toast.LENGTH_SHORT).show();
+		mSwipeRefreshLayout.setRefreshing(true);
+		new Handler().postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				mSwipeRefreshLayout.setRefreshing(false);
+			}
+		}, 5000);
+
 	}
 }

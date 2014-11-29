@@ -17,6 +17,7 @@
     <string name="title_activity_alert">AlertActivity</string>
     <string name="title_activity_map">Map</string>
     <string name="title_activity_port">PortActivity</string>
+    <string name="title_activity_people">People</string>
 
     <string-array name="alert_names">
         <item>Bad weather conditions</item>
