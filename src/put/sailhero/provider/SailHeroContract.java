@@ -28,6 +28,7 @@ final public class SailHeroContract {
 		public static final String COLUMN_NAME_TYPE = "type";
 		public static final String COLUMN_NAME_LATITUDE = "latitude";
 		public static final String COLUMN_NAME_LONGITUDE = "longitude";
+		public static final String COLUMN_NAME_USER_ID = "user_id";
 		public static final String COLUMN_NAME_ADDITIONAL_INFO = "additional_info";
 	}
 

@@ -150,6 +150,7 @@ public class RetrieveAlertsRequestHelper extends RequestHelper {
 					.withValue(SailHeroContract.Alert.COLUMN_NAME_TYPE, alert.getAlertType())
 					.withValue(SailHeroContract.Alert.COLUMN_NAME_LATITUDE, alert.getLocation().getLatitude())
 					.withValue(SailHeroContract.Alert.COLUMN_NAME_LONGITUDE, alert.getLocation().getLongitude())
+					.withValue(SailHeroContract.Alert.COLUMN_NAME_USER_ID, alert.getUserId())
 					.withValue(SailHeroContract.Alert.COLUMN_NAME_ADDITIONAL_INFO, alert.getAdditionalInfo())
 					.build());
 		}

@@ -273,13 +273,14 @@ public class SailHeroContentProvider extends ContentProvider {
 	}
 
 	static class SailHeroDatabaseHelper extends SQLiteOpenHelper {
-		public static final int DATABASE_VERSION = 10;
+		public static final int DATABASE_VERSION = 11;
 		public static final String DATABASE_NAME = "sailhero.db";
 
 		private static final String SQL_CREATE_ALERTS = "CREATE TABLE " + SailHeroContract.Alert.TABLE_NAME + " ("
 				+ SailHeroContract.Alert.COLUMN_NAME_ID + " INTEGER PRIMARY KEY" + ","
 				+ SailHeroContract.Alert.COLUMN_NAME_TYPE + " TEXT" + "," + SailHeroContract.Alert.COLUMN_NAME_LATITUDE
 				+ " REAL" + "," + SailHeroContract.Alert.COLUMN_NAME_LONGITUDE + " REAL" + ","
+				+ SailHeroContract.Alert.COLUMN_NAME_USER_ID + " INTEGER" + ","
 				+ SailHeroContract.Alert.COLUMN_NAME_ADDITIONAL_INFO + " TEXT" + ")";
 
 		private static final String SQL_DELETE_ALERTS = "DROP TABLE IF EXISTS " + SailHeroContract.Alert.TABLE_NAME;

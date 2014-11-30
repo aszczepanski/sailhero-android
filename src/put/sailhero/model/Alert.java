@@ -10,6 +10,7 @@ public class Alert {
 	private Location location;
 	private String alertType;
 	private String additionalInfo;
+	private Integer userId;
 	private Integer credibility;
 
 	public Alert() {
@@ -21,6 +22,7 @@ public class Alert {
 		setId(Integer.valueOf(alertObject.get("id").toString()));
 		setAlertType(alertObject.get("alert_type").toString());
 		setAdditionalInfo(alertObject.get("additional_info").toString());
+		setUserId(Integer.valueOf(alertObject.get("user_id").toString()));
 		setCredibility(Integer.valueOf(alertObject.get("credibility").toString()));
 
 		Location alertLocation = new Location("sailhero");
@@ -71,6 +73,14 @@ public class Alert {
 
 	public void setAdditionalInfo(String additionalInfo) {
 		this.additionalInfo = additionalInfo;
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
 	}
 
 	public Integer getCredibility() {
