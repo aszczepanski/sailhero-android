@@ -18,6 +18,8 @@ public class PrefUtils {
 	private static final String PREF_REGION = "pref_region";
 	private static final String PREF_YACHT = "pref_yacht";
 
+	private static final String PREF_ALERT_RADIUS = "pref_alert_radius";
+
 	private static final String PREF_WELCOME_DONE = "pref_welcome_done";
 
 	public static void setUser(Context context, final User user) {
@@ -84,6 +86,16 @@ public class PrefUtils {
 		Gson gson = builder.create();
 		Region region = gson.fromJson(regionJson, Region.class);
 		return region;
+	}
+
+	public static Integer getAlertRadius(final Context context) {
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+		return sp.getInt(PREF_ALERT_RADIUS, 500);
+	}
+
+	public static void setAlertRadius(final Context context, final Integer radius) {
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+		sp.edit().putInt(PREF_ALERT_RADIUS, radius).commit();
 	}
 
 	public static boolean isWelcomeDone(final Context context) {

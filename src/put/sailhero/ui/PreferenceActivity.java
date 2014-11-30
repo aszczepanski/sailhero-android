@@ -1,7 +1,7 @@
 package put.sailhero.ui;
 
-import put.sailhero.account.AccountUtils;
 import put.sailhero.R;
+import put.sailhero.account.AccountUtils;
 import put.sailhero.model.Region;
 import put.sailhero.provider.SailHeroContract;
 import put.sailhero.sync.RequestHelper;
@@ -60,6 +60,7 @@ public class PreferenceActivity extends BaseActivity {
 
 		private ThrottledContentObserver mRegionsObserver;
 
+		private Preference mAlertRadiusPreference;
 		private ListPreference mRegionListPreference;
 
 		public PrefFragment() {
@@ -72,6 +73,15 @@ public class PreferenceActivity extends BaseActivity {
 			mContext = getActivity();
 
 			addPreferencesFromResource(R.xml.preferences);
+
+			mAlertRadiusPreference = (Preference) findPreference("alert_radius_preference");
+			mAlertRadiusPreference.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+				@Override
+				public boolean onPreferenceChange(Preference preference, Object newValue) {
+					PrefUtils.setAlertRadius(mContext, (Integer) newValue);
+					return true;
+				}
+			});
 
 			mRegionListPreference = (ListPreference) findPreference("region_list_preference");
 			mRegionListPreference.setEnabled(false);

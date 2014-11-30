@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://put.sailhero" >
 
     <PreferenceCategory
         android:key="general_preference_category"
         android:title="General" >
-        <Preference
+        <put.sailhero.util.SeekBarPreference
+            android:defaultValue="500"
             android:key="alert_radius_preference"
-            android:summary="Select alert radius"
-            android:title="Alert radius" />
+            android:max="1000"
+            android:summary=""
+            android:title="Alert radius"
+            app:interval="5"
+            app:min="50"
+            app:unitsRight="m" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="user_settings_preference_category"
@@ -15,12 +21,12 @@
         <ListPreference
             android:dialogTitle="Select a region"
             android:key="region_list_preference"
-            android:summary="Selected region"
+            android:summary="Select a region"
             android:title="Region" />
 
         <PreferenceScreen
             android:key="yacht_preference_screen"
-            android:summary="Insert yacht parameters"
+            android:summary="Insert your yacht parameters"
             android:title="Yacht" >
             <intent android:action="android.sailhero.YACHT" />
         </PreferenceScreen>
