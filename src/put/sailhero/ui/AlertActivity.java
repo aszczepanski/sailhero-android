@@ -1,11 +1,11 @@
 package put.sailhero.ui;
 
-import put.sailhero.account.AccountUtils;
 import put.sailhero.R;
 import put.sailhero.model.Alert;
 import put.sailhero.provider.SailHeroContract;
 import put.sailhero.sync.CreateAlertRequestHelper;
 import put.sailhero.sync.RequestHelper;
+import put.sailhero.util.AccountUtils;
 import put.sailhero.util.ThrottledContentObserver;
 import android.accounts.Account;
 import android.app.Activity;
@@ -301,7 +301,7 @@ public class AlertActivity extends BaseActivity implements GooglePlayServicesCli
 
 		@Override
 		public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-			if (getActivity() == null) {
+			if (getActivity() == null || !isAdded()) {
 				return;
 			}
 

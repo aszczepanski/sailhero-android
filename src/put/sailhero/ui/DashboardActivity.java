@@ -1,23 +1,30 @@
 package put.sailhero.ui;
 
-import put.sailhero.account.AccountUtils;
 import put.sailhero.R;
+import put.sailhero.model.Alert;
 import put.sailhero.model.Region;
 import put.sailhero.provider.SailHeroContract;
 import put.sailhero.sync.RequestHelper;
 import put.sailhero.sync.RetrieveUserRequestHelper;
+import put.sailhero.util.AccountUtils;
 import put.sailhero.util.PrefUtils;
 import android.accounts.Account;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class DashboardActivity extends BaseActivity implements SwipeRefreshLayout.OnRefreshListener {
@@ -26,12 +33,38 @@ public class DashboardActivity extends BaseActivity implements SwipeRefreshLayou
 
 	private SwipeRefreshLayout mSwipeRefreshLayout;
 
+	private SensorManager mSensorManager;
+	private float[] mGData = new float[3];
+	private float[] mMData = new float[3];
+	private float[] mR = new float[16];
+	private float[] mI = new float[16];
+	private float[] mOrientation = new float[3];
+	private int mCount;
+
+	private TextView mLocationTextView;
+	private TextView mBearingTextView;
+	private TextView mSpeedTextView;
+	private TextView mDirTextView;
+	private TextView mAlertTextView;
+	private TextView mAlertDistanceTextView;
+	private TextView mAlertBearingTextView;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_dashboard);
 
 		mContext = DashboardActivity.this;
+
+		mLocationTextView = (TextView) findViewById(R.id.location_text_view);
+		mBearingTextView = (TextView) findViewById(R.id.bearing_text_view);
+		mSpeedTextView = (TextView) findViewById(R.id.speed_text_view);
+		mDirTextView = (TextView) findViewById(R.id.dir_text_view);
+		mAlertTextView = (TextView) findViewById(R.id.alert_text_view);
+		mAlertDistanceTextView = (TextView) findViewById(R.id.alert_distance_text_view);
+		mAlertBearingTextView = (TextView) findViewById(R.id.alert_bearing_text_view);
+
+		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
 		mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
 		mSwipeRefreshLayout.setOnRefreshListener(this);
@@ -44,6 +77,63 @@ public class DashboardActivity extends BaseActivity implements SwipeRefreshLayou
 		if (account != null) {
 			Toast.makeText(getApplicationContext(), "Using: " + account.name, Toast.LENGTH_SHORT).show();
 		}
+	}
+
+	private final SensorEventListener mListener = new SensorEventListener() {
+		public void onSensorChanged(SensorEvent event) {
+			int type = event.sensor.getType();
+			if (type == Sensor.TYPE_ACCELEROMETER) {
+				mGData = event.values.clone();
+			} else if (type == Sensor.TYPE_MAGNETIC_FIELD) {
+				mMData = event.values.clone();
+			} else {
+				// we should not be here.
+				return;
+			}
+
+			SensorManager.getRotationMatrix(mR, mI, mGData, mMData);
+
+			// SensorManager.remapCoordinateSystem(mR, SensorManager.AXIS_X, SensorManager.AXIS_Z, mR);
+			SensorManager.getOrientation(mR, mOrientation);
+			float incl = SensorManager.getInclination(mI);
+
+			if (mCount++ > 50) {
+				final float rad2deg = (float) (180.0f / Math.PI);
+				mCount = 0;
+				mDirTextView.setText(("direction: " + (int) (mOrientation[0] * rad2deg)));
+				// Log.d(Config.TAG, "yaw: " + (int) (mOrientation[0] * rad2deg) + "  pitch: "
+				// + (int) (mOrientation[1] * rad2deg) + "  roll: " + (int) (mOrientation[2] * rad2deg)
+				// + "  incl: " + (int) (incl * rad2deg));
+			}
+		}
+
+		public void onAccuracyChanged(Sensor sensor, int accuracy) {
+		}
+	};
+
+	protected void onLocationUpdate(Location currentLocation, Alert alert) {
+		if (currentLocation == null || alert == null) {
+			return;
+		}
+
+		mLocationTextView.setText("location: " + currentLocation.getLatitude() + " " + currentLocation.getLongitude());
+		if (currentLocation.hasSpeed()) {
+			mSpeedTextView.setText("speed: " + currentLocation.getSpeed());
+		} else {
+			mSpeedTextView.setText("speed: " + "N/A");
+		}
+
+		if (currentLocation.hasBearing()) {
+			mBearingTextView.setText("bearing: " + currentLocation.getBearing());
+		} else {
+			mBearingTextView.setText("bearing: " + "N/A");
+		}
+
+		// TODO: alert == null
+		mAlertTextView.setText(alert.getId() + " " + alert.getAlertType());
+		mAlertDistanceTextView.setText("distance: " + currentLocation.distanceTo(alert.getLocation()));
+
+		mAlertBearingTextView.setText("bearing: " + currentLocation.bearingTo(alert.getLocation()));
 	}
 
 	@Override
@@ -77,6 +167,8 @@ public class DashboardActivity extends BaseActivity implements SwipeRefreshLayou
 	protected void onPause() {
 		Log.d(TAG, "MainActivity::onPause");
 		super.onPause();
+
+		mSensorManager.unregisterListener(mListener);
 	}
 
 	@Override
@@ -107,6 +199,7 @@ public class DashboardActivity extends BaseActivity implements SwipeRefreshLayou
 		bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 		bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
 
+		// ContentResolver.setIsSyncable(account, SailHeroContract.CONTENT_AUTHORITY, 1);
 		ContentResolver.requestSync(account, SailHeroContract.CONTENT_AUTHORITY, bundle);
 
 		RequestHelperAsyncTask getUserProfileTask = new RequestHelperAsyncTask(mContext, new RetrieveUserRequestHelper(
@@ -119,6 +212,10 @@ public class DashboardActivity extends BaseActivity implements SwipeRefreshLayou
 		});
 		getUserProfileTask.execute();
 
+		Sensor gsensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+		Sensor msensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+		mSensorManager.registerListener(mListener, gsensor, SensorManager.SENSOR_DELAY_UI);
+		mSensorManager.registerListener(mListener, msensor, SensorManager.SENSOR_DELAY_UI);
 	}
 
 	public void onUserProfileReceived() {

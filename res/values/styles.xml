@@ -42,6 +42,15 @@
         <item name="android:popupMenuStyle">@style/Widget.SailHero.PopupMenu</item>
         <item name="android:dropDownListViewStyle">@style/Widget.SailHero.ListView.DropDown</item>
         <item name="android:textAppearanceLargePopupMenu">@style/TextAppearance.LargePopupMenu</item>
+
+        <!-- search view -->
+        <item name="searchViewStyle">@style/Widget.SailHero.SearchView</item>
+    </style>
+
+    <style name="Theme.SailHero.Search" parent="AppTheme">
+        <item name="android:windowBackground">@color/gray_background</item>
+        <item name="android:autoCompleteTextViewStyle">@style/Widget.SailHero.Search.AutoCompleteTextView</item>
+        <item name="colorControlActivated">@color/theme_accent_1</item>
     </style>
 
     <style name="ActionBarThemeOverlay" parent="">
@@ -73,6 +82,10 @@
         <item name="android:background">@drawable/edit_text</item>
     </style>
 
+    <style name="Widget.SailHero.Search.AutoCompleteTextView" parent="Widget.AppCompat.Light.AutoCompleteTextView">
+        <item name="android:textColorHint">#5fff</item>
+    </style>
+
     <style name="Widget.SailHero.PopupMenu" parent="Widget.AppCompat.Light.PopupMenu">
         <item name="android:dropDownSelector">?android:selectableItemBackground</item>
     </style>
@@ -93,6 +106,8 @@
         <item name="android:divider">@null</item>
         <item name="android:dividerHeight">0dp</item>
     </style>
+
+    <style name="Widget.SailHero.SearchView" parent="Widget.AppCompat.SearchView" />
 
     <style name="TabIndicator" />
 

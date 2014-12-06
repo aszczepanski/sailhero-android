@@ -28,6 +28,9 @@
     </permission>
 
     <uses-feature
+        android:name="android.hardware.sensor.compass"
+        android:required="true" />
+    <uses-feature
         android:glEsVersion="0x00020000"
         android:required="true" />
 
@@ -44,15 +47,15 @@
             android:value="AIzaSyC5bxeX8oAkoKdjBKyFXB_1nfptL6SKQfY" />
 
         <activity
-            android:name="put.sailhero.ui.LoginActivity"
+            android:name=".ui.LoginActivity"
             android:label="@string/title_activity_login" >
         </activity>
         <activity
-            android:name="put.sailhero.ui.RegisterUserActivity"
+            android:name=".ui.RegisterUserActivity"
             android:label="@string/title_activity_register_user" >
         </activity>
         <activity
-            android:name="put.sailhero.ui.DashboardActivity"
+            android:name=".ui.DashboardActivity"
             android:label="@string/title_activity_dashboard" >
             <intent-filter android:label="@string/app_name" >
                 <action android:name="android.intent.action.MAIN" />
@@ -61,13 +64,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="put.sailhero.ui.PreferenceActivity"
+            android:name=".ui.PreferenceActivity"
             android:label="@string/title_activity_preference" >
         </activity>
         <activity
-            android:name="put.sailhero.ui.YachtActivity"
+            android:name=".ui.YachtActivity"
             android:label="@string/title_activity_yacht"
-            android:parentActivityName="put.sailhero.ui.MapActivity" >
+            android:parentActivityName=".ui.MapActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="put.sailhero.android.app.TestMapActivity" />
@@ -79,24 +82,24 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="put.sailhero.ui.AlertActivity"
+            android:name=".ui.AlertActivity"
             android:label="@string/title_activity_alert" >
         </activity>
         <activity
-            android:name="put.sailhero.ui.MapActivity"
+            android:name=".ui.MapActivity"
             android:label="@string/title_activity_map" >
         </activity>
         <activity
-            android:name="put.sailhero.ui.PortActivity"
+            android:name=".ui.PortActivity"
             android:label="@string/title_activity_port"
-            android:parentActivityName="put.sailhero.ui.MapActivity" >
+            android:parentActivityName=".ui.MapActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="put.sailhero.android.app.TestMapActivity" />
         </activity>
 
         <receiver
-            android:name="put.sailhero.gcm.GcmBroadcastReceiver"
+            android:name=".gcm.GcmBroadcastReceiver"
             android:enabled="true"
             android:exported="true"
             android:permission="com.google.android.c2dm.permission.SEND" >
@@ -108,11 +111,11 @@
         </receiver>
 
         <service
-            android:name="put.sailhero.gcm.GcmIntentService"
+            android:name=".gcm.GcmIntentService"
             android:exported="false" >
         </service>
         <service
-            android:name="put.sailhero.account.AuthenticatorService"
+            android:name=".account.AuthenticatorService"
             android:exported="false" >
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
@@ -123,7 +126,7 @@
                 android:resource="@xml/authenticator" />
         </service>
         <service
-            android:name="put.sailhero.sync.SyncService"
+            android:name=".sync.SyncService"
             android:enabled="true"
             android:exported="true" >
             <intent-filter>
@@ -136,15 +139,38 @@
         </service>
 
         <provider
-            android:name="put.sailhero.provider.SailHeroContentProvider"
+            android:name=".provider.SailHeroContentProvider"
             android:authorities="put.sailhero"
             android:enabled="true"
             android:exported="false" >
         </provider>
 
         <activity
-            android:name="put.sailhero.ui.PeopleActivity"
+            android:name=".ui.PeopleActivity"
             android:label="@string/title_activity_people" >
+        </activity>
+
+        <service
+            android:name=".service.AlertService"
+            android:enabled="true"
+            android:exported="false" >
+        </service>
+
+        <activity
+            android:name=".SearchUserActivity"
+            android:label="@string/title_activity_search_user"
+            android:parentActivityName=".ui.PeopleActivity"
+            android:theme="@style/Theme.SailHero.Search" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="put.sailhero.ui.PeopleActivity" />
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable_user" />
         </activity>
     </application>
 

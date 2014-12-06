@@ -1,10 +1,10 @@
 package put.sailhero.ui;
 
-import put.sailhero.account.AccountUtils;
 import put.sailhero.R;
 import put.sailhero.sync.CreateUserRequestHelper;
 import put.sailhero.sync.LogInRequestHelper;
 import put.sailhero.sync.RequestHelper;
+import put.sailhero.util.AccountUtils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;

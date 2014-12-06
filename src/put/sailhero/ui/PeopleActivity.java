@@ -2,13 +2,17 @@ package put.sailhero.ui;
 
 import put.sailhero.Config;
 import put.sailhero.R;
+import put.sailhero.SearchUserActivity;
 import put.sailhero.ui.widget.SlidingTabLayout;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
 public class PeopleActivity extends BaseActivity {
 
@@ -30,8 +34,6 @@ public class PeopleActivity extends BaseActivity {
 		mSlidingTabLayout.setDistributeEvenly(true);
 		mSlidingTabLayout.setSelectedIndicatorColors(getResources().getColor(R.color.tab_selected_strip));
 
-		mSlidingTabLayout.setContentDescription(0, "friends list");
-		
 		mSlidingTabLayout.setViewPager(mViewPager);
 
 	}
@@ -39,6 +41,24 @@ public class PeopleActivity extends BaseActivity {
 	@Override
 	protected int getSelfNavDrawerItem() {
 		return NAVDRAWER_ITEM_PEOPLE;
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+
+		getMenuInflater().inflate(R.menu.people, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.action_search_user:
+			startActivity(new Intent(this, SearchUserActivity.class));
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 
 	class PeoplePagerAdapter extends FragmentPagerAdapter {

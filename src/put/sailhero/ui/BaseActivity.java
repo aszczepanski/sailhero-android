@@ -2,22 +2,37 @@ package put.sailhero.ui;
 
 import java.util.ArrayList;
 
-import put.sailhero.account.AccountUtils;
 import put.sailhero.R;
+import put.sailhero.model.Alert;
 import put.sailhero.model.User;
+import put.sailhero.service.AlertService;
+import put.sailhero.service.AlertService.LocalBinder;
+import put.sailhero.sync.CancelAlertRequestHelper;
+import put.sailhero.sync.ConfirmAlertRequestHelper;
+import put.sailhero.sync.RequestHelper;
+import put.sailhero.util.AccountUtils;
 import put.sailhero.util.PrefUtils;
 import android.accounts.Account;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -74,15 +89,132 @@ public class BaseActivity extends ActionBarActivity {
 	private Toolbar mActionBarToolbar;
 	private DrawerLayout mDrawerLayout;
 
+	private AlertService mAlertService;
+	private boolean mBound = false;
+
+	private View mAlertBarToolbar;
+	private Button mConfirmAlertButton;
+	private Button mCancelAlertButton;
+	private TextView mAlertBarTypeTextView;
+	private TextView mAlertBarDistanceTextView;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		mHandler = new Handler();
 
-		if (savedInstanceState != null) {
-			// TODO
+		Intent alertServiceIntent = new Intent(this, AlertService.class);
+		bindService(alertServiceIntent, mConnection, Context.BIND_AUTO_CREATE);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+
+		unbindService(mConnection);
+	}
+
+	private void setupAlertBar() {
+		mAlertBarToolbar = findViewById(R.id.toolbar_alertbar);
+
+		if (mAlertBarToolbar == null) {
+			Log.w(TAG, "alert bar not found");
+			return;
 		}
+		mConfirmAlertButton = (Button) findViewById(R.id.button_accept);
+		mConfirmAlertButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Alert alertToRespond = PrefUtils.getAlertToRespond(BaseActivity.this);
+
+				if (alertToRespond == null) {
+					return;
+				}
+
+				RequestHelperAsyncTask confirmAlertTask = new RequestHelperAsyncTask(BaseActivity.this,
+						new ConfirmAlertRequestHelper(BaseActivity.this, alertToRespond.getId()),
+						new RequestHelperAsyncTask.AsyncRequestListener() {
+							@Override
+							public void onSuccess(RequestHelper requestHelper) {
+								// TODO
+							}
+						});
+				confirmAlertTask.execute();
+			}
+		});
+
+		mCancelAlertButton = (Button) findViewById(R.id.button_decline);
+		mCancelAlertButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Alert alertToRespond = PrefUtils.getAlertToRespond(BaseActivity.this);
+
+				if (alertToRespond == null) {
+					return;
+				}
+
+				RequestHelperAsyncTask cancelAlertTask = new RequestHelperAsyncTask(BaseActivity.this,
+						new CancelAlertRequestHelper(BaseActivity.this, alertToRespond.getId()),
+						new RequestHelperAsyncTask.AsyncRequestListener() {
+							@Override
+							public void onSuccess(RequestHelper requestHelper) {
+								// TODO
+							}
+						});
+				cancelAlertTask.execute();
+			}
+		});
+
+		mAlertBarTypeTextView = (TextView) findViewById(R.id.alert_bar_type_text_view);
+		mAlertBarDistanceTextView = (TextView) findViewById(R.id.alert_bar_distance_text_view);
+	}
+
+	private ServiceConnection mConnection = new ServiceConnection() {
+
+		@Override
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			// We've bound to AlertService, cast the IBinder and get LocalService instance
+			LocalBinder binder = (LocalBinder) service;
+			mAlertService = binder.getService();
+			mBound = true;
+
+			mAlertService.registerListener(mAlertServiceListener);
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName arg0) {
+			mBound = false;
+		}
+	};
+
+	private AlertService.AlertServiceListener mAlertServiceListener = new AlertService.AlertServiceListener() {
+
+		@Override
+		public void onLocationUpdate(Location lastKnownLocation, Alert alertToRespond) {
+			// TODO: alert == null
+			if (mAlertBarToolbar != null) {
+				if (lastKnownLocation.distanceTo(alertToRespond.getLocation()) < PrefUtils.getAlertRadius(BaseActivity.this)) {
+					mAlertBarTypeTextView.setText(alertToRespond.getAlertType());
+					mAlertBarDistanceTextView.setText(Math.round(lastKnownLocation.distanceTo(alertToRespond.getLocation()))
+							+ " metres");
+					mAlertBarToolbar.setVisibility(View.VISIBLE);
+
+					PrefUtils.setAlertToRespond(BaseActivity.this, alertToRespond);
+				} else {
+					mAlertBarToolbar.setVisibility(View.GONE);
+
+					PrefUtils.setAlertToRespond(BaseActivity.this, null);
+				}
+			}
+
+			PrefUtils.setLastKnownLocation(BaseActivity.this, lastKnownLocation);
+
+			BaseActivity.this.onLocationUpdate(lastKnownLocation, alertToRespond);
+		}
+	};
+
+	protected void onLocationUpdate(Location currentLocation, Alert alert) {
 	}
 
 	@Override
@@ -95,6 +227,38 @@ public class BaseActivity extends ActionBarActivity {
 			loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 			startActivity(loginIntent);
 			finish();
+			return;
+		}
+
+		if (mBound) {
+			mAlertService.registerListener(mAlertServiceListener);
+		}
+
+		if (mAlertBarToolbar != null) {
+			Location lastKnownLocation = PrefUtils.getLastKnownLocation(BaseActivity.this);
+			Alert alertToRespond = PrefUtils.getAlertToRespond(BaseActivity.this);
+
+			if (lastKnownLocation != null && alertToRespond != null) {
+				if (lastKnownLocation.distanceTo(alertToRespond.getLocation()) < PrefUtils.getAlertRadius(BaseActivity.this)) {
+					mAlertBarTypeTextView.setText(alertToRespond.getAlertType());
+					mAlertBarDistanceTextView.setText(Math.round(lastKnownLocation.distanceTo(alertToRespond.getLocation()))
+							+ " metres");
+					mAlertBarToolbar.setVisibility(View.VISIBLE);
+				} else {
+					mAlertBarToolbar.setVisibility(View.GONE);
+				}
+			}
+
+			onLocationUpdate(lastKnownLocation, alertToRespond);
+		}
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		if (mBound) {
+			mAlertService.unregisterListener(mAlertServiceListener);
 		}
 	}
 
@@ -290,6 +454,7 @@ public class BaseActivity extends ActionBarActivity {
 		super.onPostCreate(savedInstanceState);
 		setupNavDrawer();
 		setupAccountBox();
+		setupAlertBar();
 
 		// TODO: setup other things
 	}

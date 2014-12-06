@@ -29,5 +29,12 @@
     <!-- cardview -->
     <dimen name="card_elevation">2dp</dimen>
     <dimen name="card_corner_radius">2dp</dimen>
+    
+    <!-- list view -->
+    <dimen name="user_item_height">136dp</dimen>
+    <dimen name="user_item_height_break">80dp</dimen>
+    <dimen name="user_item_height_past">60dp</dimen>
+    <dimen name="user_info_column_width">100dp</dimen>
+    <dimen name="user_title_strip_padding">8dp</dimen>
 
 </resources>

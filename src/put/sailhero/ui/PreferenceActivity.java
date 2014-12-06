@@ -1,11 +1,11 @@
 package put.sailhero.ui;
 
 import put.sailhero.R;
-import put.sailhero.account.AccountUtils;
 import put.sailhero.model.Region;
 import put.sailhero.provider.SailHeroContract;
 import put.sailhero.sync.RequestHelper;
 import put.sailhero.sync.SelectRegionRequestHelper;
+import put.sailhero.util.AccountUtils;
 import put.sailhero.util.PrefUtils;
 import put.sailhero.util.ThrottledContentObserver;
 import android.accounts.Account;
