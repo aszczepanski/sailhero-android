@@ -157,7 +157,7 @@
         </service>
 
         <activity
-            android:name=".SearchUserActivity"
+            android:name="put.sailhero.ui.SearchUserActivity"
             android:label="@string/title_activity_search_user"
             android:parentActivityName=".ui.PeopleActivity"
             android:theme="@style/Theme.SailHero.Search" >
