@@ -1,4 +1,4 @@
-package put.sailhero.account;
+package put.sailhero.util;
 
 import put.sailhero.provider.SailHeroContract;
 import android.accounts.Account;
