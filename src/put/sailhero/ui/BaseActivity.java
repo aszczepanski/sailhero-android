@@ -3,7 +3,9 @@ package put.sailhero.ui;
 import java.util.ArrayList;
 
 import put.sailhero.R;
+import put.sailhero.gcm.GcmRegistrationAsyncTask;
 import put.sailhero.model.Alert;
+import put.sailhero.model.Region;
 import put.sailhero.model.User;
 import put.sailhero.service.AlertService;
 import put.sailhero.service.AlertService.LocalBinder;
@@ -11,6 +13,7 @@ import put.sailhero.sync.CancelAlertRequestHelper;
 import put.sailhero.sync.ConfirmAlertRequestHelper;
 import put.sailhero.sync.RequestHelper;
 import put.sailhero.sync.RequestHelperAsyncTask;
+import put.sailhero.sync.RetrieveUserRequestHelper;
 import put.sailhero.util.AccountUtils;
 import put.sailhero.util.PrefUtils;
 import android.accounts.Account;
@@ -18,13 +21,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
@@ -37,6 +38,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class BaseActivity extends ActionBarActivity {
 
@@ -192,10 +194,11 @@ public class BaseActivity extends ActionBarActivity {
 	private AlertService.AlertServiceListener mAlertServiceListener = new AlertService.AlertServiceListener() {
 
 		@Override
-		public void onLocationUpdate(Location lastKnownLocation, Alert alertToRespond) {
+		public void onClosestAlertToRespondUpdate(Location lastKnownLocation, Alert alertToRespond) {
 			// TODO: alert == null
 			if (mAlertBarToolbar != null) {
-				if (lastKnownLocation.distanceTo(alertToRespond.getLocation()) < PrefUtils.getAlertRadius(BaseActivity.this)) {
+				if (alertToRespond != null
+						&& lastKnownLocation.distanceTo(alertToRespond.getLocation()) < PrefUtils.getAlertRadius(BaseActivity.this)) {
 					mAlertBarTypeTextView.setText(alertToRespond.getAlertType());
 					mAlertBarDistanceTextView.setText(Math.round(lastKnownLocation.distanceTo(alertToRespond.getLocation()))
 							+ " metres");
@@ -210,25 +213,62 @@ public class BaseActivity extends ActionBarActivity {
 			}
 
 			PrefUtils.setLastKnownLocation(BaseActivity.this, lastKnownLocation);
+		}
 
-			BaseActivity.this.onLocationUpdate(lastKnownLocation, alertToRespond);
+		@Override
+		public void onClosestAlertUpdate(Location currentLocation, Alert alert) {
+			BaseActivity.this.onAlertToRespondUpdate(currentLocation, alert);
 		}
 	};
 
-	protected void onLocationUpdate(Location currentLocation, Alert alert) {
+	protected void onAlertToRespondUpdate(Location currentLocation, Alert alert) {
+	}
+
+	protected void onUserProfileReceived() {
+		Region selectedRegion = PrefUtils.getRegion(BaseActivity.this);
+		if (selectedRegion == null) {
+			// TODO: ask user to select a region
+		} else {
+			setupAccountBox();
+			Toast.makeText(BaseActivity.this, "Using region: " + selectedRegion.getFullName(), Toast.LENGTH_SHORT)
+					.show();
+		}
+
+		GcmRegistrationAsyncTask gcmRegistrationTask = new GcmRegistrationAsyncTask(BaseActivity.this);
+		gcmRegistrationTask.execute();
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 
-		Account account = AccountUtils.getActiveAccount(getApplicationContext());
+		Account account = AccountUtils.getActiveAccount(BaseActivity.this);
 		if (account == null) {
-			Intent loginIntent = new Intent(getApplicationContext(), LoginActivity.class);
+			Intent loginIntent = new Intent(BaseActivity.this, LoginActivity.class);
 			loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 			startActivity(loginIntent);
 			finish();
 			return;
+		}
+
+		User user = PrefUtils.getUser(BaseActivity.this);
+		if (user == null) {
+			Toast.makeText(BaseActivity.this, "user is null", Toast.LENGTH_SHORT).show();
+			RequestHelperAsyncTask getUserProfileTask = new RequestHelperAsyncTask(BaseActivity.this,
+					new RetrieveUserRequestHelper(BaseActivity.this),
+					new RequestHelperAsyncTask.AsyncRequestListener() {
+						@Override
+						public void onSuccess(RequestHelper requestHelper) {
+							onUserProfileReceived();
+						}
+					});
+			getUserProfileTask.execute();
+		}
+
+		String gcmRegistrationId = PrefUtils.getGcmRegistrationId(BaseActivity.this);
+		if (gcmRegistrationId == null) {
+			GcmRegistrationAsyncTask gcmRegistrationTask = new GcmRegistrationAsyncTask(BaseActivity.this);
+			gcmRegistrationTask.execute();
 		}
 
 		if (mBound) {
@@ -250,7 +290,7 @@ public class BaseActivity extends ActionBarActivity {
 				}
 			}
 
-			onLocationUpdate(lastKnownLocation, alertToRespond);
+			onAlertToRespondUpdate(lastKnownLocation, alertToRespond);
 		}
 	}
 
@@ -363,7 +403,7 @@ public class BaseActivity extends ActionBarActivity {
 		TextView nameTextView = (TextView) findViewById(R.id.profile_name_text);
 		TextView emailTextView = (TextView) findViewById(R.id.profile_email_text);
 
-		User currentUser = PrefUtils.getUser(getApplicationContext());
+		User currentUser = PrefUtils.getUser(BaseActivity.this);
 		if (currentUser == null) {
 			nameTextView.setVisibility(View.GONE);
 			emailTextView.setVisibility(View.GONE);

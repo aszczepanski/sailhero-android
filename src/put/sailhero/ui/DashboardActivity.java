@@ -1,6 +1,7 @@
 package put.sailhero.ui;
 
 import put.sailhero.R;
+import put.sailhero.gcm.GcmRegistrationAsyncTask;
 import put.sailhero.model.Alert;
 import put.sailhero.model.Region;
 import put.sailhero.provider.SailHeroContract;
@@ -112,7 +113,8 @@ public class DashboardActivity extends BaseActivity implements SwipeRefreshLayou
 		}
 	};
 
-	protected void onLocationUpdate(Location currentLocation, Alert alert) {
+	@Override
+	protected void onAlertToRespondUpdate(Location currentLocation, Alert alert) {
 		if (currentLocation == null || alert == null) {
 			return;
 		}
@@ -200,33 +202,12 @@ public class DashboardActivity extends BaseActivity implements SwipeRefreshLayou
 		bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 		bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
 
-		// ContentResolver.setIsSyncable(account, SailHeroContract.CONTENT_AUTHORITY, 1);
 		ContentResolver.requestSync(account, SailHeroContract.CONTENT_AUTHORITY, bundle);
-
-		RequestHelperAsyncTask getUserProfileTask = new RequestHelperAsyncTask(mContext, new RetrieveUserRequestHelper(
-				mContext), new RequestHelperAsyncTask.AsyncRequestListener() {
-
-			@Override
-			public void onSuccess(RequestHelper requestHelper) {
-				onUserProfileReceived();
-			}
-		});
-		getUserProfileTask.execute();
 
 		Sensor gsensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 		Sensor msensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 		mSensorManager.registerListener(mListener, gsensor, SensorManager.SENSOR_DELAY_UI);
 		mSensorManager.registerListener(mListener, msensor, SensorManager.SENSOR_DELAY_UI);
-	}
-
-	public void onUserProfileReceived() {
-		Region selectedRegion = PrefUtils.getRegion(mContext);
-		if (selectedRegion == null) {
-
-		} else {
-			Toast.makeText(DashboardActivity.this, "Using region: " + selectedRegion.getFullName(), Toast.LENGTH_SHORT)
-					.show();
-		}
 	}
 
 	@Override

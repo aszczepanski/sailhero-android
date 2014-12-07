@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/toolbar_alertbar"
+    android:layout_width="match_parent"
+    android:layout_height="84dp"
+    android:background="@color/theme_primary"
+    android:orientation="vertical"
+    android:visibility="gone" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/alert_bar_type_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif"
+            android:gravity="center"
+            android:text="alert_type"
+            android:textAllCaps="true"
+            android:textColor="#fff"
+            android:textSize="@dimen/text_size_medium"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/alert_bar_distance_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif"
+            android:gravity="center"
+            android:text="alert_distance"
+            android:textAllCaps="true"
+            android:textColor="#fff"
+            android:textSize="@dimen/text_size_medium"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/button_decline"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?android:selectableItemBackground"
+            android:fontFamily="sans-serif"
+            android:text="@string/decline"
+            android:textAllCaps="true"
+            android:textColor="#8fff"
+            android:textSize="@dimen/text_size_medium"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/button_accept"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?android:selectableItemBackground"
+            android:fontFamily="sans-serif"
+            android:text="@string/accept"
+            android:textAllCaps="true"
+            android:textColor="#fff"
+            android:textSize="@dimen/text_size_medium"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</LinearLayout>

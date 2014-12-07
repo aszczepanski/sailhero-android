@@ -15,6 +15,8 @@ import put.sailhero.exception.NotFoundException;
 import put.sailhero.exception.SystemException;
 import put.sailhero.exception.UnauthorizedException;
 import put.sailhero.model.Alert;
+import put.sailhero.provider.SailHeroContract;
+import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 
@@ -105,6 +107,15 @@ public class CancelAlertRequestHelper extends RequestHelper {
 
 	@Override
 	public void storeData() {
-		// TODO: save using content resolver
+		if (mRetrievedAlert == null) {
+			return;
+		}
+
+		ContentValues values = new ContentValues();
+		values.put(SailHeroContract.Alert.COLUMN_NAME_RESPONSE_STATUS, SailHeroContract.Alert.RESPONSE_STATUS_DECLINED);
+
+		mContext.getContentResolver().update(
+				SailHeroContract.Alert.CONTENT_URI.buildUpon().appendPath(mRetrievedAlert.getId().toString()).build(),
+				values, null, null);
 	}
 }

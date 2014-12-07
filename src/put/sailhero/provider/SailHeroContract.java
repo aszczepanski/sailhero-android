@@ -31,6 +31,11 @@ final public class SailHeroContract {
 		public static final String COLUMN_NAME_LONGITUDE = "longitude";
 		public static final String COLUMN_NAME_USER_ID = "user_id";
 		public static final String COLUMN_NAME_ADDITIONAL_INFO = "additional_info";
+		public static final String COLUMN_NAME_RESPONSE_STATUS = "response_status";
+		
+		public static final int RESPONSE_STATUS_NOT_RESPONDED = 0;
+		public static final int RESPONSE_STATUS_CONFIRMED = 1;
+		public static final int RESPONSE_STATUS_DECLINED = 2;
 	}
 
 	public static class Region {
