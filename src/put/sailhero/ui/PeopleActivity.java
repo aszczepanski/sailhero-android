@@ -9,23 +9,19 @@ import put.sailhero.R;
 import put.sailhero.model.User;
 import put.sailhero.provider.SailHeroContract;
 import put.sailhero.ui.widget.SlidingTabLayout;
-import put.sailhero.util.AccountUtils;
-import android.accounts.Account;
+import put.sailhero.util.ThrottledContentObserver;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ListFragment;
 import android.app.LoaderManager;
-import android.content.ContentResolver;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
-import android.content.SyncStatusObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -68,16 +64,26 @@ public class PeopleActivity extends BaseActivity implements LoaderManager.Loader
 
 		getLoaderManager().restartLoader(FriendshipQuery._TOKEN, null, PeopleActivity.this);
 	}
-	
 
 	@Override
 	protected int getSelfNavDrawerItem() {
 		return NAVDRAWER_ITEM_PEOPLE;
 	}
 
+	private ThrottledContentObserver mFriendshipsObserver = new ThrottledContentObserver(
+			new ThrottledContentObserver.Callbacks() {
+				@Override
+				public void onThrottledContentObserverFired() {
+					getLoaderManager().restartLoader(FriendshipQuery._TOKEN, null, PeopleActivity.this);
+				}
+			});
+
 	@Override
 	protected void onResume() {
 		super.onResume();
+
+		getContentResolver().registerContentObserver(SailHeroContract.Friendship.CONTENT_URI, true,
+				mFriendshipsObserver);
 
 		//		Account account = AccountUtils.getActiveAccount(getApplicationContext());
 		//		ContentResolver.setIsSyncable(account, SailHeroContract.CONTENT_AUTHORITY, 1);
@@ -93,6 +99,8 @@ public class PeopleActivity extends BaseActivity implements LoaderManager.Loader
 	@Override
 	protected void onPause() {
 		super.onPause();
+
+		getContentResolver().unregisterContentObserver(mFriendshipsObserver);
 	}
 
 	@Override
