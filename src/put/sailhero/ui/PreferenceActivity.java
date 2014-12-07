@@ -3,6 +3,7 @@ package put.sailhero.ui;
 import put.sailhero.R;
 import put.sailhero.model.Region;
 import put.sailhero.provider.SailHeroContract;
+import put.sailhero.sync.LogOutRequestHelper;
 import put.sailhero.sync.RequestHelper;
 import put.sailhero.sync.RequestHelperAsyncTask;
 import put.sailhero.sync.SelectRegionRequestHelper;
@@ -20,6 +21,7 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -63,6 +65,8 @@ public class PreferenceActivity extends BaseActivity {
 
 		private Preference mAlertRadiusPreference;
 		private ListPreference mRegionListPreference;
+
+		private Preference mLogoutPreference;
 
 		public PrefFragment() {
 		}
@@ -108,6 +112,32 @@ public class PreferenceActivity extends BaseActivity {
 					selectRegionTask.execute();
 
 					return false;
+				}
+			});
+
+			mLogoutPreference = (Preference) findPreference("logout_preference");
+			mLogoutPreference.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+				@Override
+				public boolean onPreferenceClick(Preference preference) {
+					RequestHelperAsyncTask logoutTask = new RequestHelperAsyncTask(mContext, new LogOutRequestHelper(
+							mContext), new RequestHelperAsyncTask.AsyncRequestListener() {
+						@Override
+						public void onSuccess(RequestHelper requestHelper) {
+							// TODO: perform clear in background
+
+							PrefUtils.clear(getActivity());
+
+							AccountUtils.removeActiveAccount(getActivity());
+
+							getActivity().getContentResolver().delete(SailHeroContract.Friendship.CONTENT_URI, null,
+									null);
+							getActivity().getContentResolver().delete(SailHeroContract.Alert.CONTENT_URI, null, null);
+
+							getActivity().finish();
+						}
+					});
+					logoutTask.execute();
+					return true;
 				}
 			});
 		}

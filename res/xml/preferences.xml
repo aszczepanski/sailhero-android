@@ -35,6 +35,9 @@
         android:key="account_settings_preference_category"
         android:title="Account settings" >
         <Preference
+            android:key="logout_preference"
+            android:title="Log out" />
+        <Preference
             android:key="deactivate_account_preference"
             android:title="Deactivate account" />
     </PreferenceCategory>
