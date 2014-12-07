@@ -9,8 +9,8 @@ import org.apache.http.entity.StringEntity;
 import org.json.simple.JSONObject;
 
 import put.sailhero.Config;
-import put.sailhero.account.AccountUtils;
 import put.sailhero.exception.SystemException;
+import put.sailhero.util.AccountUtils;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AuthenticatorException;

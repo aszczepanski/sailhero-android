@@ -7,12 +7,18 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import put.sailhero.account.AccountUtils;
+import put.sailhero.exception.ForbiddenException;
+import put.sailhero.exception.InvalidRegionException;
 import put.sailhero.exception.InvalidResourceOwnerException;
+import put.sailhero.exception.NotFoundException;
+import put.sailhero.exception.NullUserException;
+import put.sailhero.exception.SameUserException;
 import put.sailhero.exception.SystemException;
 import put.sailhero.exception.TransportException;
 import put.sailhero.exception.UnauthorizedException;
 import put.sailhero.exception.UnprocessableEntityException;
+import put.sailhero.exception.YachtAlreadyCreatedException;
+import put.sailhero.util.AccountUtils;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AuthenticatorException;
@@ -65,7 +71,8 @@ public abstract class RequestHelper {
 	}
 
 	public void doRequest() throws TransportException, UnauthorizedException, SystemException,
-			UnprocessableEntityException, InvalidResourceOwnerException {
+			UnprocessableEntityException, InvalidResourceOwnerException, ForbiddenException, NotFoundException,
+			InvalidRegionException, SameUserException, NullUserException, YachtAlreadyCreatedException {
 		prepareHttpUriRequest();
 
 		try {
@@ -77,7 +84,8 @@ public abstract class RequestHelper {
 	}
 
 	protected abstract void parseResponse() throws UnauthorizedException, SystemException,
-			UnprocessableEntityException, InvalidResourceOwnerException;
+			UnprocessableEntityException, InvalidResourceOwnerException, ForbiddenException, NotFoundException,
+			InvalidRegionException, SameUserException, NullUserException, YachtAlreadyCreatedException;
 
 	public void storeData() throws SystemException {
 	}

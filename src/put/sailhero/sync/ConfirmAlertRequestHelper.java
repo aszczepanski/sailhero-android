@@ -9,28 +9,37 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import put.sailhero.Config;
+import put.sailhero.exception.ForbiddenException;
+import put.sailhero.exception.InvalidRegionException;
 import put.sailhero.exception.NotFoundException;
 import put.sailhero.exception.SystemException;
 import put.sailhero.exception.UnauthorizedException;
-import put.sailhero.model.Region;
-import put.sailhero.util.PrefUtils;
+import put.sailhero.model.Alert;
 import android.content.Context;
 import android.net.Uri;
 
-public class SelectRegionRequestHelper extends RequestHelper {
+public class ConfirmAlertRequestHelper extends RequestHelper {
 
 	public final static String TAG = "sailhero";
 
-	private final static String REGIONS_PATH = "regions";
-	private final static String SELECT_PATH = "select";
+	private final static String ALERTS_REQUEST_PATH = "alerts";
+	private final static String CONFIRMATIONS_REQUEST_PATH = "confirmations";
 
-	private Integer mRegionId;
+	private Integer mSentId;
+	private Alert mRetrievedAlert;
 
-	private Region mRetrievedRegion;
-
-	public SelectRegionRequestHelper(Context context, Integer regionId) {
+	public ConfirmAlertRequestHelper(Context context, Integer alertId) {
 		super(context);
-		mRegionId = regionId;
+
+		mSentId = alertId;
+	}
+
+	public Integer getSentId() {
+		return mSentId;
+	}
+
+	public Alert getRetrievedAlert() {
+		return mRetrievedAlert;
 	}
 
 	@Override
@@ -45,9 +54,9 @@ public class SelectRegionRequestHelper extends RequestHelper {
 				.appendPath(apiPath)
 				.appendPath(version)
 				.appendPath(i18n)
-				.appendEncodedPath(REGIONS_PATH)
-				.appendEncodedPath(mRegionId.toString())
-				.appendEncodedPath(SELECT_PATH)
+				.appendEncodedPath(ALERTS_REQUEST_PATH)
+				.appendPath(mSentId.toString())
+				.appendPath(CONFIRMATIONS_REQUEST_PATH)
 				.build();
 
 		mHttpUriRequest = new HttpPost(uri.toString());
@@ -59,38 +68,43 @@ public class SelectRegionRequestHelper extends RequestHelper {
 	}
 
 	@Override
-	protected void parseResponse() throws SystemException, UnauthorizedException, NotFoundException {
+	protected void parseResponse() throws SystemException, UnauthorizedException, ForbiddenException,
+			NotFoundException, InvalidRegionException {
 		int statusCode = mHttpResponse.getStatusLine().getStatusCode();
+		String responseBody = "";
+		try {
+			responseBody = EntityUtils.toString(mHttpResponse.getEntity());
+		} catch (ParseException | IOException e) {
+			e.printStackTrace();
+		}
 
 		if (statusCode == 200) {
 			try {
 				JSONParser parser = new JSONParser();
-				JSONObject obj;
-				obj = (JSONObject) parser.parse(EntityUtils.toString(mHttpResponse.getEntity()));
+				JSONObject obj = (JSONObject) parser.parse(responseBody);
 
-				JSONObject regionObject = (JSONObject) obj.get("region");
-				mRetrievedRegion = new Region(regionObject);
+				JSONObject alertObject = (JSONObject) obj.get("alert");
+				mRetrievedAlert = new Alert(alertObject);
 
 			} catch (ParseException | org.json.simple.parser.ParseException | NullPointerException
-					| NumberFormatException | IOException e) {
+					| NumberFormatException e) {
 				throw new SystemException(e.getMessage());
 			}
 		} else if (statusCode == 401) {
 			throw new UnauthorizedException();
+		} else if (statusCode == 403) {
+			throw new ForbiddenException();
 		} else if (statusCode == 404) {
 			throw new NotFoundException();
+		} else if (statusCode == 460) {
+			throw new InvalidRegionException();
 		} else {
-			throw new SystemException("Invalid status code");
+			throw new SystemException("Invalid status code(" + statusCode + ")");
 		}
 	}
 
 	@Override
 	public void storeData() {
-		Region oldRegion = PrefUtils.getRegion(mContext);
-		if (oldRegion == null || oldRegion.getId() != mRetrievedRegion.getId()
-				|| oldRegion.getCodeName() != mRetrievedRegion.getCodeName()
-				|| oldRegion.getFullName() != mRetrievedRegion.getFullName()) {
-			PrefUtils.setRegion(mContext, mRetrievedRegion);
-		}
+		// TODO: save using content resolver
 	}
 }

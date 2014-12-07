@@ -1,47 +1,41 @@
 package put.sailhero.sync;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.ParseException;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import put.sailhero.Config;
+import put.sailhero.exception.ForbiddenException;
 import put.sailhero.exception.InvalidRegionException;
+import put.sailhero.exception.NotFoundException;
 import put.sailhero.exception.SystemException;
 import put.sailhero.exception.UnauthorizedException;
 import put.sailhero.model.Alert;
 import android.content.Context;
-import android.location.Location;
 import android.net.Uri;
 
-public class CreateAlertRequestHelper extends RequestHelper {
+public class CancelAlertRequestHelper extends RequestHelper {
 
 	public final static String TAG = "sailhero";
 
-	private final static String CREATE_ALERT_REQUEST_PATH = "alerts";
+	private final static String ALERTS_REQUEST_PATH = "alerts";
+	private final static String CONFIRMATIONS_REQUEST_PATH = "confirmations";
 
-	private Alert mSentAlert;
+	private Integer mSentId;
 	private Alert mRetrievedAlert;
 
-	public CreateAlertRequestHelper(Context context, String alertType, Location location, String additionalInfo) {
+	public CancelAlertRequestHelper(Context context, Integer alertId) {
 		super(context);
 
-		mContext = context;
-
-		mSentAlert = new Alert();
-		mSentAlert.setAlertType(alertType);
-		mSentAlert.setLocation(location);
-		mSentAlert.setAdditionalInfo(additionalInfo);
+		mSentId = alertId;
 	}
 
-	public Alert getSentAlert() {
-		return mSentAlert;
+	public Integer getSentId() {
+		return mSentId;
 	}
 
 	public Alert getRetrievedAlert() {
@@ -60,37 +54,22 @@ public class CreateAlertRequestHelper extends RequestHelper {
 				.appendPath(apiPath)
 				.appendPath(version)
 				.appendPath(i18n)
-				.appendEncodedPath(CREATE_ALERT_REQUEST_PATH)
+				.appendEncodedPath(ALERTS_REQUEST_PATH)
+				.appendPath(mSentId.toString())
+				.appendPath(CONFIRMATIONS_REQUEST_PATH)
 				.build();
 
-		mHttpUriRequest = new HttpPost(uri.toString());
+		mHttpUriRequest = new HttpDelete(uri.toString());
 	}
 
 	@Override
 	protected void setHeaders() {
 		addHeaderAuthorization();
-		addHeaderContentJson();
 	}
 
 	@Override
-	protected void setEntity() {
-		JSONObject obj = new JSONObject();
-
-		JSONObject alertObject = mSentAlert.toJSONObject();
-		obj.put("alert", alertObject);
-
-		HttpEntity entity = null;
-		try {
-			entity = new StringEntity(obj.toString());
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		((HttpPost) mHttpUriRequest).setEntity(entity);
-	}
-
-	@Override
-	protected void parseResponse() throws SystemException, UnauthorizedException, InvalidRegionException {
+	protected void parseResponse() throws SystemException, UnauthorizedException, ForbiddenException,
+			NotFoundException, InvalidRegionException {
 		int statusCode = mHttpResponse.getStatusLine().getStatusCode();
 		String responseBody = "";
 		try {
@@ -99,7 +78,7 @@ public class CreateAlertRequestHelper extends RequestHelper {
 			e.printStackTrace();
 		}
 
-		if (statusCode == 201) {
+		if (statusCode == 200) {
 			try {
 				JSONParser parser = new JSONParser();
 				JSONObject obj = (JSONObject) parser.parse(responseBody);
@@ -113,6 +92,10 @@ public class CreateAlertRequestHelper extends RequestHelper {
 			}
 		} else if (statusCode == 401) {
 			throw new UnauthorizedException();
+		} else if (statusCode == 403) {
+			throw new ForbiddenException();
+		} else if (statusCode == 404) {
+			throw new NotFoundException();
 		} else if (statusCode == 460) {
 			throw new InvalidRegionException();
 		} else {

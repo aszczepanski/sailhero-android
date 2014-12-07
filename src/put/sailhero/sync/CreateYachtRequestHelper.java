@@ -15,6 +15,7 @@ import put.sailhero.Config;
 import put.sailhero.exception.SystemException;
 import put.sailhero.exception.UnauthorizedException;
 import put.sailhero.exception.UnprocessableEntityException;
+import put.sailhero.exception.YachtAlreadyCreatedException;
 import put.sailhero.model.Yacht;
 import put.sailhero.util.PrefUtils;
 import android.content.Context;
@@ -89,7 +90,8 @@ public class CreateYachtRequestHelper extends RequestHelper {
 	}
 
 	@Override
-	protected void parseResponse() throws SystemException, UnauthorizedException, UnprocessableEntityException {
+	protected void parseResponse() throws SystemException, UnauthorizedException, UnprocessableEntityException,
+			YachtAlreadyCreatedException {
 		int statusCode = mHttpResponse.getStatusLine().getStatusCode();
 		String responseBody = "";
 		try {
@@ -114,6 +116,8 @@ public class CreateYachtRequestHelper extends RequestHelper {
 			throw new UnauthorizedException();
 		} else if (statusCode == 422) {
 			throw new UnprocessableEntityException(responseBody);
+		} else if (statusCode == 461) {
+			throw new YachtAlreadyCreatedException();
 		} else {
 			throw new SystemException("Invalid status code");
 		}

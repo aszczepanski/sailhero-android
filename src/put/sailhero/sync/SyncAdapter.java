@@ -1,10 +1,5 @@
 package put.sailhero.sync;
 
-import put.sailhero.exception.InvalidResourceOwnerException;
-import put.sailhero.exception.SystemException;
-import put.sailhero.exception.TransportException;
-import put.sailhero.exception.UnauthorizedException;
-import put.sailhero.exception.UnprocessableEntityException;
 import android.accounts.Account;
 import android.annotation.TargetApi;
 import android.content.AbstractThreadedSyncAdapter;
@@ -43,8 +38,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		try {
 			retrieveAlertsRequestHelper.doRequest();
 			retrieveAlertsRequestHelper.storeData();
-		} catch (TransportException | UnauthorizedException | SystemException | UnprocessableEntityException
-				| InvalidResourceOwnerException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -53,8 +47,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		try {
 			retrieveRegionsRequestHelper.doRequest();
 			retrieveRegionsRequestHelper.storeData();
-		} catch (TransportException | UnauthorizedException | SystemException | UnprocessableEntityException
-				| InvalidResourceOwnerException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -63,8 +56,37 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		try {
 			retrievePortsRequestHelper.doRequest();
 			retrievePortsRequestHelper.storeData();
-		} catch (TransportException | UnauthorizedException | SystemException | UnprocessableEntityException
-				| InvalidResourceOwnerException e) {
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		RetrieveSentFriendshipsRequestHelper retrieveSentFriendshipsRequestHelper = new RetrieveSentFriendshipsRequestHelper(
+				getContext());
+		try {
+			retrieveSentFriendshipsRequestHelper.doRequest();
+			retrieveSentFriendshipsRequestHelper.storeData();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		RetrievePendingFriendshipsRequestHelper retrievePendingFriendshipsRequestHelper = new RetrievePendingFriendshipsRequestHelper(
+				getContext());
+		try {
+			retrievePendingFriendshipsRequestHelper.doRequest();
+			retrievePendingFriendshipsRequestHelper.storeData();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		RetrieveFriendshipsRequestHelper retrieveFriendshipsRequestHelper = new RetrieveFriendshipsRequestHelper(
+				getContext());
+		try {
+			retrieveFriendshipsRequestHelper.doRequest();
+			retrieveFriendshipsRequestHelper.storeData();
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

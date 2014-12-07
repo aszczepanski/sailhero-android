@@ -13,6 +13,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import put.sailhero.Config;
+import put.sailhero.exception.InvalidRegionException;
 import put.sailhero.exception.SystemException;
 import put.sailhero.exception.UnauthorizedException;
 import put.sailhero.model.Alert;
@@ -62,7 +63,7 @@ public class RetrieveAlertsRequestHelper extends RequestHelper {
 	}
 
 	@Override
-	protected void parseResponse() throws UnauthorizedException, SystemException {
+	protected void parseResponse() throws UnauthorizedException, InvalidRegionException, SystemException {
 		int statusCode = mHttpResponse.getStatusLine().getStatusCode();
 
 		if (statusCode == 200) {
@@ -97,6 +98,8 @@ public class RetrieveAlertsRequestHelper extends RequestHelper {
 			}
 		} else if (statusCode == 401) {
 			throw new UnauthorizedException();
+		} else if (statusCode == 460) {
+			throw new InvalidRegionException();
 		} else {
 			throw new SystemException("Invalid status code (" + statusCode + ")");
 		}
