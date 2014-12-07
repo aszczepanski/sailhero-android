@@ -1,8 +1,10 @@
 package put.sailhero.ui;
 
 import put.sailhero.R;
+import put.sailhero.provider.SailHeroContract;
 import put.sailhero.sync.LogInRequestHelper;
 import put.sailhero.sync.RequestHelper;
+import put.sailhero.sync.RequestHelperAsyncTask;
 import put.sailhero.util.AccountUtils;
 import android.accounts.Account;
 import android.app.Activity;
@@ -100,6 +102,10 @@ public class LoginActivity extends Activity {
 	}
 
 	private void onUserAuthenticated() {
+		// TODO: add it to user registration and logout
+		mContext.getContentResolver().delete(SailHeroContract.Alert.CONTENT_URI, null, null);
+		mContext.getContentResolver().delete(SailHeroContract.Friendship.CONTENT_URI, null, null);
+
 		Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
 		startActivity(intent);
 		finish();
