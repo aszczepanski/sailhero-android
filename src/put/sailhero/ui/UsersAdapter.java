@@ -6,14 +6,25 @@ import java.util.LinkedList;
 import put.sailhero.Config;
 import put.sailhero.R;
 import put.sailhero.model.User;
+import put.sailhero.provider.SailHeroContract;
+import put.sailhero.sync.CreateFriendshipRequestHelper;
+import put.sailhero.sync.RequestHelper;
+import put.sailhero.sync.RequestHelperAsyncTask;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.DataSetObserver;
+import android.graphics.Typeface;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class UsersAdapter implements ListAdapter {
 
@@ -24,7 +35,7 @@ public class UsersAdapter implements ListAdapter {
 
 	private Context mContext;
 
-	private ArrayList<User> mUsers = new ArrayList<User>();
+	private ArrayList<UserContext> mUserContexts = new ArrayList<UserContext>();
 	private ArrayList<DataSetObserver> mObservers = new ArrayList<DataSetObserver>();
 
 	public UsersAdapter(Context context) {
@@ -47,12 +58,12 @@ public class UsersAdapter implements ListAdapter {
 
 	@Override
 	public int getCount() {
-		return mUsers.size();
+		return mUserContexts.size();
 	}
 
 	@Override
 	public Object getItem(int position) {
-		return position >= 0 && position < mUsers.size() ? mUsers.get(position) : null;
+		return position >= 0 && position < mUserContexts.size() ? mUserContexts.get(position) : null;
 	}
 
 	@Override
@@ -69,22 +80,118 @@ public class UsersAdapter implements ListAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
 		int itemViewType = getItemViewType(position);
-		int layoutResId = R.layout.user_item;
+		int layoutResId = R.layout.list_item_user;
 
 		if (convertView == null) {
 			convertView = ((LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(
 					layoutResId, parent, false);
 		}
 
-		if (position < 0 || position >= mUsers.size()) {
+		if (position < 0 || position >= mUserContexts.size()) {
 			Log.e(Config.TAG, "Invalid view position passed to MyScheduleAdapter: " + position);
 			return convertView;
 		}
 
-		User user = mUsers.get(position);
+		final UserContext userContext = mUserContexts.get(position);
 
-		TextView tv = (TextView) convertView.findViewById(R.id.tv);
-		tv.setText(user.getEmail());
+		FrameLayout mainBoxView = (FrameLayout) convertView.findViewById(R.id.main_box);
+		LinearLayout bottomBoxView = (LinearLayout) convertView.findViewById(R.id.bottom_box);
+		LinearLayout rightBoxView = (LinearLayout) convertView.findViewById(R.id.right_box);
+		TextView userTitleTextView = (TextView) convertView.findViewById(R.id.slot_user_title);
+		TextView userSubtitleTextView = (TextView) convertView.findViewById(R.id.slot_user_subtitle);
+
+		Button inviteButton = (Button) convertView.findViewById(R.id.invite_button);
+		Button acceptButton = (Button) convertView.findViewById(R.id.accept_button);
+		Button denyButton = (Button) convertView.findViewById(R.id.deny_button);
+		Button blockButton = (Button) convertView.findViewById(R.id.block_button);
+
+		//		boxView.setBackgroundResource(R.drawable.user_item_background_normal);
+		//		boxView.setForeground(null);
+
+		final User user = userContext.getUser();
+		Integer status = userContext.getStatus();
+
+		if (status == null) {
+			Cursor cursor = mContext.getContentResolver().query(SailHeroContract.Friendship.CONTENT_URI, new String[] {
+				SailHeroContract.Friendship.COLUMN_NAME_STATUS
+			}, SailHeroContract.Friendship.COLUMN_NAME_FRIEND_ID + "=?", new String[] {
+				user.getId().toString()
+			}, null);
+
+			if (cursor.moveToFirst()) {
+				status = cursor.getInt(0);
+			} else {
+				status = SailHeroContract.Friendship.STATUS_STRANGER;
+			}
+
+			cursor.close();
+		}
+
+		userTitleTextView.setText(user.getName() + " " + user.getSurname());
+		userTitleTextView.setTextColor(mContext.getResources().getColor(R.color.body_text_1));
+		userTitleTextView.setTypeface(Typeface.SANS_SERIF, Typeface.NORMAL);
+
+		userSubtitleTextView.setText(user.getEmail());
+		userSubtitleTextView.setTextColor(mContext.getResources().getColor(R.color.body_text_2));
+
+		if (status == SailHeroContract.Friendship.STATUS_STRANGER) {
+			bottomBoxView.setVisibility(View.GONE);
+			inviteButton.setVisibility(View.VISIBLE);
+			inviteButton.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					// TODO:
+					RequestHelperAsyncTask createFriendshipTask = new RequestHelperAsyncTask(mContext,
+							new CreateFriendshipRequestHelper(mContext, user.getId()),
+							new RequestHelperAsyncTask.AsyncRequestListener() {
+								@Override
+								public void onSuccess(RequestHelper requestHelper) {
+									Toast.makeText(mContext, "User invited.", Toast.LENGTH_SHORT).show();
+								}
+							});
+					createFriendshipTask.execute();
+				}
+			});
+		} else if (status == SailHeroContract.Friendship.STATUS_ACCEPTED) {
+			bottomBoxView.setVisibility(View.GONE);
+		} else if (status == SailHeroContract.Friendship.STATUS_PENDING) {
+			acceptButton.setVisibility(View.VISIBLE);
+			acceptButton.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					// TODO:
+					RequestHelperAsyncTask createFriendshipTask = new RequestHelperAsyncTask(mContext,
+							new CreateFriendshipRequestHelper(mContext, user.getId()),
+							new RequestHelperAsyncTask.AsyncRequestListener() {
+								@Override
+								public void onSuccess(RequestHelper requestHelper) {
+									Toast.makeText(mContext, "User invited.", Toast.LENGTH_SHORT).show();
+								}
+							});
+					createFriendshipTask.execute();
+				}
+			});
+
+			denyButton.setVisibility(View.VISIBLE);
+			denyButton.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					RequestHelperAsyncTask createFriendshipTask = new RequestHelperAsyncTask(mContext,
+							new CreateFriendshipRequestHelper(mContext, user.getId()),
+							new RequestHelperAsyncTask.AsyncRequestListener() {
+								@Override
+								public void onSuccess(RequestHelper requestHelper) {
+									Toast.makeText(mContext, "User invited.", Toast.LENGTH_SHORT).show();
+								}
+							});
+					createFriendshipTask.execute();
+				}
+			});
+		} else if (status == SailHeroContract.Friendship.STATUS_SENT) {
+			bottomBoxView.setVisibility(View.GONE);
+		} else if (status == SailHeroContract.Friendship.STATUS_BLOCKED) {
+			bottomBoxView.setVisibility(View.GONE);
+		}
 
 		return convertView;
 	}
@@ -114,12 +221,13 @@ public class UsersAdapter implements ListAdapter {
 		notifyObservers();
 	}
 
-	public void updateItems(LinkedList<User> users) {
-		mUsers.clear();
-		if (users != null) {
-			for (User user : users) {
-				Log.d(Config.TAG, "Adding user item: " + user.getEmail());
-				mUsers.add(user); // TODO: clone
+	public void updateItems(LinkedList<UserContext> userContexts) {
+		Log.e(Config.TAG, "size2: " + userContexts.size());
+		mUserContexts.clear();
+		if (userContexts != null) {
+			for (UserContext userContext : userContexts) {
+				Log.d(Config.TAG, "Adding user item: " + userContext.getUser().getEmail());
+				mUserContexts.add(userContext);
 			}
 		}
 		notifyObservers();
@@ -127,7 +235,7 @@ public class UsersAdapter implements ListAdapter {
 
 	@Override
 	public boolean isEmpty() {
-		return mUsers.isEmpty();
+		return mUserContexts.isEmpty();
 	}
 
 	@Override
@@ -138,6 +246,32 @@ public class UsersAdapter implements ListAdapter {
 	@Override
 	public boolean isEnabled(int position) {
 		return true;
+	}
+
+	public static class UserContext {
+		private User mUser;
+		private Integer mStatus;
+
+		public UserContext(User user, Integer status) {
+			mUser = user;
+			mStatus = status;
+		}
+
+		public User getUser() {
+			return mUser;
+		}
+
+		public void setUser(User user) {
+			mUser = user;
+		}
+
+		public Integer getStatus() {
+			return mStatus;
+		}
+
+		public void setStatus(Integer status) {
+			mStatus = status;
+		}
 	}
 
 }
