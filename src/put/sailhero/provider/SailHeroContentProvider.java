@@ -1,7 +1,6 @@
 package put.sailhero.provider;
 
 import android.content.ContentProvider;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
@@ -25,14 +24,19 @@ public class SailHeroContentProvider extends ContentProvider {
 	private static final int ROUTE_PORTS = 20;
 	private static final int ROUTE_PORTS_ID = 21;
 
+	private static final int ROUTE_FRIENDSHIPS = 30;
+	private static final int ROUTE_FRIENDSHIPS_ID = 31;
+
 	private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 	static {
-		sUriMatcher.addURI("put.sailhero", "alerts", ROUTE_ALERTS);
-		sUriMatcher.addURI("put.sailhero", "alerts/#", ROUTE_ALERTS_ID);
-		sUriMatcher.addURI("put.sailhero", "regions", ROUTE_REGIONS);
-		sUriMatcher.addURI("put.sailhero", "regions/#", ROUTE_REGIONS_ID);
-		sUriMatcher.addURI("put.sailhero", "ports", ROUTE_PORTS);
-		sUriMatcher.addURI("put.sailhero", "ports/#", ROUTE_PORTS_ID);
+		sUriMatcher.addURI(SailHeroContract.CONTENT_AUTHORITY, "alerts", ROUTE_ALERTS);
+		sUriMatcher.addURI(SailHeroContract.CONTENT_AUTHORITY, "alerts/#", ROUTE_ALERTS_ID);
+		sUriMatcher.addURI(SailHeroContract.CONTENT_AUTHORITY, "regions", ROUTE_REGIONS);
+		sUriMatcher.addURI(SailHeroContract.CONTENT_AUTHORITY, "regions/#", ROUTE_REGIONS_ID);
+		sUriMatcher.addURI(SailHeroContract.CONTENT_AUTHORITY, "ports", ROUTE_PORTS);
+		sUriMatcher.addURI(SailHeroContract.CONTENT_AUTHORITY, "ports/#", ROUTE_PORTS_ID);
+		sUriMatcher.addURI(SailHeroContract.CONTENT_AUTHORITY, "friendships", ROUTE_FRIENDSHIPS);
+		sUriMatcher.addURI(SailHeroContract.CONTENT_AUTHORITY, "friendships/#", ROUTE_FRIENDSHIPS_ID);
 	}
 
 	public SailHeroContentProvider() {
@@ -49,17 +53,21 @@ public class SailHeroContentProvider extends ContentProvider {
 		final int match = sUriMatcher.match(uri);
 		switch (match) {
 		case ROUTE_ALERTS:
-			return ContentResolver.CURSOR_DIR_BASE_TYPE + SailHeroContract.Alert.CONTENT_TYPE;
+			return SailHeroContract.Alert.CONTENT_TYPE;
 		case ROUTE_ALERTS_ID:
-			return ContentResolver.CURSOR_ITEM_BASE_TYPE + SailHeroContract.Alert.CONTENT_ITEM_TYPE;
+			return SailHeroContract.Alert.CONTENT_ITEM_TYPE;
 		case ROUTE_REGIONS:
-			return ContentResolver.CURSOR_DIR_BASE_TYPE + SailHeroContract.Region.CONTENT_TYPE;
+			return SailHeroContract.Region.CONTENT_TYPE;
 		case ROUTE_REGIONS_ID:
-			return ContentResolver.CURSOR_ITEM_BASE_TYPE + SailHeroContract.Region.CONTENT_ITEM_TYPE;
+			return SailHeroContract.Region.CONTENT_ITEM_TYPE;
 		case ROUTE_PORTS:
-			return ContentResolver.CURSOR_DIR_BASE_TYPE + SailHeroContract.Region.CONTENT_TYPE;
+			return SailHeroContract.Port.CONTENT_TYPE;
 		case ROUTE_PORTS_ID:
-			return ContentResolver.CURSOR_ITEM_BASE_TYPE + SailHeroContract.Region.CONTENT_ITEM_TYPE;
+			return SailHeroContract.Port.CONTENT_ITEM_TYPE;
+		case ROUTE_FRIENDSHIPS:
+			return SailHeroContract.Friendship.CONTENT_TYPE;
+		case ROUTE_FRIENDSHIPS_ID:
+			return SailHeroContract.Friendship.CONTENT_ITEM_TYPE;
 		default:
 			throw new UnsupportedOperationException("Unknown uri: " + uri);
 		}
@@ -97,10 +105,25 @@ public class SailHeroContentProvider extends ContentProvider {
 					.where(selection, selectionArgs)
 					.delete(db);
 			break;
+		case ROUTE_FRIENDSHIPS_ID:
+			id = uri.getLastPathSegment();
+			count = builder.table(SailHeroContract.Friendship.TABLE_NAME)
+					.where("id" + "=?", id)
+					.where(selection, selectionArgs)
+					.delete(db);
+			break;
 		case ROUTE_ALERTS:
+			count = builder.table(SailHeroContract.Alert.TABLE_NAME).where(selection, selectionArgs).delete(db);
+			break;
 		case ROUTE_REGIONS:
+			count = builder.table(SailHeroContract.Region.TABLE_NAME).where(selection, selectionArgs).delete(db);
+			break;
 		case ROUTE_PORTS:
-			throw new UnsupportedOperationException("Delete not supported on URI: " + uri);
+			count = builder.table(SailHeroContract.Port.TABLE_NAME).where(selection, selectionArgs).delete(db);
+			break;
+		case ROUTE_FRIENDSHIPS:
+			count = builder.table(SailHeroContract.Friendship.TABLE_NAME).where(selection, selectionArgs).delete(db);
+			break;
 		default:
 			throw new UnsupportedOperationException("Unknown uri: " + uri);
 		}
@@ -156,9 +179,20 @@ public class SailHeroContentProvider extends ContentProvider {
 			ctx.getContentResolver().notifyChange(uri, null, false);
 
 			return result;
+		case ROUTE_FRIENDSHIPS:
+			id = db.insertOrThrow(SailHeroContract.Friendship.TABLE_NAME, null, values);
+
+			result = Uri.parse(SailHeroContract.Friendship.CONTENT_URI + "/" + id);
+
+			ctx = getContext();
+			assert ctx != null;
+			ctx.getContentResolver().notifyChange(uri, null, false);
+
+			return result;
 		case ROUTE_ALERTS_ID:
 		case ROUTE_REGIONS_ID:
 		case ROUTE_PORTS_ID:
+		case ROUTE_FRIENDSHIPS_ID:
 			throw new UnsupportedOperationException("Insert not supported on URI: " + uri);
 		default:
 			throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -216,6 +250,19 @@ public class SailHeroContentProvider extends ContentProvider {
 			cursor.setNotificationUri(ctx.getContentResolver(), uri);
 
 			return cursor;
+		case ROUTE_FRIENDSHIPS_ID:
+			id = uri.getLastPathSegment();
+			builder.where("id" + "=?", id);
+		case ROUTE_FRIENDSHIPS:
+			builder.table(SailHeroContract.Friendship.TABLE_NAME).where(selection, selectionArgs);
+			cursor = builder.query(db, projection, sortOrder);
+
+			// TODO: make sure this is accurate
+			ctx = getContext();
+			assert ctx != null;
+			cursor.setNotificationUri(ctx.getContentResolver(), uri);
+
+			return cursor;
 		default:
 			throw new UnsupportedOperationException("Unknown uri: " + uri);
 		}
@@ -255,9 +302,16 @@ public class SailHeroContentProvider extends ContentProvider {
 					.update(db, values);
 
 			break;
+		case ROUTE_FRIENDSHIPS_ID:
+			id = uri.getLastPathSegment();
+			count = builder.table(SailHeroContract.Friendship.TABLE_NAME)
+					.where("id" + "=?", id)
+					.where(selection, selectionArgs)
+					.update(db, values);
 		case ROUTE_ALERTS:
 		case ROUTE_REGIONS:
 		case ROUTE_PORTS:
+		case ROUTE_FRIENDSHIPS:
 			throw new UnsupportedOperationException("Delete not supported on URI: " + uri);
 		default:
 			throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -273,7 +327,7 @@ public class SailHeroContentProvider extends ContentProvider {
 	}
 
 	static class SailHeroDatabaseHelper extends SQLiteOpenHelper {
-		public static final int DATABASE_VERSION = 11;
+		public static final int DATABASE_VERSION = 14;
 		public static final String DATABASE_NAME = "sailhero.db";
 
 		private static final String SQL_CREATE_ALERTS = "CREATE TABLE " + SailHeroContract.Alert.TABLE_NAME + " ("
@@ -325,6 +379,17 @@ public class SailHeroContentProvider extends ContentProvider {
 
 		private static final String SQL_DELETE_PORTS = "DROP TABLE IF EXISTS " + SailHeroContract.Port.TABLE_NAME;
 
+		private static final String SQL_CREATE_FRIENDSHIPS = "CREATE TABLE " + SailHeroContract.Friendship.TABLE_NAME
+				+ " (" + SailHeroContract.Friendship.COLUMN_NAME_ID + " INTEGER PRIMARY KEY,"
+				+ SailHeroContract.Friendship.COLUMN_NAME_STATUS + " INTEGER" + ","
+				+ SailHeroContract.Friendship.COLUMN_NAME_FRIEND_ID + " INTEGER" + ","
+				+ SailHeroContract.Friendship.COLUMN_NAME_FRIEND_EMAIL + " TEXT" + ","
+				+ SailHeroContract.Friendship.COLUMN_NAME_FRIEND_NAME + " TEXT" + ","
+				+ SailHeroContract.Friendship.COLUMN_NAME_FRIEND_SURNAME + " TEXT" + ")";
+
+		private static final String SQL_DELETE_FRIENDSHIPS = "DROP TABLE IF EXISTS "
+				+ SailHeroContract.Friendship.TABLE_NAME;
+
 		public SailHeroDatabaseHelper(Context context) {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
 		}
@@ -334,6 +399,7 @@ public class SailHeroContentProvider extends ContentProvider {
 			db.execSQL(SQL_CREATE_ALERTS);
 			db.execSQL(SQL_CREATE_REGIONS);
 			db.execSQL(SQL_CREATE_PORTS);
+			db.execSQL(SQL_CREATE_FRIENDSHIPS);
 		}
 
 		@Override
@@ -341,6 +407,7 @@ public class SailHeroContentProvider extends ContentProvider {
 			db.execSQL(SQL_DELETE_ALERTS);
 			db.execSQL(SQL_DELETE_REGIONS);
 			db.execSQL(SQL_DELETE_PORTS);
+			db.execSQL(SQL_DELETE_FRIENDSHIPS);
 			onCreate(db);
 		}
 	}

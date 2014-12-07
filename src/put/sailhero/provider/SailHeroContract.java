@@ -14,6 +14,7 @@ final public class SailHeroContract {
 	private static final String PATH_ALERTS = "alerts";
 	private static final String PATH_REGIONS = "regions";
 	private static final String PATH_PORTS = "ports";
+	private static final String PATH_FRIENDSHIPS = "friendships";
 
 	public static class Alert {
 		public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd.put.sailhero.alerts";
@@ -87,6 +88,30 @@ final public class SailHeroContract {
 		public static final String COLUMN_NAME_PRICE_PARKING = "price_parking";
 		public static final String COLUMN_NAME_PRICE_WASHING_MACHINE = "price_washing_machine";
 		public static final String COLUMN_NAME_PRICE_EMPTYING_CHEMICAL_TOILET = "price_emptying_chemical_toilet";
+	}
+
+	public static class Friendship {
+		public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE
+				+ "/vnd.put.sailhero.friendships";
+		public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE
+				+ "/vnd.put.sailhero.friendship";
+
+		public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_FRIENDSHIPS).build();
+
+		public static final String TABLE_NAME = "friendships";
+
+		public static final String COLUMN_NAME_ID = "id";
+		public static final String COLUMN_NAME_STATUS = "status";
+		public static final String COLUMN_NAME_FRIEND_ID = "friend_id";
+		public static final String COLUMN_NAME_FRIEND_EMAIL = "friend_email";
+		public static final String COLUMN_NAME_FRIEND_NAME = "friend_name";
+		public static final String COLUMN_NAME_FRIEND_SURNAME = "friend_surname";
+
+		public static final int STATUS_STRANGER = -1;
+		public static final int STATUS_ACCEPTED = 0;
+		public static final int STATUS_PENDING = 11;
+		public static final int STATUS_SENT = 12;
+		public static final int STATUS_BLOCKED = 2;
 	}
 
 }
