@@ -1,15 +1,9 @@
 package put.sailhero.ui;
 
 import put.sailhero.R;
-import put.sailhero.gcm.GcmRegistrationAsyncTask;
 import put.sailhero.model.Alert;
-import put.sailhero.model.Region;
 import put.sailhero.provider.SailHeroContract;
-import put.sailhero.sync.RequestHelper;
-import put.sailhero.sync.RequestHelperAsyncTask;
-import put.sailhero.sync.RetrieveUserRequestHelper;
 import put.sailhero.util.AccountUtils;
-import put.sailhero.util.PrefUtils;
 import android.accounts.Account;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
@@ -21,19 +15,15 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class DashboardActivity extends BaseActivity implements SwipeRefreshLayout.OnRefreshListener {
+public class DashboardActivity extends BaseActivity {
 
 	private Context mContext;
-
-	private SwipeRefreshLayout mSwipeRefreshLayout;
 
 	private SensorManager mSensorManager;
 	private float[] mGData = new float[3];
@@ -67,11 +57,6 @@ public class DashboardActivity extends BaseActivity implements SwipeRefreshLayou
 		mAlertBearingTextView = (TextView) findViewById(R.id.alert_bearing_text_view);
 
 		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-
-		mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
-		mSwipeRefreshLayout.setOnRefreshListener(this);
-		mSwipeRefreshLayout.setColorSchemeResources(R.color.refresh_progress_1, R.color.refresh_progress_2,
-				R.color.refresh_progress_3);
 
 		overridePendingTransition(0, 0);
 
@@ -194,8 +179,9 @@ public class DashboardActivity extends BaseActivity implements SwipeRefreshLayou
 			return;
 		}
 
+		// TODO: create SyncUtils !!!
 		Account account = AccountUtils.getActiveAccount(getApplicationContext());
-		ContentResolver.setIsSyncable(account, SailHeroContract.CONTENT_AUTHORITY, 1);
+		// ContentResolver.setIsSyncable(account, SailHeroContract.CONTENT_AUTHORITY, 1);
 
 		Bundle bundle = new Bundle();
 		// Disable sync backoff and ignore sync preferences. In other words...perform sync NOW!
@@ -233,18 +219,5 @@ public class DashboardActivity extends BaseActivity implements SwipeRefreshLayou
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-
-	@Override
-	public void onRefresh() {
-		Toast.makeText(mContext, "Refresh", Toast.LENGTH_SHORT).show();
-		mSwipeRefreshLayout.setRefreshing(true);
-		new Handler().postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				mSwipeRefreshLayout.setRefreshing(false);
-			}
-		}, 5000);
-
 	}
 }

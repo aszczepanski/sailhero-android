@@ -7,6 +7,7 @@ import put.sailhero.gcm.GcmRegistrationAsyncTask;
 import put.sailhero.model.Alert;
 import put.sailhero.model.Region;
 import put.sailhero.model.User;
+import put.sailhero.provider.SailHeroContract;
 import put.sailhero.service.AlertService;
 import put.sailhero.service.AlertService.LocalBinder;
 import put.sailhero.sync.CancelAlertRequestHelper;
@@ -18,15 +19,18 @@ import put.sailhero.util.AccountUtils;
 import put.sailhero.util.PrefUtils;
 import android.accounts.Account;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SyncStatusObserver;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -93,7 +97,11 @@ public class BaseActivity extends ActionBarActivity {
 	private DrawerLayout mDrawerLayout;
 
 	private AlertService mAlertService;
-	private boolean mBound = false;
+	private boolean mAlertServiceBound = false;
+
+	private SwipeRefreshLayout mSwipeRefreshLayout;
+	private Object mSyncObserverHandle;
+	private boolean mManualSyncRequest;
 
 	private View mAlertBarToolbar;
 	private Button mConfirmAlertButton;
@@ -180,14 +188,14 @@ public class BaseActivity extends ActionBarActivity {
 			// We've bound to AlertService, cast the IBinder and get LocalService instance
 			LocalBinder binder = (LocalBinder) service;
 			mAlertService = binder.getService();
-			mBound = true;
+			mAlertServiceBound = true;
 
 			mAlertService.registerListener(mAlertServiceListener);
 		}
 
 		@Override
 		public void onServiceDisconnected(ComponentName arg0) {
-			mBound = false;
+			mAlertServiceBound = false;
 		}
 	};
 
@@ -251,6 +259,10 @@ public class BaseActivity extends ActionBarActivity {
 			return;
 		}
 
+		mSyncStatusObserver.onStatusChanged(0);
+		final int mask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING | ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE;
+		mSyncObserverHandle = ContentResolver.addStatusChangeListener(mask, mSyncStatusObserver);
+
 		User user = PrefUtils.getUser(BaseActivity.this);
 		if (user == null) {
 			Toast.makeText(BaseActivity.this, "user is null", Toast.LENGTH_SHORT).show();
@@ -271,7 +283,7 @@ public class BaseActivity extends ActionBarActivity {
 			gcmRegistrationTask.execute();
 		}
 
-		if (mBound) {
+		if (mAlertServiceBound) {
 			mAlertService.registerListener(mAlertServiceListener);
 		}
 
@@ -298,8 +310,13 @@ public class BaseActivity extends ActionBarActivity {
 	protected void onPause() {
 		super.onPause();
 
-		if (mBound) {
+		if (mAlertServiceBound) {
 			mAlertService.unregisterListener(mAlertServiceListener);
+		}
+
+		if (mSyncObserverHandle != null) {
+			ContentResolver.removeStatusChangeListener(mSyncObserverHandle);
+			mSyncObserverHandle = null;
 		}
 	}
 
@@ -323,6 +340,66 @@ public class BaseActivity extends ActionBarActivity {
 
 	protected int getSelfNavDrawerItem() {
 		return NAVDRAWER_ITEM_INVALID;
+	}
+
+	private void trySetupSwipeRefresh() {
+		mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+		if (mSwipeRefreshLayout != null) {
+			mSwipeRefreshLayout.setColorSchemeResources(R.color.refresh_progress_1, R.color.refresh_progress_2,
+					R.color.refresh_progress_3);
+			mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+				@Override
+				public void onRefresh() {
+					requestDataRefresh();
+				}
+			});
+		}
+	}
+
+	protected void requestDataRefresh() {
+		Account account = AccountUtils.getActiveAccount(getApplicationContext());
+		if (ContentResolver.isSyncActive(account, SailHeroContract.CONTENT_AUTHORITY)) {
+			Log.d(TAG, "Ignoring manual sync request because a sync is already in progress.");
+			return;
+		}
+		mManualSyncRequest = true;
+		Log.d(TAG, "Requesting manual data refresh.");
+		Bundle bundle = new Bundle();
+		// Disable sync backoff and ignore sync preferences. In other words...perform sync NOW!
+		bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+		bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+
+		ContentResolver.requestSync(account, SailHeroContract.CONTENT_AUTHORITY, bundle);
+	}
+
+	private SyncStatusObserver mSyncStatusObserver = new SyncStatusObserver() {
+		@Override
+		public void onStatusChanged(int which) {
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					Account account = AccountUtils.getActiveAccount(BaseActivity.this);
+					if (account == null) {
+						onRefreshingStateChanged(false);
+						mManualSyncRequest = false;
+						return;
+					}
+
+					boolean syncActive = ContentResolver.isSyncActive(account, SailHeroContract.CONTENT_AUTHORITY);
+					boolean syncPending = ContentResolver.isSyncPending(account, SailHeroContract.CONTENT_AUTHORITY);
+					if (!syncActive && !syncPending) {
+						mManualSyncRequest = false;
+					}
+					onRefreshingStateChanged(syncActive || (mManualSyncRequest && syncPending));
+				}
+			});
+		}
+	};
+
+	protected void onRefreshingStateChanged(boolean refreshing) {
+		if (mSwipeRefreshLayout != null) {
+			mSwipeRefreshLayout.setRefreshing(refreshing);
+		}
 	}
 
 	public void setupNavDrawer() {
@@ -493,9 +570,12 @@ public class BaseActivity extends ActionBarActivity {
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
+
 		setupNavDrawer();
 		setupAccountBox();
 		setupAlertBar();
+
+		trySetupSwipeRefresh();
 
 		// TODO: setup other things
 	}
