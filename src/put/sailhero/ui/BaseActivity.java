@@ -10,6 +10,7 @@ import put.sailhero.service.AlertService.LocalBinder;
 import put.sailhero.sync.CancelAlertRequestHelper;
 import put.sailhero.sync.ConfirmAlertRequestHelper;
 import put.sailhero.sync.RequestHelper;
+import put.sailhero.sync.RequestHelperAsyncTask;
 import put.sailhero.util.AccountUtils;
 import put.sailhero.util.PrefUtils;
 import android.accounts.Account;

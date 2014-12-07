@@ -4,6 +4,7 @@ import put.sailhero.R;
 import put.sailhero.model.Yacht;
 import put.sailhero.sync.CreateYachtRequestHelper;
 import put.sailhero.sync.RequestHelper;
+import put.sailhero.sync.RequestHelperAsyncTask;
 import put.sailhero.sync.UpdateYachtRequestHelper;
 import put.sailhero.util.PrefUtils;
 import android.os.Bundle;

@@ -1,6 +1,6 @@
 package put.sailhero.gcm;
 
-import put.sailhero.account.AccountUtils;
+import put.sailhero.util.AccountUtils;
 import android.accounts.Account;
 import android.app.IntentService;
 import android.content.ContentResolver;
