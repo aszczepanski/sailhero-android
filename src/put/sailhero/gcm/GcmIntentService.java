@@ -1,5 +1,6 @@
 package put.sailhero.gcm;
 
+import put.sailhero.provider.SailHeroContract;
 import put.sailhero.util.AccountUtils;
 import android.accounts.Account;
 import android.app.IntentService;
@@ -34,15 +35,15 @@ public class GcmIntentService extends IntentService {
 			} else if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
 				// Post notification of received message.
 				Log.i(TAG, "Received: " + extras.toString());
-				
-				Account account = AccountUtils.getActiveAccount(getApplicationContext());				
+
+				Account account = AccountUtils.getActiveAccount(getApplicationContext());
 				if (account != null) {
 					Bundle bundle = new Bundle();
 					// Disable sync backoff and ignore sync preferences. In other words...perform sync NOW!
 					bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 					bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
 
-					ContentResolver.requestSync(account, "put.sailhero", bundle);
+					ContentResolver.requestSync(account, SailHeroContract.CONTENT_AUTHORITY, bundle);
 				}
 			}
 		}

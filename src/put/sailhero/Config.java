@@ -19,4 +19,6 @@ public class Config {
 	public static final String API_PATH = "api";
 	public static final String VERSION = "v1";
 	public static final String I18N = "en";
+	
+	public static final String GCM_SENDER_ID = "804800551458";
 }

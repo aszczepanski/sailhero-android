@@ -17,6 +17,7 @@ import put.sailhero.exception.UnprocessableEntityException;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 
 public class RegisterGcmRequestHelper extends RequestHelper {
 
@@ -92,12 +93,14 @@ public class RegisterGcmRequestHelper extends RequestHelper {
 			e.printStackTrace();
 		}
 
+		Log.e(TAG, responseBody);
+		
 		if (statusCode == 201) {
 			// gcm id registered
 		} else if (statusCode == 401) {
 			throw new UnauthorizedException();
 		} else if (statusCode == 422) {
-			throw new UnprocessableEntityException();
+			throw new UnprocessableEntityException(responseBody);
 		} else {
 			throw new SystemException("Invalid status code");
 		}
