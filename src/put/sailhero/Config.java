@@ -16,4 +16,6 @@ public class Config {
 	public static final String HOST_AUTHORITY = "sailhero-staging.herokuapp.com";
 
 	public static final String GCM_SENDER_ID = "804800551458";
+	
+	public static final String WEATHER_URL = "http://www.meteo.pl";
 }

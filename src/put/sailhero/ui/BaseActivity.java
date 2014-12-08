@@ -2,6 +2,7 @@ package put.sailhero.ui;
 
 import java.util.ArrayList;
 
+import put.sailhero.Config;
 import put.sailhero.R;
 import put.sailhero.gcm.GcmRegistrationAsyncTask;
 import put.sailhero.model.Alert;
@@ -25,6 +26,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SyncStatusObserver;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -598,6 +600,10 @@ public class BaseActivity extends ActionBarActivity {
 		case NAVDRAWER_ITEM_MAP:
 			intent = new Intent(this, MapActivity.class);
 			break;
+		case NAVDRAWER_ITEM_WEATHER:
+			intent = new Intent(Intent.ACTION_VIEW);
+			intent.setData(Uri.parse(Config.WEATHER_URL));
+			break;
 		case NAVDRAWER_ITEM_PEOPLE:
 			intent = new Intent(this, PeopleActivity.class);
 			break;
@@ -702,7 +708,7 @@ public class BaseActivity extends ActionBarActivity {
 	}
 
 	private boolean isSpecialItem(int itemId) {
-		return (itemId == NAVDRAWER_ITEM_SETTINGS || itemId == NAVDRAWER_ITEM_HELP);
+		return (itemId == NAVDRAWER_ITEM_SETTINGS || itemId == NAVDRAWER_ITEM_HELP || itemId == NAVDRAWER_ITEM_WEATHER);
 	}
 
 	private boolean isSeparator(int itemId) {
