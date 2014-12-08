@@ -63,7 +63,6 @@ public class PreferenceActivity extends BaseActivity {
 
 		private ThrottledContentObserver mRegionsObserver;
 
-		private Preference mAlertRadiusPreference;
 		private ListPreference mRegionListPreference;
 
 		private Preference mLogoutPreference;
@@ -78,15 +77,6 @@ public class PreferenceActivity extends BaseActivity {
 			mContext = getActivity();
 
 			addPreferencesFromResource(R.xml.preferences);
-
-			mAlertRadiusPreference = (Preference) findPreference("alert_radius_preference");
-			mAlertRadiusPreference.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-				@Override
-				public boolean onPreferenceChange(Preference preference, Object newValue) {
-					PrefUtils.setAlertRadius(mContext, (Integer) newValue);
-					return true;
-				}
-			});
 
 			mRegionListPreference = (ListPreference) findPreference("region_list_preference");
 			mRegionListPreference.setEnabled(false);

@@ -7,7 +7,7 @@
         android:title="General" >
         <put.sailhero.util.SeekBarPreference
             android:defaultValue="500"
-            android:key="alert_radius_preference"
+            android:key="pref_alert_radius"
             android:max="1000"
             android:summary=""
             android:title="Alert radius"
