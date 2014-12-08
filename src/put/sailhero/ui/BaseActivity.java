@@ -604,6 +604,9 @@ public class BaseActivity extends ActionBarActivity {
 		case NAVDRAWER_ITEM_SETTINGS:
 			intent = new Intent(this, PreferenceActivity.class);
 			break;
+		case NAVDRAWER_ITEM_HELP:
+			intent = new Intent(this, HelpActivity.class);
+			break;
 		default:
 			return;
 		}
@@ -699,7 +702,7 @@ public class BaseActivity extends ActionBarActivity {
 	}
 
 	private boolean isSpecialItem(int itemId) {
-		return itemId == NAVDRAWER_ITEM_SETTINGS;
+		return (itemId == NAVDRAWER_ITEM_SETTINGS || itemId == NAVDRAWER_ITEM_HELP);
 	}
 
 	private boolean isSeparator(int itemId) {
