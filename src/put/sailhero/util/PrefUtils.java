@@ -23,6 +23,8 @@ public class PrefUtils {
 	public static final String PREF_ALERT_RADIUS = "pref_alert_radius";
 	public static final String PREF_ALERT_TO_RESPOND = "pref_alert_to_respond";
 
+	public static final String PREF_WANTS_TO_SHARE_LOCATION = "pref_wants_to_share_location";
+	
 	public static final String PREF_LAST_KNOWN_LOCATION = "pref_last_known_location";
 
 	public static final String PREF_WELCOME_DONE = "pref_welcome_done";
@@ -154,6 +156,16 @@ public class PrefUtils {
 		Gson gson = builder.create();
 		Alert alert = gson.fromJson(alertJson, Alert.class);
 		return alert;
+	}
+	
+	public static void setWantsToShareLocation(final Context context, boolean wantsToShareLocation) {
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+		sp.edit().putBoolean(PREF_WANTS_TO_SHARE_LOCATION, wantsToShareLocation).commit();
+	}
+	
+	public static boolean getWantsToShareLocation(final Context context) {
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+		return sp.getBoolean(PREF_WANTS_TO_SHARE_LOCATION, false);
 	}
 
 	public static void setLastKnownLocation(Context context, final Location location) {
