@@ -52,12 +52,6 @@ public class YachtActivity extends BaseActivity {
 			mLengthEditText.setText(mCurrentYacht.getLength().toString());
 			mWidthEditText.setText(mCurrentYacht.getWidth().toString());
 			mCrewEditText.setText(mCurrentYacht.getCrew().toString());
-		} else {
-			// TODO:
-			mNameEditText.setText("Tango");
-			mLengthEditText.setText("780");
-			mWidthEditText.setText("350");
-			mCrewEditText.setText("7");
 		}
 
 		mSendButton = (Button) findViewById(R.id.ActivityYachtSendButton);
@@ -105,10 +99,19 @@ public class YachtActivity extends BaseActivity {
 									finish();
 								}
 
-								// TODO: onYachtAlreadyCreated
+								@Override
+								public void onYachtAlreadyCreatedException(RequestHelper requestHelper) {
+									Log.w(TAG, "yacht already created");
+
+									// TODO: do second request maybe
+									Toast.makeText(YachtActivity.this, "Yacht has already been created.",
+											Toast.LENGTH_SHORT).show();
+									finish();
+								}
 
 								@Override
-								public void onUnprocessableEntityException(RequestHelper requestHelper, String entityErrorsJson) {
+								public void onUnprocessableEntityException(RequestHelper requestHelper,
+										String entityErrorsJson) {
 									YachtParametersErrorsHolder errorsHolder = new YachtParametersErrorsHolder(
 											entityErrorsJson);
 									if (!errorsHolder.getNameErrors().isEmpty()) {
