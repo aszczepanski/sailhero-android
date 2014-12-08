@@ -60,11 +60,11 @@ public class LoginActivity extends Activity {
 						new RequestHelperAsyncTask.AsyncRequestListener() {
 							@Override
 							public void onSuccess(RequestHelper requestHelper) {
-								AccountUtils.addAccount(getApplicationContext(), logInRequestHelper.mUsername,
-										logInRequestHelper.mRetrievedAccessToken,
-										logInRequestHelper.mRetrievedRefreshToken);
+								AccountUtils.addAccount(getApplicationContext(), logInRequestHelper.getSentUsername(),
+										logInRequestHelper.getRetrievedAccessToken(),
+										logInRequestHelper.getRetrievedRefreshToken());
 
-								Log.d(TAG, "access token: " + logInRequestHelper.mRetrievedAccessToken);
+								Log.d(TAG, "access token: " + logInRequestHelper.getRetrievedAccessToken());
 
 								onUserAuthenticated();
 							}

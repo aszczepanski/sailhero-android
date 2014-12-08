@@ -8,7 +8,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import put.sailhero.Config;
 import put.sailhero.exception.SystemException;
 import put.sailhero.exception.UnauthorizedException;
 import put.sailhero.model.Region;
@@ -22,7 +21,8 @@ public class RetrieveUserRequestHelper extends RequestHelper {
 
 	public final static String TAG = "sailhero";
 
-	private final static String USER_PROFILE_REQUEST_PATH = "users/me";
+	private final static String PATH_USERS = "users";
+	private final static String PATH_ME = "me";
 
 	private User mRetrievedUser;
 	private Region mRetrievedRegion;
@@ -34,18 +34,7 @@ public class RetrieveUserRequestHelper extends RequestHelper {
 
 	@Override
 	protected void createMethodClient() {
-		final String apiHost = Config.API_HOST;
-		final String apiPath = Config.API_PATH;
-		final String version = Config.VERSION;
-		final String i18n = Config.I18N;
-
-		Uri uri = new Uri.Builder().scheme("http")
-				.encodedAuthority(apiHost)
-				.appendPath(apiPath)
-				.appendPath(version)
-				.appendPath(i18n)
-				.appendEncodedPath(USER_PROFILE_REQUEST_PATH)
-				.build();
+		Uri uri = API_BASE_URI.buildUpon().appendPath(PATH_USERS).appendPath(PATH_ME).build();
 
 		mHttpUriRequest = new HttpGet(uri.toString());
 	}
@@ -101,40 +90,8 @@ public class RetrieveUserRequestHelper extends RequestHelper {
 
 	@Override
 	public void storeData() throws SystemException {
-		if (mRetrievedUser == null) {
-			PrefUtils.setRegion(mContext, null);
-		} else {
-			User oldUser = PrefUtils.getUser(mContext);
-			if (oldUser == null || oldUser.getId() != mRetrievedUser.getId()
-					|| oldUser.getEmail() != mRetrievedUser.getEmail() || oldUser.getName() != mRetrievedUser.getName()
-					|| oldUser.getSurname() != mRetrievedUser.getSurname()) {
-				PrefUtils.setUser(mContext, mRetrievedUser);
-			}
-		}
-
-		if (mRetrievedYacht == null) {
-			PrefUtils.setRegion(mContext, null);
-		} else {
-			Yacht oldYacht = PrefUtils.getYacht(mContext);
-			if (oldYacht == null || oldYacht.getId() != mRetrievedYacht.getId()
-					|| oldYacht.getName() != mRetrievedYacht.getName()
-					|| oldYacht.getLength() != mRetrievedYacht.getLength()
-					|| oldYacht.getWidth() != mRetrievedYacht.getWidth()
-					|| oldYacht.getCrew() != mRetrievedYacht.getCrew()) {
-				PrefUtils.setYacht(mContext, mRetrievedYacht);
-			}
-
-		}
-
-		if (mRetrievedRegion == null) {
-			PrefUtils.setRegion(mContext, null);
-		} else {
-			Region oldRegion = PrefUtils.getRegion(mContext);
-			if (oldRegion == null || oldRegion.getId() != mRetrievedRegion.getId()
-					|| oldRegion.getCodeName() != mRetrievedRegion.getCodeName()
-					|| oldRegion.getFullName() != mRetrievedRegion.getFullName()) {
-				PrefUtils.setRegion(mContext, mRetrievedRegion);
-			}
-		}
+		PrefUtils.setUser(mContext, mRetrievedUser);
+		PrefUtils.setRegion(mContext, mRetrievedRegion);
+		PrefUtils.setYacht(mContext, mRetrievedYacht);
 	}
 }

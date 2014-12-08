@@ -114,7 +114,7 @@ public class SearchUserActivity extends BaseActivity implements UsersListFragmen
 //							}
 //							cursor.close();
 
-							userContexts.add(new UsersAdapter.UserContext(user, null));
+							userContexts.add(new UsersAdapter.UserContext(user, null, null));
 						}
 
 						mUserAdapters[0].updateItems(userContexts);

@@ -8,7 +8,6 @@ import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import put.sailhero.Config;
 import put.sailhero.exception.NotFoundException;
 import put.sailhero.exception.SystemException;
 import put.sailhero.exception.UnauthorizedException;
@@ -21,8 +20,8 @@ public class SelectRegionRequestHelper extends RequestHelper {
 
 	public final static String TAG = "sailhero";
 
-	private final static String REGIONS_PATH = "regions";
-	private final static String SELECT_PATH = "select";
+	private final static String PATH_REGIONS = "regions";
+	private final static String PATH_SELECT = "select";
 
 	private Integer mRegionId;
 
@@ -35,19 +34,10 @@ public class SelectRegionRequestHelper extends RequestHelper {
 
 	@Override
 	protected void createMethodClient() {
-		final String apiHost = Config.API_HOST;
-		final String apiPath = Config.API_PATH;
-		final String version = Config.VERSION;
-		final String i18n = Config.I18N;
-
-		Uri uri = new Uri.Builder().scheme("http")
-				.encodedAuthority(apiHost)
-				.appendPath(apiPath)
-				.appendPath(version)
-				.appendPath(i18n)
-				.appendEncodedPath(REGIONS_PATH)
+		Uri uri = API_BASE_URI.buildUpon()
+				.appendEncodedPath(PATH_REGIONS)
 				.appendEncodedPath(mRegionId.toString())
-				.appendEncodedPath(SELECT_PATH)
+				.appendEncodedPath(PATH_SELECT)
 				.build();
 
 		mHttpUriRequest = new HttpPost(uri.toString());
@@ -86,11 +76,6 @@ public class SelectRegionRequestHelper extends RequestHelper {
 
 	@Override
 	public void storeData() {
-		Region oldRegion = PrefUtils.getRegion(mContext);
-		if (oldRegion == null || oldRegion.getId() != mRetrievedRegion.getId()
-				|| oldRegion.getCodeName() != mRetrievedRegion.getCodeName()
-				|| oldRegion.getFullName() != mRetrievedRegion.getFullName()) {
-			PrefUtils.setRegion(mContext, mRetrievedRegion);
-		}
+		PrefUtils.setRegion(mContext, mRetrievedRegion);
 	}
 }

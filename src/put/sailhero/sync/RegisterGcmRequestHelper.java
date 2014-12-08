@@ -10,7 +10,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONObject;
 
-import put.sailhero.Config;
 import put.sailhero.exception.SystemException;
 import put.sailhero.exception.UnauthorizedException;
 import put.sailhero.exception.UnprocessableEntityException;
@@ -23,7 +22,9 @@ public class RegisterGcmRequestHelper extends RequestHelper {
 
 	public final static String TAG = "sailhero";
 
-	private final static String REGISTER_GCM_REQUEST_PATH = "users/me/devices";
+	private final static String PATH_USERS = "users";
+	private final static String PATH_ME = "me";
+	private final static String PATH_DEVICES = "devices";
 
 	private String mRegistrationId;
 
@@ -39,18 +40,7 @@ public class RegisterGcmRequestHelper extends RequestHelper {
 
 	@Override
 	protected void createMethodClient() {
-		final String apiHost = Config.API_HOST;
-		final String apiPath = Config.API_PATH;
-		final String version = Config.VERSION;
-		final String i18n = Config.I18N;
-
-		Uri uri = new Uri.Builder().scheme("http")
-				.encodedAuthority(apiHost)
-				.appendPath(apiPath)
-				.appendPath(version)
-				.appendPath(i18n)
-				.appendEncodedPath(REGISTER_GCM_REQUEST_PATH)
-				.build();
+		Uri uri = API_BASE_URI.buildUpon().appendPath(PATH_USERS).appendPath(PATH_ME).appendPath(PATH_DEVICES).build();
 
 		mHttpUriRequest = new HttpPost(uri.toString());
 	}
@@ -94,7 +84,7 @@ public class RegisterGcmRequestHelper extends RequestHelper {
 		}
 
 		Log.e(TAG, responseBody);
-		
+
 		if (statusCode == 201) {
 			// gcm id registered
 		} else if (statusCode == 401) {

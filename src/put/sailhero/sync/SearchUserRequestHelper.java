@@ -10,7 +10,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import put.sailhero.Config;
 import put.sailhero.exception.SystemException;
 import put.sailhero.exception.UnauthorizedException;
 import put.sailhero.model.User;
@@ -21,7 +20,7 @@ public class SearchUserRequestHelper extends RequestHelper {
 
 	public final static String TAG = "sailhero";
 
-	private final static String USERS_REQUEST_PATH = "users";
+	private final static String PATH_USERS = "users";
 
 	private String mSentValue;
 
@@ -38,19 +37,7 @@ public class SearchUserRequestHelper extends RequestHelper {
 
 	@Override
 	protected void createMethodClient() {
-		final String apiHost = Config.API_HOST;
-		final String apiPath = Config.API_PATH;
-		final String version = Config.VERSION;
-		final String i18n = Config.I18N;
-
-		Uri uri = new Uri.Builder().scheme("http")
-				.encodedAuthority(apiHost)
-				.appendPath(apiPath)
-				.appendPath(version)
-				.appendPath(i18n)
-				.appendEncodedPath(USERS_REQUEST_PATH)
-				.appendQueryParameter("q", mSentValue)
-				.build();
+		Uri uri = API_BASE_URI.buildUpon().appendPath(PATH_USERS).appendQueryParameter("q", mSentValue).build();
 
 		mHttpUriRequest = new HttpGet(uri.toString());
 	}

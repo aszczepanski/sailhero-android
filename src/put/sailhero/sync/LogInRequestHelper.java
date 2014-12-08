@@ -21,15 +21,16 @@ public class LogInRequestHelper extends RequestHelper {
 
 	public final static String TAG = "sailhero";
 
-	// TODO: create getters
-	public String mUsername;
-	public String mPassword;
+	private static final String PATH_OAUTH = "oauth";
+	private static final String PATH_TOKEN = "token";
 
-	// TODO: create getters
-	public String mRetrievedAccessToken;
-	public String mRetrievedTokenType;
-	public Integer mRetrievedExpiresIn;
-	public String mRetrievedRefreshToken;
+	private String mSentUsername;
+	private String mSentPassword;
+
+	private String mRetrievedAccessToken;
+	private String mRetrievedTokenType;
+	private Integer mRetrievedExpiresIn;
+	private String mRetrievedRefreshToken;
 
 	private User mRetrievedUser;
 
@@ -38,23 +39,52 @@ public class LogInRequestHelper extends RequestHelper {
 	public LogInRequestHelper(Context context, String username, String password) {
 		super(context);
 
-		mUsername = username;
-		mPassword = password;
+		mSentUsername = username;
+		mSentPassword = password;
+	}
+
+	public String getSentUsername() {
+		return mSentUsername;
+	}
+
+	public String getSentPassword() {
+		return mSentPassword;
+	}
+
+	public String getRetrievedAccessToken() {
+		return mRetrievedAccessToken;
+	}
+
+	public String getRetrievedTokenType() {
+		return mRetrievedTokenType;
+	}
+
+	public Integer getRetrievedExpiresIn() {
+		return mRetrievedExpiresIn;
+	}
+
+	public String getRetrievedRefreshToken() {
+		return mRetrievedRefreshToken;
+	}
+
+	public User getRetrievedUser() {
+		return mRetrievedUser;
+	}
+
+	public String getErrorMessage() {
+		return mErrorMessage;
 	}
 
 	@Override
 	protected void createMethodClient() {
-		final String authenticateUserHost = Config.ACCESS_TOKEN_HOST;
-		final String authenticateUserPath = Config.ACCESS_TOKEN_PATH;
-
-		Uri uri = new Uri.Builder().scheme("http")
-				.encodedAuthority(authenticateUserHost)
-				.path(authenticateUserPath)
+		Uri uri = OAUTH_BASE_URI.buildUpon()
+				.appendPath(PATH_OAUTH)
+				.appendPath(PATH_TOKEN)
 				.appendQueryParameter("client_id", Config.APP_ID)
 				.appendQueryParameter("client_secret", Config.APP_SECRET)
 				.appendQueryParameter("grant_type", "password")
-				.appendQueryParameter("username", mUsername)
-				.appendQueryParameter("password", mPassword)
+				.appendQueryParameter("username", mSentUsername)
+				.appendQueryParameter("password", mSentPassword)
 				.build();
 
 		mHttpUriRequest = new HttpPost(uri.toString());

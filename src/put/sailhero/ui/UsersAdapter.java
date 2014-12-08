@@ -7,7 +7,9 @@ import put.sailhero.Config;
 import put.sailhero.R;
 import put.sailhero.model.User;
 import put.sailhero.provider.SailHeroContract;
+import put.sailhero.sync.AcceptFriendshipRequestHelper;
 import put.sailhero.sync.CreateFriendshipRequestHelper;
+import put.sailhero.sync.DenyFriendshipRequestHelper;
 import put.sailhero.sync.RequestHelper;
 import put.sailhero.sync.RequestHelperAsyncTask;
 import android.content.Context;
@@ -105,11 +107,12 @@ public class UsersAdapter implements ListAdapter {
 		Button denyButton = (Button) convertView.findViewById(R.id.deny_button);
 		Button blockButton = (Button) convertView.findViewById(R.id.block_button);
 
-		//		boxView.setBackgroundResource(R.drawable.user_item_background_normal);
-		//		boxView.setForeground(null);
+		// boxView.setBackgroundResource(R.drawable.user_item_background_normal);
+		// boxView.setForeground(null);
 
 		final User user = userContext.getUser();
-		Integer status = userContext.getStatus();
+		final Integer friendshipId = userContext.getFriendshipId();
+		Integer status = userContext.getResponseStatus();
 
 		if (status == null) {
 			Cursor cursor = mContext.getContentResolver().query(SailHeroContract.Friendship.CONTENT_URI, new String[] {
@@ -147,6 +150,7 @@ public class UsersAdapter implements ListAdapter {
 								@Override
 								public void onSuccess(RequestHelper requestHelper) {
 									Toast.makeText(mContext, "User invited.", Toast.LENGTH_SHORT).show();
+									notifyObservers();
 								}
 							});
 					createFriendshipTask.execute();
@@ -160,15 +164,16 @@ public class UsersAdapter implements ListAdapter {
 				@Override
 				public void onClick(View v) {
 					// TODO:
-					RequestHelperAsyncTask createFriendshipTask = new RequestHelperAsyncTask(mContext,
-							new CreateFriendshipRequestHelper(mContext, user.getId()),
+					RequestHelperAsyncTask acceptFriendshipTask = new RequestHelperAsyncTask(mContext,
+							new AcceptFriendshipRequestHelper(mContext, friendshipId),
 							new RequestHelperAsyncTask.AsyncRequestListener() {
 								@Override
 								public void onSuccess(RequestHelper requestHelper) {
-									Toast.makeText(mContext, "User invited.", Toast.LENGTH_SHORT).show();
+									Toast.makeText(mContext, "Friendship accepted.", Toast.LENGTH_SHORT).show();
+									notifyObservers();
 								}
 							});
-					createFriendshipTask.execute();
+					acceptFriendshipTask.execute();
 				}
 			});
 
@@ -176,15 +181,16 @@ public class UsersAdapter implements ListAdapter {
 			denyButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					RequestHelperAsyncTask createFriendshipTask = new RequestHelperAsyncTask(mContext,
-							new CreateFriendshipRequestHelper(mContext, user.getId()),
+					RequestHelperAsyncTask denyFriendshipTask = new RequestHelperAsyncTask(mContext,
+							new DenyFriendshipRequestHelper(mContext, friendshipId),
 							new RequestHelperAsyncTask.AsyncRequestListener() {
 								@Override
 								public void onSuccess(RequestHelper requestHelper) {
 									Toast.makeText(mContext, "User invited.", Toast.LENGTH_SHORT).show();
+									notifyObservers();
 								}
 							});
-					createFriendshipTask.execute();
+					denyFriendshipTask.execute();
 				}
 			});
 		} else if (status == SailHeroContract.Friendship.STATUS_SENT) {
@@ -250,11 +256,13 @@ public class UsersAdapter implements ListAdapter {
 
 	public static class UserContext {
 		private User mUser;
-		private Integer mStatus;
+		private Integer mResponseStatus;
+		private Integer mFriendshipId;
 
-		public UserContext(User user, Integer status) {
+		public UserContext(User user, Integer responseStatus, Integer friendshipId) {
 			mUser = user;
-			mStatus = status;
+			mResponseStatus = responseStatus;
+			mFriendshipId = friendshipId;
 		}
 
 		public User getUser() {
@@ -265,12 +273,20 @@ public class UsersAdapter implements ListAdapter {
 			mUser = user;
 		}
 
-		public Integer getStatus() {
-			return mStatus;
+		public Integer getResponseStatus() {
+			return mResponseStatus;
 		}
 
-		public void setStatus(Integer status) {
-			mStatus = status;
+		public void setResponseStatus(Integer status) {
+			mResponseStatus = status;
+		}
+
+		public Integer getFriendshipId() {
+			return mFriendshipId;
+		}
+
+		public void setFriendshipId(Integer id) {
+			mFriendshipId = id;
 		}
 	}
 

@@ -7,6 +7,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import put.sailhero.Config;
 import put.sailhero.exception.ForbiddenException;
 import put.sailhero.exception.InvalidRegionException;
 import put.sailhero.exception.InvalidResourceOwnerException;
@@ -24,6 +25,7 @@ import android.accounts.AccountManager;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.content.Context;
+import android.net.Uri;
 
 public abstract class RequestHelper {
 
@@ -33,6 +35,22 @@ public abstract class RequestHelper {
 	protected HttpResponse mHttpResponse;
 
 	protected Context mContext;
+
+	protected static final String PATH_API = "api";
+	protected static final String PATH_VERSION = "v1";
+	protected static final String PATH_I18N = "en";
+
+	protected Uri BASE_URI = new Uri.Builder().scheme(Config.HOST_SCHEME)
+			.encodedAuthority(Config.HOST_AUTHORITY)
+			.build();
+
+	protected Uri API_BASE_URI = BASE_URI.buildUpon()
+			.appendPath(PATH_API)
+			.appendPath(PATH_VERSION)
+			.appendPath(PATH_I18N)
+			.build();
+
+	protected Uri OAUTH_BASE_URI = API_BASE_URI;
 
 	public RequestHelper(Context context) {
 		mContext = context;

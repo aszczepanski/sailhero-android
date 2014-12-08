@@ -1,6 +1,7 @@
 package put.sailhero.ui;
 
 import put.sailhero.R;
+import put.sailhero.provider.SailHeroContract;
 import put.sailhero.sync.CreateUserRequestHelper;
 import put.sailhero.sync.LogInRequestHelper;
 import put.sailhero.sync.RequestHelper;
@@ -66,11 +67,12 @@ public class RegisterUserActivity extends Activity {
 											@Override
 											public void onSuccess(RequestHelper requestHelper) {
 												AccountUtils.addAccount(getApplicationContext(),
-														logInRequestHelper.mUsername,
-														logInRequestHelper.mRetrievedAccessToken,
-														logInRequestHelper.mRetrievedRefreshToken);
+														logInRequestHelper.getSentUsername(),
+														logInRequestHelper.getRetrievedAccessToken(),
+														logInRequestHelper.getRetrievedRefreshToken());
 
-												Log.d(TAG, "access token: " + logInRequestHelper.mRetrievedAccessToken);
+												Log.d(TAG,
+														"access token: " + logInRequestHelper.getRetrievedAccessToken());
 
 												onUserAuthenticated();
 											}
@@ -124,6 +126,10 @@ public class RegisterUserActivity extends Activity {
 	}
 
 	private void onUserAuthenticated() {
+		// TODO: add it to user registration and logout
+		mContext.getContentResolver().delete(SailHeroContract.Alert.CONTENT_URI, null, null);
+		mContext.getContentResolver().delete(SailHeroContract.Friendship.CONTENT_URI, null, null);
+
 		Intent intent = new Intent(RegisterUserActivity.this, DashboardActivity.class);
 		startActivity(intent);
 		finish();

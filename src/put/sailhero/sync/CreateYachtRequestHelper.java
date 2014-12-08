@@ -11,7 +11,6 @@ import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import put.sailhero.Config;
 import put.sailhero.exception.SystemException;
 import put.sailhero.exception.UnauthorizedException;
 import put.sailhero.exception.UnprocessableEntityException;
@@ -25,7 +24,7 @@ public class CreateYachtRequestHelper extends RequestHelper {
 
 	public final static String TAG = "sailhero";
 
-	private final static String CREATE_YACHT_REQUEST_PATH = "yachts";
+	private final static String PATH_YACHTS = "yachts";
 
 	private Yacht mSentYacht;
 	private Yacht mRetrievedYacht;
@@ -50,18 +49,7 @@ public class CreateYachtRequestHelper extends RequestHelper {
 
 	@Override
 	protected void createMethodClient() {
-		final String apiHost = Config.API_HOST;
-		final String apiPath = Config.API_PATH;
-		final String version = Config.VERSION;
-		final String i18n = Config.I18N;
-
-		Uri uri = new Uri.Builder().scheme("http")
-				.encodedAuthority(apiHost)
-				.appendPath(apiPath)
-				.appendPath(version)
-				.appendPath(i18n)
-				.appendEncodedPath(CREATE_YACHT_REQUEST_PATH)
-				.build();
+		Uri uri = API_BASE_URI.buildUpon().appendPath(PATH_YACHTS).build();
 
 		mHttpUriRequest = new HttpPost(uri.toString());
 	}
@@ -126,7 +114,7 @@ public class CreateYachtRequestHelper extends RequestHelper {
 	@Override
 	public void storeData() {
 		if (mRetrievedYacht == null) {
-			PrefUtils.setRegion(mContext, null);
+			PrefUtils.setYacht(mContext, null);
 		} else {
 			Yacht oldYacht = PrefUtils.getYacht(mContext);
 			if (oldYacht == null || oldYacht.getId() != mRetrievedYacht.getId()

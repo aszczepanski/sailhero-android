@@ -8,7 +8,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.json.simple.JSONObject;
 
-import put.sailhero.Config;
 import put.sailhero.exception.SystemException;
 import put.sailhero.util.AccountUtils;
 import android.accounts.Account;
@@ -17,10 +16,14 @@ import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 
 public class LogOutRequestHelper extends RequestHelper {
 
 	public final static String TAG = "sailhero";
+
+	private static final String PATH_OAUTH = "oauth";
+	private static final String PATH_REVOKE = "revoke";
 
 	public LogOutRequestHelper(Context context) {
 		super(context);
@@ -28,13 +31,9 @@ public class LogOutRequestHelper extends RequestHelper {
 
 	@Override
 	protected void createMethodClient() {
-		final String unauthorizeUserHost = Config.ACCESS_TOKEN_HOST;
-		final String unauthorizeUserPath = "oauth/revoke";
+		Uri uri = OAUTH_BASE_URI.buildUpon().appendPath(PATH_OAUTH).appendPath(PATH_REVOKE).build();
 
-		Uri uri = new Uri.Builder().scheme("http")
-				.encodedAuthority(unauthorizeUserHost)
-				.path(unauthorizeUserPath)
-				.build();
+		Log.e(TAG, uri.toString());
 
 		mHttpUriRequest = new HttpPost(uri.toString());
 	}

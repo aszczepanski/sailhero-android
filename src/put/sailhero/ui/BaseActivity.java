@@ -233,11 +233,12 @@ public class BaseActivity extends ActionBarActivity {
 	}
 
 	protected void onUserProfileReceived() {
+		setupAccountBox();
+
 		Region selectedRegion = PrefUtils.getRegion(BaseActivity.this);
 		if (selectedRegion == null) {
 			// TODO: ask user to select a region
 		} else {
-			setupAccountBox();
 			Toast.makeText(BaseActivity.this, "Using region: " + selectedRegion.getFullName(), Toast.LENGTH_SHORT)
 					.show();
 		}

@@ -308,11 +308,12 @@ public class SailHeroContentProvider extends ContentProvider {
 					.where("id" + "=?", id)
 					.where(selection, selectionArgs)
 					.update(db, values);
+			break;
 		case ROUTE_ALERTS:
 		case ROUTE_REGIONS:
 		case ROUTE_PORTS:
 		case ROUTE_FRIENDSHIPS:
-			throw new UnsupportedOperationException("Delete not supported on URI: " + uri);
+			throw new UnsupportedOperationException("Update not supported on URI: " + uri);
 		default:
 			throw new UnsupportedOperationException("Unknown uri: " + uri);
 		}

@@ -11,7 +11,6 @@ import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import put.sailhero.Config;
 import put.sailhero.exception.ForbiddenException;
 import put.sailhero.exception.NullUserException;
 import put.sailhero.exception.SameUserException;
@@ -25,7 +24,7 @@ public class CreateFriendshipRequestHelper extends RequestHelper {
 
 	public final static String TAG = "sailhero";
 
-	private final static String CREATE_FRIENDSHIP_REQUEST_PATH = "friendships";
+	private final static String PATH_FRIENDSHIPS = "friendships";
 
 	private Integer mSentFriendId;
 	private Friendship mReceivedFriendship;
@@ -46,18 +45,7 @@ public class CreateFriendshipRequestHelper extends RequestHelper {
 
 	@Override
 	protected void createMethodClient() {
-		final String apiHost = Config.API_HOST;
-		final String apiPath = Config.API_PATH;
-		final String version = Config.VERSION;
-		final String i18n = Config.I18N;
-
-		Uri uri = new Uri.Builder().scheme("http")
-				.encodedAuthority(apiHost)
-				.appendPath(apiPath)
-				.appendPath(version)
-				.appendPath(i18n)
-				.appendEncodedPath(CREATE_FRIENDSHIP_REQUEST_PATH)
-				.build();
+		Uri uri = API_BASE_URI.buildUpon().appendPath(PATH_FRIENDSHIPS).build();
 
 		mHttpUriRequest = new HttpPost(uri.toString());
 	}

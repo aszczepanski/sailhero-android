@@ -12,7 +12,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import put.sailhero.Config;
 import put.sailhero.exception.SystemException;
 import put.sailhero.exception.UnauthorizedException;
 import put.sailhero.model.Port;
@@ -30,8 +29,8 @@ public class RetrievePortsRequestHelper extends RequestHelper {
 
 	public final static String TAG = "sailhero";
 
-	private final static String MAP_PATH = "map";
-	private final static String GET_PORTS_REQUEST_PATH = "ports";
+	private final static String PATH_MAP = "map";
+	private final static String PATH_PORTS = "ports";
 
 	private LinkedList<Port> mRetrievedPorts;
 
@@ -41,19 +40,7 @@ public class RetrievePortsRequestHelper extends RequestHelper {
 
 	@Override
 	protected void createMethodClient() {
-		final String apiHost = Config.API_HOST;
-		final String apiPath = Config.API_PATH;
-		final String version = Config.VERSION;
-		final String i18n = Config.I18N;
-
-		Uri uri = new Uri.Builder().scheme("http")
-				.encodedAuthority(apiHost)
-				.appendPath(apiPath)
-				.appendPath(version)
-				.appendPath(i18n)
-				.appendEncodedPath(MAP_PATH)
-				.appendEncodedPath(GET_PORTS_REQUEST_PATH)
-				.build();
+		Uri uri = API_BASE_URI.buildUpon().appendEncodedPath(PATH_MAP).appendEncodedPath(PATH_PORTS).build();
 
 		mHttpUriRequest = new HttpGet(uri.toString());
 	}

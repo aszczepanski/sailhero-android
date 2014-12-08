@@ -204,12 +204,13 @@ public class PeopleActivity extends BaseActivity implements LoaderManager.Loader
 			friend.setSurname(cursor.getString(FriendshipQuery.FRIENDSHIP_FRIEND_SURNAME));
 
 			int status = cursor.getInt(FriendshipQuery.FRIENDSHIP_STATUS);
+			int friendshipId = cursor.getInt(FriendshipQuery.FRIENDSHIP_ID);
 			if (status == SailHeroContract.Friendship.STATUS_ACCEPTED) {
-				friendshipsAccepted.add(new UsersAdapter.UserContext(friend, status));
+				friendshipsAccepted.add(new UsersAdapter.UserContext(friend, status, friendshipId));
 			} else if (status == SailHeroContract.Friendship.STATUS_PENDING) {
-				friendshipsPending.add(new UsersAdapter.UserContext(friend, status));
+				friendshipsPending.add(new UsersAdapter.UserContext(friend, status, friendshipId));
 			} else if (status == SailHeroContract.Friendship.STATUS_SENT) {
-				friendshipsSent.add(new UsersAdapter.UserContext(friend, status));
+				friendshipsSent.add(new UsersAdapter.UserContext(friend, status, friendshipId));
 			}
 
 			Log.e(TAG, "friendship: " + friend.getEmail() + " " + status);
