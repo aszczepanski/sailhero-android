@@ -163,23 +163,30 @@ public class PreferenceActivity extends BaseActivity {
 			getActivity().getContentResolver().unregisterContentObserver(mRegionsObserver);
 		}
 
-		private void onRegionsChanged() {
-			Toast.makeText(mContext, "onRegionsChanged()", Toast.LENGTH_SHORT).show();
-			Log.d(TAG, "onRegionsChanged()");
+		private interface RegionQuery {
+			int _TOKEN = 0x1;
 
-			getLoaderManager().restartLoader(1, null, PrefFragment.this);
-		}
-
-		@Override
-		public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-			String[] projection = new String[] {
+			String[] PROJECTION = {
 					SailHeroContract.Region.COLUMN_NAME_ID,
 					SailHeroContract.Region.COLUMN_NAME_FULL_NAME
 			};
 
+			int REGION_ID = 0;
+			int REGION_FULL_NAME = 1;
+		}
+
+		private void onRegionsChanged() {
+			Toast.makeText(mContext, "onRegionsChanged()", Toast.LENGTH_SHORT).show();
+			Log.d(TAG, "onRegionsChanged()");
+
+			getLoaderManager().restartLoader(RegionQuery._TOKEN, null, PrefFragment.this);
+		}
+
+		@Override
+		public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 			Loader<Cursor> loader = null;
-			loader = new CursorLoader(mContext, SailHeroContract.Region.CONTENT_URI, projection, null, null,
-					SailHeroContract.Alert.COLUMN_NAME_ID);
+			loader = new CursorLoader(mContext, SailHeroContract.Region.CONTENT_URI, RegionQuery.PROJECTION, null,
+					null, SailHeroContract.Region.COLUMN_NAME_ID);
 			return loader;
 		}
 
@@ -196,8 +203,8 @@ public class PreferenceActivity extends BaseActivity {
 				CharSequence[] regionsEntryValues = new CharSequence[data.getCount()];
 
 				while (data.moveToNext()) {
-					regionsEntries[data.getPosition()] = data.getString(1);
-					regionsEntryValues[data.getPosition()] = String.valueOf(data.getString(0));
+					regionsEntries[data.getPosition()] = data.getString(RegionQuery.REGION_FULL_NAME);
+					regionsEntryValues[data.getPosition()] = String.valueOf(data.getString(RegionQuery.REGION_ID));
 				}
 
 				mRegionListPreference.setEntries(regionsEntries);
