@@ -3,6 +3,9 @@ package put.sailhero.ui;
 import put.sailhero.R;
 import put.sailhero.model.Alert;
 import put.sailhero.provider.SailHeroContract;
+import put.sailhero.sync.CreateAlertRequestHelper;
+import put.sailhero.sync.RequestHelper;
+import put.sailhero.sync.RequestHelperAsyncTask;
 import put.sailhero.util.AccountUtils;
 import android.accounts.Account;
 import android.app.AlertDialog;
@@ -18,12 +21,24 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class DashboardActivity extends BaseActivity {
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.location.LocationClient;
+
+public class DashboardActivity extends BaseActivity implements GooglePlayServicesClient.ConnectionCallbacks,
+		GooglePlayServicesClient.OnConnectionFailedListener {
 
 	private Context mContext;
+
+	private LocationClient mLocationClient;
+
+	private boolean mLocationClientConnected = false;
 
 	private SensorManager mSensorManager;
 	private float[] mGData = new float[3];
@@ -41,12 +56,18 @@ public class DashboardActivity extends BaseActivity {
 	private TextView mAlertDistanceTextView;
 	private TextView mAlertBearingTextView;
 
+	private Button mBadWeatherConditionsButton;
+	private Button mClosedAreaButton;
+	private Button mYachtFailureButton;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_dashboard);
 
 		mContext = DashboardActivity.this;
+
+		mLocationClient = new LocationClient(mContext, this, this);
 
 		mLocationTextView = (TextView) findViewById(R.id.location_text_view);
 		mBearingTextView = (TextView) findViewById(R.id.bearing_text_view);
@@ -56,6 +77,30 @@ public class DashboardActivity extends BaseActivity {
 		mAlertDistanceTextView = (TextView) findViewById(R.id.alert_distance_text_view);
 		mAlertBearingTextView = (TextView) findViewById(R.id.alert_bearing_text_view);
 
+		mBadWeatherConditionsButton = (Button) findViewById(R.id.bad_weather_conditions_button);
+		mBadWeatherConditionsButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				submitAlert("BAD_WEATHER_CONDITIONS");
+			}
+		});
+
+		mClosedAreaButton = (Button) findViewById(R.id.closed_area_button);
+		mClosedAreaButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				submitAlert("CLOSED_AREA");
+			}
+		});
+
+		mYachtFailureButton = (Button) findViewById(R.id.yacht_failure_button);
+		mYachtFailureButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				submitAlert("YACHT_FAILURE");
+			}
+		});
+
 		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
 		overridePendingTransition(0, 0);
@@ -64,6 +109,26 @@ public class DashboardActivity extends BaseActivity {
 		if (account != null) {
 			Toast.makeText(getApplicationContext(), "Using: " + account.name, Toast.LENGTH_SHORT).show();
 		}
+	}
+
+	private void submitAlert(String alertType) {
+		if (!mLocationClientConnected) {
+			Toast.makeText(mContext, "Location services are not connected.", Toast.LENGTH_SHORT).show();
+			return;
+		}
+
+		final Location currentLocation = mLocationClient.getLastLocation();
+
+		final CreateAlertRequestHelper createAlertRequestHelper = new CreateAlertRequestHelper(mContext, alertType,
+				currentLocation, "");
+		RequestHelperAsyncTask createAlertTask = new RequestHelperAsyncTask(mContext, createAlertRequestHelper,
+				new RequestHelperAsyncTask.AsyncRequestListener() {
+					@Override
+					public void onSuccess(RequestHelper requestHelper) {
+						Log.d(TAG, "created alert with id " + createAlertRequestHelper.getRetrievedAlert().getId());
+					}
+				});
+		createAlertTask.execute();
 	}
 
 	private final SensorEventListener mListener = new SensorEventListener() {
@@ -149,6 +214,8 @@ public class DashboardActivity extends BaseActivity {
 	protected void onStart() {
 		Log.d(TAG, "MainActivity::onStart");
 		super.onStart();
+
+		mLocationClient.connect();
 	}
 
 	@Override
@@ -156,6 +223,7 @@ public class DashboardActivity extends BaseActivity {
 		Log.d(TAG, "MainActivity::onPause");
 		super.onPause();
 
+		mLocationClient.disconnect();
 		mSensorManager.unregisterListener(mListener);
 	}
 
@@ -219,5 +287,21 @@ public class DashboardActivity extends BaseActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult arg0) {
+		Toast.makeText(mContext, "Cannot connect to location services.", Toast.LENGTH_SHORT).show();
+		mLocationClientConnected = false;
+	}
+
+	@Override
+	public void onConnected(Bundle arg0) {
+		mLocationClientConnected = true;
+	}
+
+	@Override
+	public void onDisconnected() {
+		mLocationClientConnected = false;
 	}
 }
