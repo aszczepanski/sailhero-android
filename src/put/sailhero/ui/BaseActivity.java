@@ -243,8 +243,12 @@ public class BaseActivity extends ActionBarActivity {
 					.show();
 		}
 
-		GcmRegistrationAsyncTask gcmRegistrationTask = new GcmRegistrationAsyncTask(BaseActivity.this);
-		gcmRegistrationTask.execute();
+		// possible duplication, but who cares if server just overwrites it
+		String gcmRegistrationId = PrefUtils.getGcmRegistrationId(BaseActivity.this);
+		if (gcmRegistrationId == null) {
+			GcmRegistrationAsyncTask gcmRegistrationTask = new GcmRegistrationAsyncTask(BaseActivity.this);
+			gcmRegistrationTask.execute();
+		}
 	}
 
 	@Override
