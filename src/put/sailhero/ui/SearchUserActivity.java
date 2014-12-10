@@ -6,9 +6,6 @@ import java.util.Set;
 
 import put.sailhero.Config;
 import put.sailhero.R;
-import put.sailhero.R.id;
-import put.sailhero.R.layout;
-import put.sailhero.R.menu;
 import put.sailhero.model.User;
 import put.sailhero.sync.RequestHelper;
 import put.sailhero.sync.RequestHelperAsyncTask;

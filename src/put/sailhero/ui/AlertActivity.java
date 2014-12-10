@@ -6,9 +6,8 @@ import put.sailhero.provider.SailHeroContract;
 import put.sailhero.sync.CreateAlertRequestHelper;
 import put.sailhero.sync.RequestHelper;
 import put.sailhero.sync.RequestHelperAsyncTask;
-import put.sailhero.util.AccountUtils;
+import put.sailhero.util.SyncUtils;
 import put.sailhero.util.ThrottledContentObserver;
-import android.accounts.Account;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager;
@@ -96,8 +95,6 @@ public class AlertActivity extends BaseActivity implements GooglePlayServicesCli
 
 		private Context mContext;
 
-		private Account mAccount;
-
 		private Object mSyncObserverHandle;
 
 		private Spinner mSpinner;
@@ -154,11 +151,7 @@ public class AlertActivity extends BaseActivity implements GooglePlayServicesCli
 			mRefreshButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Bundle bundle = new Bundle();
-					// Disable sync backoff and ignore sync preferences. In other words...perform sync NOW!
-					bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-					bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-					ContentResolver.requestSync(mAccount, "put.sailhero", bundle);
+					SyncUtils.syncAll(mContext);
 				}
 			});
 
@@ -220,9 +213,7 @@ public class AlertActivity extends BaseActivity implements GooglePlayServicesCli
 		public void onResume() {
 			super.onResume();
 
-			mAccount = AccountUtils.getActiveAccount(mContext);
-
-			Uri uri = Uri.parse("content://put.sailhero").buildUpon().appendPath("alerts").build();
+			Uri uri = SailHeroContract.Alert.CONTENT_URI;
 			mAlertsObserver = new ThrottledContentObserver(new ThrottledContentObserver.Callbacks() {
 				@Override
 				public void onThrottledContentObserverFired() {
@@ -236,11 +227,7 @@ public class AlertActivity extends BaseActivity implements GooglePlayServicesCli
 			final int mask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING | ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE;
 			mSyncObserverHandle = ContentResolver.addStatusChangeListener(mask, mSyncStatusObserver);
 
-			Bundle bundle = new Bundle();
-			// Disable sync backoff and ignore sync preferences. In other words...perform sync NOW!
-			bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-			bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-			ContentResolver.requestSync(mAccount, "put.sailhero", bundle);
+			SyncUtils.syncAll(mContext);
 
 			onAlertsChanged();
 		}

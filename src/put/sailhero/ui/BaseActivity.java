@@ -18,6 +18,7 @@ import put.sailhero.sync.RequestHelperAsyncTask;
 import put.sailhero.sync.RetrieveUserRequestHelper;
 import put.sailhero.util.AccountUtils;
 import put.sailhero.util.PrefUtils;
+import put.sailhero.util.SyncUtils;
 import android.accounts.Account;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -371,12 +372,7 @@ public class BaseActivity extends ActionBarActivity {
 		}
 		mManualSyncRequest = true;
 		Log.d(TAG, "Requesting manual data refresh.");
-		Bundle bundle = new Bundle();
-		// Disable sync backoff and ignore sync preferences. In other words...perform sync NOW!
-		bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-		bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-
-		ContentResolver.requestSync(account, SailHeroContract.CONTENT_AUTHORITY, bundle);
+		SyncUtils.syncAll(BaseActivity.this);
 	}
 
 	private SyncStatusObserver mSyncStatusObserver = new SyncStatusObserver() {

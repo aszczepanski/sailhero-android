@@ -9,10 +9,9 @@ import put.sailhero.sync.RequestHelperAsyncTask;
 import put.sailhero.sync.SelectRegionRequestHelper;
 import put.sailhero.util.AccountUtils;
 import put.sailhero.util.PrefUtils;
+import put.sailhero.util.SyncUtils;
 import put.sailhero.util.ThrottledContentObserver;
-import android.accounts.Account;
 import android.app.LoaderManager;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
@@ -59,7 +58,6 @@ public class PreferenceActivity extends BaseActivity {
 	public static class PrefFragment extends PreferenceFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
 		private Context mContext;
-		private Account mAccount;
 
 		private ThrottledContentObserver mRegionsObserver;
 
@@ -136,8 +134,6 @@ public class PreferenceActivity extends BaseActivity {
 		public void onResume() {
 			super.onResume();
 
-			mAccount = AccountUtils.getActiveAccount(mContext);
-
 			mRegionsObserver = new ThrottledContentObserver(new ThrottledContentObserver.Callbacks() {
 				@Override
 				public void onThrottledContentObserverFired() {
@@ -147,11 +143,7 @@ public class PreferenceActivity extends BaseActivity {
 			getActivity().getContentResolver().registerContentObserver(SailHeroContract.Region.CONTENT_URI, true,
 					mRegionsObserver);
 
-			Bundle bundle = new Bundle();
-			// Disable sync backoff and ignore sync preferences. In other words...perform sync NOW!
-			bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-			bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-			ContentResolver.requestSync(mAccount, SailHeroContract.CONTENT_AUTHORITY, bundle);
+			SyncUtils.syncAll(mContext);
 
 			onRegionsChanged();
 		}

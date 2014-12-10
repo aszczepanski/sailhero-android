@@ -1,5 +1,6 @@
 package put.sailhero.sync;
 
+import put.sailhero.util.SyncUtils;
 import android.accounts.Account;
 import android.annotation.TargetApi;
 import android.content.AbstractThreadedSyncAdapter;
@@ -29,66 +30,82 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		Log.i(TAG, "Beginning network synchronization");
 
 		if (extras == null) {
-			// TODO: do sth
-		} else {
-			// TODO: select data to sync from extras
+			extras = new Bundle();
+			extras.putInt(SyncUtils.SYNC_EXTRAS_ITEMS_MASK, SyncUtils.SYNC_ALERTS | SyncUtils.SYNC_FRIENDSHIPS
+					| SyncUtils.SYNC_PORTS | SyncUtils.SYNC_REGIONS | SyncUtils.SYNC_USER_DATA);
 		}
 
-		RetrieveAlertsRequestHelper retrieveAlertsRequestHelper = new RetrieveAlertsRequestHelper(getContext());
-		try {
-			retrieveAlertsRequestHelper.doRequest();
-			retrieveAlertsRequestHelper.storeData();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		int syncItemsMask = extras.getInt(SyncUtils.SYNC_EXTRAS_ITEMS_MASK);
+
+		if (syncItemsMask == 0) {
+			Log.e(TAG, "syncItemsMask is 0");
+			return;
 		}
 
-		RetrieveRegionsRequestHelper retrieveRegionsRequestHelper = new RetrieveRegionsRequestHelper(getContext());
-		try {
-			retrieveRegionsRequestHelper.doRequest();
-			retrieveRegionsRequestHelper.storeData();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		// TODO: make separate functions
+		if ((syncItemsMask & SyncUtils.SYNC_ALERTS) > 0) {
+			RetrieveAlertsRequestHelper retrieveAlertsRequestHelper = new RetrieveAlertsRequestHelper(getContext());
+			try {
+				retrieveAlertsRequestHelper.doRequest();
+				retrieveAlertsRequestHelper.storeData();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+		if ((syncItemsMask & SyncUtils.SYNC_FRIENDSHIPS) > 0) {
+			RetrieveSentFriendshipsRequestHelper retrieveSentFriendshipsRequestHelper = new RetrieveSentFriendshipsRequestHelper(
+					getContext());
+			try {
+				retrieveSentFriendshipsRequestHelper.doRequest();
+				retrieveSentFriendshipsRequestHelper.storeData();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-		RetrievePortsRequestHelper retrievePortsRequestHelper = new RetrievePortsRequestHelper(getContext());
-		try {
-			retrievePortsRequestHelper.doRequest();
-			retrievePortsRequestHelper.storeData();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			RetrievePendingFriendshipsRequestHelper retrievePendingFriendshipsRequestHelper = new RetrievePendingFriendshipsRequestHelper(
+					getContext());
+			try {
+				retrievePendingFriendshipsRequestHelper.doRequest();
+				retrievePendingFriendshipsRequestHelper.storeData();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			RetrieveFriendshipsRequestHelper retrieveFriendshipsRequestHelper = new RetrieveFriendshipsRequestHelper(
+					getContext());
+			try {
+				retrieveFriendshipsRequestHelper.doRequest();
+				retrieveFriendshipsRequestHelper.storeData();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-
-		RetrieveSentFriendshipsRequestHelper retrieveSentFriendshipsRequestHelper = new RetrieveSentFriendshipsRequestHelper(
-				getContext());
-		try {
-			retrieveSentFriendshipsRequestHelper.doRequest();
-			retrieveSentFriendshipsRequestHelper.storeData();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if ((syncItemsMask & SyncUtils.SYNC_PORTS) > 0) {
+			RetrievePortsRequestHelper retrievePortsRequestHelper = new RetrievePortsRequestHelper(getContext());
+			try {
+				retrievePortsRequestHelper.doRequest();
+				retrievePortsRequestHelper.storeData();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-
-		RetrievePendingFriendshipsRequestHelper retrievePendingFriendshipsRequestHelper = new RetrievePendingFriendshipsRequestHelper(
-				getContext());
-		try {
-			retrievePendingFriendshipsRequestHelper.doRequest();
-			retrievePendingFriendshipsRequestHelper.storeData();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if ((syncItemsMask & SyncUtils.SYNC_REGIONS) > 0) {
+			RetrieveRegionsRequestHelper retrieveRegionsRequestHelper = new RetrieveRegionsRequestHelper(getContext());
+			try {
+				retrieveRegionsRequestHelper.doRequest();
+				retrieveRegionsRequestHelper.storeData();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-
-		RetrieveFriendshipsRequestHelper retrieveFriendshipsRequestHelper = new RetrieveFriendshipsRequestHelper(
-				getContext());
-		try {
-			retrieveFriendshipsRequestHelper.doRequest();
-			retrieveFriendshipsRequestHelper.storeData();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if ((syncItemsMask & SyncUtils.SYNC_USER_DATA) > 0) {
+			// TODO
 		}
 	}
 }

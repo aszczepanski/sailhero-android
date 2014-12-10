@@ -85,15 +85,7 @@ public class PeopleActivity extends BaseActivity implements LoaderManager.Loader
 		getContentResolver().registerContentObserver(SailHeroContract.Friendship.CONTENT_URI, true,
 				mFriendshipsObserver);
 
-		//		Account account = AccountUtils.getActiveAccount(getApplicationContext());
-		//		ContentResolver.setIsSyncable(account, SailHeroContract.CONTENT_AUTHORITY, 1);
-
-		//		Bundle bundle = new Bundle();
-		//		// Disable sync backoff and ignore sync preferences. In other words...perform sync NOW!
-		//		bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-		//		bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-		//
-		//		ContentResolver.requestSync(account, SailHeroContract.CONTENT_AUTHORITY, bundle);
+		// SyncUtils.syncAll(PeopleActivity.this);
 	}
 
 	@Override

@@ -2,14 +2,13 @@ package put.sailhero.ui;
 
 import put.sailhero.R;
 import put.sailhero.model.Alert;
-import put.sailhero.provider.SailHeroContract;
 import put.sailhero.sync.CreateAlertRequestHelper;
 import put.sailhero.sync.RequestHelper;
 import put.sailhero.sync.RequestHelperAsyncTask;
 import put.sailhero.util.AccountUtils;
+import put.sailhero.util.SyncUtils;
 import android.accounts.Account;
 import android.app.AlertDialog;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.hardware.Sensor;
@@ -37,8 +36,6 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 	private Context mContext;
 
 	private LocationClient mLocationClient;
-
-	private boolean mLocationClientConnected = false;
 
 	private SensorManager mSensorManager;
 	private float[] mGData = new float[3];
@@ -112,7 +109,7 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 	}
 
 	private void submitAlert(String alertType) {
-		if (!mLocationClientConnected) {
+		if (!mLocationClient.isConnected()) {
 			Toast.makeText(mContext, "Location services are not connected.", Toast.LENGTH_SHORT).show();
 			return;
 		}
@@ -247,16 +244,7 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 			return;
 		}
 
-		// TODO: create SyncUtils !!!
-		Account account = AccountUtils.getActiveAccount(getApplicationContext());
-		// ContentResolver.setIsSyncable(account, SailHeroContract.CONTENT_AUTHORITY, 1);
-
-		Bundle bundle = new Bundle();
-		// Disable sync backoff and ignore sync preferences. In other words...perform sync NOW!
-		bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-		bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-
-		ContentResolver.requestSync(account, SailHeroContract.CONTENT_AUTHORITY, bundle);
+		SyncUtils.syncAll(mContext);
 
 		Sensor gsensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 		Sensor msensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
@@ -292,16 +280,13 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 	@Override
 	public void onConnectionFailed(ConnectionResult arg0) {
 		Toast.makeText(mContext, "Cannot connect to location services.", Toast.LENGTH_SHORT).show();
-		mLocationClientConnected = false;
 	}
 
 	@Override
 	public void onConnected(Bundle arg0) {
-		mLocationClientConnected = true;
 	}
 
 	@Override
 	public void onDisconnected() {
-		mLocationClientConnected = false;
 	}
 }

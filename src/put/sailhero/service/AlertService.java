@@ -6,11 +6,13 @@ import put.sailhero.model.Alert;
 import put.sailhero.model.User;
 import put.sailhero.provider.SailHeroContract;
 import put.sailhero.util.PrefUtils;
+import put.sailhero.util.ThrottledContentObserver;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -38,6 +40,8 @@ public class AlertService extends Service implements GooglePlayServicesClient.Co
 
 	private NotificationManager mNotificationManager;
 	private NotificationCompat.Builder mNotificationBuilder;
+
+	private ThrottledContentObserver mAlertsObserver;
 
 	private final IBinder mBinder = new LocalBinder();
 
@@ -93,6 +97,15 @@ public class AlertService extends Service implements GooglePlayServicesClient.Co
 		mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
 
 		mLocationClient.connect();
+
+		Uri uri = SailHeroContract.Alert.CONTENT_URI;
+		mAlertsObserver = new ThrottledContentObserver(new ThrottledContentObserver.Callbacks() {
+			@Override
+			public void onThrottledContentObserverFired() {
+				refreshAlertData(null);
+			}
+		});
+		getContentResolver().registerContentObserver(uri, true, mAlertsObserver);
 	}
 
 	@Override
@@ -105,6 +118,8 @@ public class AlertService extends Service implements GooglePlayServicesClient.Co
 		mLocationClient.disconnect();
 
 		mNotificationManager.cancel(ALERT_NOTIFICATION_ID);
+
+		getContentResolver().unregisterContentObserver(mAlertsObserver);
 
 		PrefUtils.setAlertToRespond(this, null);
 		PrefUtils.setLastKnownLocation(this, null);
@@ -123,7 +138,25 @@ public class AlertService extends Service implements GooglePlayServicesClient.Co
 	public void onLocationChanged(Location location) {
 		Log.d(Config.TAG, location.getLatitude() + " " + location.getLongitude());
 
-		// TODO: additional search conditions (e.g. not responded yet)
+		PrefUtils.setLastKnownLocation(this, location);
+
+		refreshAlertData(location);
+	}
+
+	public void refreshAlertData(Location location) {
+		if (location == null) {
+			if (mLocationClient.isConnected()) {
+				location = mLocationClient.getLastLocation();
+			} else {
+				Location lastKnownLocation = PrefUtils.getLastKnownLocation(AlertService.this);
+				if (lastKnownLocation != null) {
+					location = lastKnownLocation;
+				} else {
+					Log.e(Config.TAG, "cannot refresh alert data, unknown location");
+					return;
+				}
+			}
+		}
 
 		User currentUser = PrefUtils.getUser(this);
 
@@ -186,7 +219,6 @@ public class AlertService extends Service implements GooglePlayServicesClient.Co
 		}
 
 		PrefUtils.setAlertToRespond(this, closestAlertToRespond);
-		PrefUtils.setLastKnownLocation(this, location);
 	}
 
 	@Override

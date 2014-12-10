@@ -20,7 +20,7 @@ public class ConfirmAlertRequestHelper extends AlertResponseRequestHelper {
 	@Override
 	protected void createMethodClient() {
 		Uri uri = API_BASE_URI.buildUpon()
-				.appendEncodedPath(PATH_ALERTS)
+				.appendPath(PATH_ALERTS)
 				.appendPath(mSentId.toString())
 				.appendPath(PATH_CONFIRMATIONS)
 				.build();
