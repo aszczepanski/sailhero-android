@@ -12,10 +12,11 @@
     <dimen name="keyline_2_session_detail">@dimen/keyline_2</dimen>
 
     <!-- navdrawer -->
-    <dimen name="navdrawer_width">240dp</dimen>
+    <dimen name="navdrawer_width">260dp</dimen>
     <dimen name="navdrawer_margin_top">8dp</dimen>
     <dimen name="navdrawer_margin_bottom">8dp</dimen>
     <dimen name="navdrawer_account_box_height">140dp</dimen>
+    <dimen name="navdrawer_profile_image_size">40dp</dimen>
 
     <!-- body content -->
     <dimen name="element_spacing_normal">8dp</dimen>
