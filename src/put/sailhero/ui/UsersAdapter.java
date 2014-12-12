@@ -8,12 +8,13 @@ import put.sailhero.R;
 import put.sailhero.model.User;
 import put.sailhero.provider.SailHeroContract;
 import put.sailhero.sync.AcceptFriendshipRequestHelper;
+import put.sailhero.sync.CancelFriendshipRequestHelper;
 import put.sailhero.sync.CreateFriendshipRequestHelper;
+import put.sailhero.sync.DeleteFriendshipRequestHelper;
 import put.sailhero.sync.DenyFriendshipRequestHelper;
 import put.sailhero.sync.RequestHelper;
 import put.sailhero.sync.RequestHelperAsyncTask;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.graphics.Typeface;
 import android.util.Log;
@@ -23,17 +24,23 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+
 public class UsersAdapter implements ListAdapter {
 
+	private static final int TAG_ID_FOR_VIEW_TYPE = R.id.user_viewtype_tagkey;
 	private static final int VIEW_TYPE_FRIEND = 0;
 	private static final int VIEW_TYPE_PENDING = 1;
 	private static final int VIEW_TYPE_SENT = 2;
 	private static final int VIEW_TYPE_NORMAL = 3;
+
+	private static final String MY_VIEW_TAG = "SailHero_MY_VIEW_TAG";
 
 	private Context mContext;
 
@@ -80,32 +87,38 @@ public class UsersAdapter implements ListAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		// TODO Auto-generated method stub
 		int itemViewType = getItemViewType(position);
 		int layoutResId = R.layout.list_item_user;
 
-		if (convertView == null) {
+		if (convertView == null || !MY_VIEW_TAG.equals(convertView.getTag())
+				|| convertView.getTag(TAG_ID_FOR_VIEW_TYPE) == null
+				|| !convertView.getTag(TAG_ID_FOR_VIEW_TYPE).equals(itemViewType)) {
 			convertView = ((LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(
 					layoutResId, parent, false);
+			convertView.setTag(TAG_ID_FOR_VIEW_TYPE, itemViewType);
 		}
 
 		if (position < 0 || position >= mUserContexts.size()) {
-			Log.e(Config.TAG, "Invalid view position passed to MyScheduleAdapter: " + position);
+			Log.e(Config.TAG, "Invalid view position passed to UsersAdapter: " + position);
 			return convertView;
 		}
 
+		convertView.setTag(MY_VIEW_TAG);
+
 		final UserContext userContext = mUserContexts.get(position);
 
-		FrameLayout mainBoxView = (FrameLayout) convertView.findViewById(R.id.main_box);
+		LinearLayout mainBoxView = (LinearLayout) convertView.findViewById(R.id.main_box);
 		LinearLayout bottomBoxView = (LinearLayout) convertView.findViewById(R.id.bottom_box);
-		LinearLayout rightBoxView = (LinearLayout) convertView.findViewById(R.id.right_box);
+		FrameLayout rightBoxView = (FrameLayout) convertView.findViewById(R.id.right_box);
+		ImageView profileImageView = (ImageView) convertView.findViewById(R.id.profile_image);
 		TextView userTitleTextView = (TextView) convertView.findViewById(R.id.slot_user_title);
 		TextView userSubtitleTextView = (TextView) convertView.findViewById(R.id.slot_user_subtitle);
 
 		Button inviteButton = (Button) convertView.findViewById(R.id.invite_button);
 		Button acceptButton = (Button) convertView.findViewById(R.id.accept_button);
 		Button denyButton = (Button) convertView.findViewById(R.id.deny_button);
-		Button blockButton = (Button) convertView.findViewById(R.id.block_button);
+		Button cancelButton = (Button) convertView.findViewById(R.id.cancel_button);
+		Button removeButton = (Button) convertView.findViewById(R.id.remove_button);
 
 		// boxView.setBackgroundResource(R.drawable.user_item_background_normal);
 		// boxView.setForeground(null);
@@ -114,28 +127,16 @@ public class UsersAdapter implements ListAdapter {
 		final Integer friendshipId = userContext.getFriendshipId();
 		Integer status = userContext.getResponseStatus();
 
-		if (status == null) {
-			Cursor cursor = mContext.getContentResolver().query(SailHeroContract.Friendship.CONTENT_URI, new String[] {
-				SailHeroContract.Friendship.COLUMN_NAME_STATUS
-			}, SailHeroContract.Friendship.COLUMN_NAME_FRIEND_ID + "=?", new String[] {
-				user.getId().toString()
-			}, null);
-
-			if (cursor.moveToFirst()) {
-				status = cursor.getInt(0);
-			} else {
-				status = SailHeroContract.Friendship.STATUS_STRANGER;
-			}
-
-			cursor.close();
-		}
-
 		userTitleTextView.setText(user.getName() + " " + user.getSurname());
 		userTitleTextView.setTextColor(mContext.getResources().getColor(R.color.body_text_1));
 		userTitleTextView.setTypeface(Typeface.SANS_SERIF, Typeface.NORMAL);
 
 		userSubtitleTextView.setText(user.getEmail());
 		userSubtitleTextView.setTextColor(mContext.getResources().getColor(R.color.body_text_2));
+
+		if (user.getAvatarUrl() != null) {
+			Glide.with(mContext).load(user.getAvatarUrl()).asBitmap().into(profileImageView);
+		}
 
 		if (status == SailHeroContract.Friendship.STATUS_STRANGER) {
 			bottomBoxView.setVisibility(View.GONE);
@@ -158,6 +159,22 @@ public class UsersAdapter implements ListAdapter {
 			});
 		} else if (status == SailHeroContract.Friendship.STATUS_ACCEPTED) {
 			bottomBoxView.setVisibility(View.GONE);
+			removeButton.setVisibility(View.VISIBLE);
+			removeButton.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					RequestHelperAsyncTask deleteFriendshipTask = new RequestHelperAsyncTask(mContext,
+							new DeleteFriendshipRequestHelper(mContext, friendshipId),
+							new RequestHelperAsyncTask.AsyncRequestListener() {
+								@Override
+								public void onSuccess(RequestHelper requestHelper) {
+									Toast.makeText(mContext, "Friendship deleted.", Toast.LENGTH_SHORT).show();
+									notifyObservers();
+								}
+							});
+					deleteFriendshipTask.execute();
+				}
+			});
 		} else if (status == SailHeroContract.Friendship.STATUS_PENDING) {
 			acceptButton.setVisibility(View.VISIBLE);
 			acceptButton.setOnClickListener(new OnClickListener() {
@@ -186,7 +203,7 @@ public class UsersAdapter implements ListAdapter {
 							new RequestHelperAsyncTask.AsyncRequestListener() {
 								@Override
 								public void onSuccess(RequestHelper requestHelper) {
-									Toast.makeText(mContext, "User invited.", Toast.LENGTH_SHORT).show();
+									Toast.makeText(mContext, "Friendship denied.", Toast.LENGTH_SHORT).show();
 									notifyObservers();
 								}
 							});
@@ -195,8 +212,24 @@ public class UsersAdapter implements ListAdapter {
 			});
 		} else if (status == SailHeroContract.Friendship.STATUS_SENT) {
 			bottomBoxView.setVisibility(View.GONE);
-		} else if (status == SailHeroContract.Friendship.STATUS_BLOCKED) {
-			bottomBoxView.setVisibility(View.GONE);
+			cancelButton.setVisibility(View.VISIBLE);
+			cancelButton.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					RequestHelperAsyncTask cancelFriendshipTask = new RequestHelperAsyncTask(mContext,
+							new CancelFriendshipRequestHelper(mContext, friendshipId),
+							new RequestHelperAsyncTask.AsyncRequestListener() {
+								@Override
+								public void onSuccess(RequestHelper requestHelper) {
+									Toast.makeText(mContext, "Friendship canceled.", Toast.LENGTH_SHORT).show();
+									notifyObservers();
+								}
+							});
+					cancelFriendshipTask.execute();
+				}
+			});
+		} else {
+			Log.e(Config.TAG, "Invalid item type in UsersAdapter.");
 		}
 
 		return convertView;
@@ -204,8 +237,24 @@ public class UsersAdapter implements ListAdapter {
 
 	@Override
 	public int getItemViewType(int position) {
-		// TODO Auto-generated method stub
-		return VIEW_TYPE_NORMAL;
+		if (position < 0 || position >= mUserContexts.size()) {
+			Log.e(Config.TAG, "Invalid position passed to UsersAdapter (" + position + ")");
+			return VIEW_TYPE_NORMAL;
+		}
+
+		UserContext userContext = mUserContexts.get(position);
+		switch (userContext.getResponseStatus()) {
+		case SailHeroContract.Friendship.STATUS_STRANGER:
+			return VIEW_TYPE_NORMAL;
+		case SailHeroContract.Friendship.STATUS_SENT:
+			return VIEW_TYPE_SENT;
+		case SailHeroContract.Friendship.STATUS_PENDING:
+			return VIEW_TYPE_PENDING;
+		case SailHeroContract.Friendship.STATUS_ACCEPTED:
+			return VIEW_TYPE_FRIEND;
+		default:
+			return VIEW_TYPE_NORMAL;
+		}
 	}
 
 	@Override

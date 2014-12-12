@@ -1,5 +1,6 @@
 package put.sailhero.ui;
 
+import put.sailhero.Config;
 import put.sailhero.R;
 import put.sailhero.model.Region;
 import put.sailhero.provider.SailHeroContract;
@@ -53,6 +54,12 @@ public class PreferenceActivity extends BaseActivity {
 		}
 
 		overridePendingTransition(0, 0);
+	}
+
+	@Override
+	protected void onDestroy() {
+		Log.i(Config.TAG, "PreferenceActivity::onDestroy");
+		super.onDestroy();
 	}
 
 	public static class PrefFragment extends PreferenceFragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -112,6 +119,8 @@ public class PreferenceActivity extends BaseActivity {
 						@Override
 						public void onSuccess(RequestHelper requestHelper) {
 							// TODO: perform clear in background
+
+							Log.w(Config.TAG, "token succesfully revoked");
 
 							PrefUtils.clear(getActivity());
 

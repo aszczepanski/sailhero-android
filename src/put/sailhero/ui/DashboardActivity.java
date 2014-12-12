@@ -45,6 +45,8 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 	private float[] mOrientation = new float[3];
 	private int mCount;
 
+	private Alert mClosestAlert;
+
 	private TextView mLocationTextView;
 	private TextView mBearingTextView;
 	private TextView mSpeedTextView;
@@ -61,6 +63,8 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_dashboard);
+
+		Log.i(TAG, "MainActivity::onCreate");
 
 		mContext = DashboardActivity.this;
 
@@ -161,29 +165,36 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 	};
 
 	@Override
-	protected void onAlertToRespondUpdate(Location currentLocation, Alert alert) {
-		if (currentLocation == null || alert == null) {
-			return;
-		}
-
-		mLocationTextView.setText("location: " + currentLocation.getLatitude() + " " + currentLocation.getLongitude());
-		if (currentLocation.hasSpeed()) {
-			mSpeedTextView.setText("speed: " + currentLocation.getSpeed());
+	protected void onClosestAlertUpdate(Location currentLocation, Alert alert) {
+		if (currentLocation != null) {
+			mLocationTextView.setText("location: " + currentLocation.getLatitude() + " "
+					+ currentLocation.getLongitude());
+			if (currentLocation.hasSpeed()) {
+				mSpeedTextView.setText("speed: " + currentLocation.getSpeed());
+			} else {
+				mSpeedTextView.setText("speed: " + "N/A");
+			}
+			if (currentLocation.hasBearing()) {
+				mBearingTextView.setText("bearing: " + currentLocation.getBearing());
+			} else {
+				mBearingTextView.setText("bearing: " + "N/A");
+			}
 		} else {
+			mLocationTextView.setText("location: " + "N/A");
 			mSpeedTextView.setText("speed: " + "N/A");
-		}
-
-		if (currentLocation.hasBearing()) {
-			mBearingTextView.setText("bearing: " + currentLocation.getBearing());
-		} else {
 			mBearingTextView.setText("bearing: " + "N/A");
 		}
 
-		// TODO: alert == null
-		mAlertTextView.setText(alert.getId() + " " + alert.getAlertType());
-		mAlertDistanceTextView.setText("distance: " + currentLocation.distanceTo(alert.getLocation()));
+		if (alert != null) {
+			mAlertTextView.setText(alert.getId() + " " + alert.getAlertType());
+			mAlertDistanceTextView.setText("distance: " + currentLocation.distanceTo(alert.getLocation()));
 
-		mAlertBearingTextView.setText("bearing: " + currentLocation.bearingTo(alert.getLocation()));
+			mAlertBearingTextView.setText("bearing: " + currentLocation.bearingTo(alert.getLocation()));
+		} else {
+			mAlertTextView.setText("N/A");
+			mAlertDistanceTextView.setText("distance: " + "N/A");
+			mAlertBearingTextView.setText("bearing: " + "N/A");
+		}
 	}
 
 	@Override
@@ -219,15 +230,15 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 	protected void onPause() {
 		Log.d(TAG, "MainActivity::onPause");
 		super.onPause();
-
-		mLocationClient.disconnect();
-		mSensorManager.unregisterListener(mListener);
 	}
 
 	@Override
 	protected void onStop() {
 		Log.d(TAG, "MainActivity::onStop");
 		super.onStop();
+
+		mLocationClient.disconnect();
+		mSensorManager.unregisterListener(mListener);
 	}
 
 	@Override
@@ -278,15 +289,18 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 	}
 
 	@Override
-	public void onConnectionFailed(ConnectionResult arg0) {
+	public void onConnectionFailed(ConnectionResult connectionResult) {
 		Toast.makeText(mContext, "Cannot connect to location services.", Toast.LENGTH_SHORT).show();
+		Log.e(TAG, "Cannot connect to location services.");
 	}
 
 	@Override
-	public void onConnected(Bundle arg0) {
+	public void onConnected(Bundle bundle) {
 	}
 
 	@Override
 	public void onDisconnected() {
+		Toast.makeText(mContext, "Location services disconnected.", Toast.LENGTH_SHORT).show();
+		Log.e(TAG, "Location services disconnected.");
 	}
 }

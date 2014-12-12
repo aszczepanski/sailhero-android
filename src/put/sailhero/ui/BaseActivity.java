@@ -2,6 +2,8 @@ package put.sailhero.ui;
 
 import java.util.ArrayList;
 
+import com.bumptech.glide.Glide;
+
 import put.sailhero.Config;
 import put.sailhero.R;
 import put.sailhero.gcm.GcmRegistrationAsyncTask;
@@ -228,11 +230,11 @@ public class BaseActivity extends ActionBarActivity {
 
 		@Override
 		public void onClosestAlertUpdate(Location currentLocation, Alert alert) {
-			BaseActivity.this.onAlertToRespondUpdate(currentLocation, alert);
+			BaseActivity.this.onClosestAlertUpdate(currentLocation, alert);
 		}
 	};
 
-	protected void onAlertToRespondUpdate(Location currentLocation, Alert alert) {
+	protected void onClosestAlertUpdate(Location currentLocation, Alert alert) {
 	}
 
 	protected void onUserProfileReceived() {
@@ -310,7 +312,7 @@ public class BaseActivity extends ActionBarActivity {
 				}
 			}
 
-			onAlertToRespondUpdate(lastKnownLocation, alertToRespond);
+			onClosestAlertUpdate(null, null);
 		}
 	}
 
@@ -483,16 +485,26 @@ public class BaseActivity extends ActionBarActivity {
 		TextView nameTextView = (TextView) findViewById(R.id.profile_name_text);
 		TextView emailTextView = (TextView) findViewById(R.id.profile_email_text);
 
+		ImageView profileImageView = (ImageView) findViewById(R.id.profile_image);
+		// String profileImageUrl = "https://s3.amazonaws.com/sailhero-stg/1418158640-gijffsdhzshxsbkpccsy-data-uri.jpg";
+		// Glide.with(BaseActivity.this).load(profileImageUrl).asBitmap().into(profileImageView);
+
 		User currentUser = PrefUtils.getUser(BaseActivity.this);
 		if (currentUser == null) {
 			nameTextView.setVisibility(View.GONE);
 			emailTextView.setVisibility(View.GONE);
+			profileImageView.setVisibility(View.GONE);
 		} else {
 			nameTextView.setVisibility(View.VISIBLE);
 			nameTextView.setText(currentUser.getName() + " " + currentUser.getSurname());
 
 			emailTextView.setVisibility(View.VISIBLE);
 			emailTextView.setText(currentUser.getEmail());
+
+			profileImageView.setVisibility(View.VISIBLE);
+			if (currentUser.getAvatarUrl() != null) {
+				Glide.with(BaseActivity.this).load(currentUser.getAvatarUrl()).asBitmap().into(profileImageView);
+			}
 		}
 
 	}

@@ -27,6 +27,7 @@ public class YachtActivity extends BaseActivity {
 	private EditText mWidthEditText;
 	private EditText mCrewEditText;
 
+	private Button mAvatarButton;
 	private Button mSendButton;
 
 	private Yacht mCurrentYacht;

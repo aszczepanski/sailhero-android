@@ -70,10 +70,10 @@
         <activity
             android:name=".ui.YachtActivity"
             android:label="@string/title_activity_yacht"
-            android:parentActivityName=".ui.MapActivity" >
+            android:parentActivityName=".ui.PreferenceActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="put.sailhero.android.app.TestMapActivity" />
+                android:value="put.sailhero.ui.PreferenceActivity" />
 
             <intent-filter>
                 <action android:name="android.sailhero.YACHT" />
@@ -95,7 +95,7 @@
             android:parentActivityName=".ui.MapActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="put.sailhero.android.app.TestMapActivity" />
+                android:value="put.sailhero.ui.MapActivity" />
         </activity>
 
         <receiver
@@ -173,8 +173,22 @@
                 android:resource="@xml/searchable_user" />
         </activity>
         <activity
-            android:name="put.sailhero.ui.HelpActivity"
+            android:name=".ui.HelpActivity"
             android:label="@string/title_activity_help" >
+        </activity>
+        <activity
+            android:name="put.sailhero.ui.UserActivity"
+            android:label="@string/title_activity_user"
+            android:parentActivityName=".ui.PreferenceActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="put.sailhero.ui.PreferenceActivity" />
+
+            <intent-filter>
+                <action android:name="android.sailhero.USER" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
     </application>
 

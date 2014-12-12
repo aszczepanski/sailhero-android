@@ -30,38 +30,75 @@
                 android:paddingTop="@dimen/activity_vertical_margin" >
 
                 <EditText
-                    android:id="@+id/ActivityYachtNameEditText"
+                    android:id="@+id/email_edit_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:hint="name" />
+                    android:hint="email"
+                    android:inputType="textEmailAddress" />
 
                 <EditText
-                    android:id="@+id/ActivityYachtLengthEditText"
+                    android:id="@+id/password_edit_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:hint="length"
-                    android:inputType="numberDecimal" />
+                    android:hint="password"
+                    android:inputType="textPassword" />
 
                 <EditText
-                    android:id="@+id/ActivityYachtWidthEditText"
+                    android:id="@+id/password_confirmation_edit_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:hint="width"
-                    android:inputType="numberDecimal" />
+                    android:hint="password confirmation"
+                    android:inputType="textPassword" />
 
                 <EditText
-                    android:id="@+id/ActivityYachtCrewEditText"
+                    android:id="@+id/name_edit_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:hint="crew"
-                    android:inputType="number" />
+                    android:hint="name"
+                    android:inputType="textPersonName" />
+
+                <EditText
+                    android:id="@+id/surname_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="surname"
+                    android:inputType="textPersonName" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal" >
+
+                    <put.sailhero.ui.widget.BezelImageView
+                        android:id="@+id/profile_image"
+                        android:layout_width="@dimen/navdrawer_profile_image_size"
+                        android:layout_height="@dimen/navdrawer_profile_image_size"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/person_image_empty"
+                        app:maskDrawable="@drawable/circle_mask" />
+
+                    <Button
+                        android:id="@+id/avatar_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:background="@color/theme_primary"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="Select a new avatar"
+                        android:textAllCaps="true"
+                        android:textColor="#fff"
+                        android:textSize="14sp"
+                        android:textStyle="normal" />
+                </LinearLayout>
 
                 <Button
-                    android:id="@+id/ActivityYachtSendButton"
+                    android:id="@+id/send_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
@@ -74,8 +111,6 @@
                     android:textStyle="normal" />
             </LinearLayout>
         </LinearLayout>
-
-        <include layout="@layout/navdrawer" />
     </android.support.v4.widget.DrawerLayout>
 
 </LinearLayout>

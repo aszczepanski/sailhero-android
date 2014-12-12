@@ -23,6 +23,13 @@
     <PreferenceCategory
         android:key="user_settings_preference_category"
         android:title="User settings" >
+        <PreferenceScreen
+            android:key="user_preference_screen"
+            android:summary="Edit your profile parameters"
+            android:title="User profile" >
+            <intent android:action="android.sailhero.USER" />
+        </PreferenceScreen>
+
         <ListPreference
             android:dialogTitle="Select a region"
             android:key="region_list_preference"
@@ -31,7 +38,7 @@
 
         <PreferenceScreen
             android:key="yacht_preference_screen"
-            android:summary="Insert your yacht parameters"
+            android:summary="Edit your yacht parameters"
             android:title="Yacht" >
             <intent android:action="android.sailhero.YACHT" />
         </PreferenceScreen>

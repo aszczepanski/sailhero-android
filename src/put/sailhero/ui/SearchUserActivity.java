@@ -6,14 +6,20 @@ import java.util.Set;
 
 import put.sailhero.Config;
 import put.sailhero.R;
+import put.sailhero.model.Friendship;
 import put.sailhero.model.User;
+import put.sailhero.provider.SailHeroContract;
 import put.sailhero.sync.RequestHelper;
 import put.sailhero.sync.RequestHelperAsyncTask;
 import put.sailhero.sync.SearchUserRequestHelper;
+import put.sailhero.util.SyncUtils;
 import android.app.ListFragment;
 import android.app.SearchManager;
 import android.content.Context;
+import android.database.ContentObserver;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
@@ -21,6 +27,8 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 public class SearchUserActivity extends BaseActivity implements UsersListFragment.Listener {
+
+	private LinkedList<User> mFoundUsers;
 
 	private UsersAdapter[] mUserAdapters = new UsersAdapter[1];
 	private Set<UsersListFragment> mUserListFragments = new HashSet<UsersListFragment>();
@@ -39,6 +47,16 @@ public class SearchUserActivity extends BaseActivity implements UsersListFragmen
 		if (savedInstanceState == null) {
 			getFragmentManager().beginTransaction().add(R.id.main_content, new UsersListFragment()).commit();
 		}
+
+		getContentResolver().registerContentObserver(SailHeroContract.Friendship.CONTENT_URI, true,
+				mFriendshipsObserver);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+
+		getContentResolver().unregisterContentObserver(mFriendshipsObserver);
 	}
 
 	@Override
@@ -94,30 +112,64 @@ public class SearchUserActivity extends BaseActivity implements UsersListFragmen
 						Log.e(Config.TAG, "onSuccess");
 						SearchUserRequestHelper searchUserRequest = (SearchUserRequestHelper) requestHelper;
 
-						LinkedList<UsersAdapter.UserContext> userContexts = new LinkedList<UsersAdapter.UserContext>();
+						mFoundUsers = searchUserRequest.getRetrievedUsers();
 
-						for (User user : searchUserRequest.getRetrievedUsers()) {
-//							int status = SailHeroContract.Friendship.STATUS_STRANGER;
-//
-//							Log.i(Config.TAG, user.getEmail());
-//							Cursor cursor = getContentResolver().query(SailHeroContract.Friendship.CONTENT_URI,
-//									new String[] {
-//										SailHeroContract.Friendship.COLUMN_NAME_STATUS
-//									}, "id=?", new String[] {
-//										user.getId().toString()
-//									}, null);
-//							if (cursor.getCount() > 0) {
-//								status = cursor.getInt(0);
-//							}
-//							cursor.close();
-
-							userContexts.add(new UsersAdapter.UserContext(user, null, null));
-						}
-
-						mUserAdapters[0].updateItems(userContexts);
+						reloadFriendships();
+						SyncUtils.syncFriendships(SearchUserActivity.this);
 					}
 				});
 		searchUserTask.execute();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+	}
+
+	private final ContentObserver mFriendshipsObserver = new ContentObserver(new Handler()) {
+		@Override
+		public void onChange(boolean selfChange) {
+			reloadFriendships();
+		}
+	};
+
+	private void reloadFriendships() {
+		if (mFoundUsers == null) {
+			return;
+		}
+
+		LinkedList<UsersAdapter.UserContext> userContexts = new LinkedList<UsersAdapter.UserContext>();
+
+		for (User user : mFoundUsers) {
+			Friendship friendship = new Friendship();
+
+			Cursor cursor = getContentResolver().query(SailHeroContract.Friendship.CONTENT_URI,
+					FriendshipQuery.PROJECTION, SailHeroContract.Friendship.COLUMN_NAME_FRIEND_ID + "=?", new String[] {
+						user.getId().toString()
+					}, null);
+
+			friendship.setFriend(user);
+
+			if (cursor.moveToFirst()) {
+				friendship.setId(cursor.getInt(FriendshipQuery.FRIENDSHIP_ID));
+				friendship.setStatus(cursor.getInt(FriendshipQuery.FRIENDSHIP_STATUS));
+			} else {
+				friendship.setStatus(SailHeroContract.Friendship.STATUS_STRANGER);
+			}
+
+			cursor.close();
+
+			userContexts.add(new UsersAdapter.UserContext(friendship.getFriend(), friendship.getStatus(),
+					friendship.getId()));
+		}
+
+		mUserAdapters[0].updateItems(userContexts);
 	}
 
 	@Override
@@ -141,5 +193,25 @@ public class SearchUserActivity extends BaseActivity implements UsersListFragmen
 	@Override
 	public void onFragmentDetached(UsersListFragment fragment) {
 		mUserListFragments.remove(fragment);
+	}
+
+	private interface FriendshipQuery {
+		int _TOKEN = 0x1;
+
+		String[] PROJECTION = {
+				SailHeroContract.Friendship.COLUMN_NAME_ID,
+				SailHeroContract.Friendship.COLUMN_NAME_STATUS,
+				SailHeroContract.Friendship.COLUMN_NAME_FRIEND_ID,
+				SailHeroContract.Friendship.COLUMN_NAME_FRIEND_EMAIL,
+				SailHeroContract.Friendship.COLUMN_NAME_FRIEND_NAME,
+				SailHeroContract.Friendship.COLUMN_NAME_FRIEND_SURNAME
+		};
+
+		int FRIENDSHIP_ID = 0;
+		int FRIENDSHIP_STATUS = 1;
+		int FRIENDSHIP_FRIEND_ID = 2;
+		int FRIENDSHIP_FRIEND_EMAIL = 3;
+		int FRIENDSHIP_FRIEND_NAME = 4;
+		int FRIENDSHIP_FRIEND_SURNAME = 5;
 	}
 }

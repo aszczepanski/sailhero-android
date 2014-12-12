@@ -1,5 +1,7 @@
 package put.sailhero.service;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import put.sailhero.Config;
 import put.sailhero.R;
 import put.sailhero.model.Alert;
@@ -30,7 +32,7 @@ public class AlertService extends Service implements GooglePlayServicesClient.Co
 
 	public static final int ALERT_NOTIFICATION_ID = 1;
 
-	private static final long UPDATE_INTERVAL = 20000;
+	private static final long UPDATE_INTERVAL = 5000;
 	private static final long FASTEST_INTERVAL = 2000;
 
 	private static LocationClient mLocationClient;
@@ -44,6 +46,8 @@ public class AlertService extends Service implements GooglePlayServicesClient.Co
 	private ThrottledContentObserver mAlertsObserver;
 
 	private final IBinder mBinder = new LocalBinder();
+
+	private AtomicBoolean mIsServiceRunning;
 
 	public class LocalBinder extends Binder {
 		public AlertService getService() {
@@ -102,24 +106,30 @@ public class AlertService extends Service implements GooglePlayServicesClient.Co
 		mAlertsObserver = new ThrottledContentObserver(new ThrottledContentObserver.Callbacks() {
 			@Override
 			public void onThrottledContentObserverFired() {
+				Log.i(Config.TAG, "AlertService: requesting alerts refresh");
 				refreshAlertData(null);
 			}
 		});
 		getContentResolver().registerContentObserver(uri, true, mAlertsObserver);
+
+		mIsServiceRunning.set(true);
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		Log.e(Config.TAG, "AlertService onDestroy()");
+
+		mIsServiceRunning.set(false);
+
 		if (mLocationClient.isConnected()) {
 			mLocationClient.removeLocationUpdates(this);
 		}
 		mLocationClient.disconnect();
 
-		mNotificationManager.cancel(ALERT_NOTIFICATION_ID);
-
 		getContentResolver().unregisterContentObserver(mAlertsObserver);
+
+		mNotificationManager.cancel(ALERT_NOTIFICATION_ID);
 
 		PrefUtils.setAlertToRespond(this, null);
 		PrefUtils.setLastKnownLocation(this, null);
@@ -127,6 +137,7 @@ public class AlertService extends Service implements GooglePlayServicesClient.Co
 
 	public AlertService() {
 		Log.d(Config.TAG, "AlertService()");
+		mIsServiceRunning = new AtomicBoolean(false);
 	}
 
 	@Override
@@ -144,6 +155,10 @@ public class AlertService extends Service implements GooglePlayServicesClient.Co
 	}
 
 	public void refreshAlertData(Location location) {
+		if (mIsServiceRunning.get() == false) {
+			return;
+		}
+
 		if (location == null) {
 			if (mLocationClient.isConnected()) {
 				location = mLocationClient.getLastLocation();
