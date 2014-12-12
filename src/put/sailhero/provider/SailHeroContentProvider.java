@@ -328,7 +328,7 @@ public class SailHeroContentProvider extends ContentProvider {
 	}
 
 	static class SailHeroDatabaseHelper extends SQLiteOpenHelper {
-		public static final int DATABASE_VERSION = 15;
+		public static final int DATABASE_VERSION = 19;
 		public static final String DATABASE_NAME = "sailhero.db";
 
 		private static final String SQL_CREATE_ALERTS = "CREATE TABLE " + SailHeroContract.Alert.TABLE_NAME + " ("
@@ -388,7 +388,8 @@ public class SailHeroContentProvider extends ContentProvider {
 				+ SailHeroContract.Friendship.COLUMN_NAME_FRIEND_ID + " INTEGER" + ","
 				+ SailHeroContract.Friendship.COLUMN_NAME_FRIEND_EMAIL + " TEXT" + ","
 				+ SailHeroContract.Friendship.COLUMN_NAME_FRIEND_NAME + " TEXT" + ","
-				+ SailHeroContract.Friendship.COLUMN_NAME_FRIEND_SURNAME + " TEXT" + ")";
+				+ SailHeroContract.Friendship.COLUMN_NAME_FRIEND_SURNAME + " TEXT" + ","
+				+ SailHeroContract.Friendship.COLUMN_NAME_FRIEND_AVATAR_URL + " TEXT" + ")";
 
 		private static final String SQL_DELETE_FRIENDSHIPS = "DROP TABLE IF EXISTS "
 				+ SailHeroContract.Friendship.TABLE_NAME;

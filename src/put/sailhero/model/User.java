@@ -3,10 +3,11 @@ package put.sailhero.model;
 import org.json.simple.JSONObject;
 
 public class User {
-	private Integer id;
-	private String email;
-	private String name;
-	private String surname;
+	private Integer mId;
+	private String mEmail;
+	private String mName;
+	private String mSurname;
+	private String mAvatarUrl;
 
 	public User() {
 	}
@@ -14,41 +15,50 @@ public class User {
 	public User(JSONObject userObject) {
 		this();
 
-		setId(Integer.valueOf(userObject.get("id").toString()));
-		setEmail(userObject.get("email").toString());
-		setName(userObject.get("name").toString());
-		setSurname(userObject.get("surname").toString());
+		setId(((Number) (userObject.get("id"))).intValue());
+		setEmail((String) userObject.get("email"));
+		setName((String) userObject.get("name"));
+		setSurname((String) userObject.get("surname"));
+		setAvatarUrl((String) userObject.get("avatar_url"));
 	}
 
 	public Integer getId() {
-		return id;
+		return mId;
 	}
 
 	public void setId(Integer id) {
-		this.id = id;
+		mId = id;
 	}
 
 	public String getEmail() {
-		return email;
+		return mEmail;
 	}
 
 	public void setEmail(String email) {
-		this.email = email;
+		mEmail = email;
 	}
 
 	public String getSurname() {
-		return surname;
+		return mSurname;
 	}
 
 	public void setSurname(String surname) {
-		this.surname = surname;
+		mSurname = surname;
 	}
 
 	public String getName() {
-		return name;
+		return mName;
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		mName = name;
+	}
+
+	public String getAvatarUrl() {
+		return mAvatarUrl;
+	}
+
+	public void setAvatarUrl(String avatarUrl) {
+		mAvatarUrl = avatarUrl;
 	}
 }

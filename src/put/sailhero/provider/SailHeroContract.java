@@ -32,7 +32,7 @@ final public class SailHeroContract {
 		public static final String COLUMN_NAME_USER_ID = "user_id";
 		public static final String COLUMN_NAME_ADDITIONAL_INFO = "additional_info";
 		public static final String COLUMN_NAME_RESPONSE_STATUS = "response_status";
-		
+
 		public static final int RESPONSE_STATUS_NOT_RESPONDED = 0;
 		public static final int RESPONSE_STATUS_CONFIRMED = 1;
 		public static final int RESPONSE_STATUS_DECLINED = 2;
@@ -111,12 +111,12 @@ final public class SailHeroContract {
 		public static final String COLUMN_NAME_FRIEND_EMAIL = "friend_email";
 		public static final String COLUMN_NAME_FRIEND_NAME = "friend_name";
 		public static final String COLUMN_NAME_FRIEND_SURNAME = "friend_surname";
+		public static final String COLUMN_NAME_FRIEND_AVATAR_URL = "friend_avatar_url";
 
 		public static final int STATUS_STRANGER = -1;
 		public static final int STATUS_ACCEPTED = 0;
-		public static final int STATUS_PENDING = 11;
-		public static final int STATUS_SENT = 12;
-		public static final int STATUS_BLOCKED = 2;
+		public static final int STATUS_PENDING = 1;
+		public static final int STATUS_SENT = 2;
 	}
 
 }
