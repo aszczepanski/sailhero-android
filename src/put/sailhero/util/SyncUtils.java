@@ -30,7 +30,8 @@ public class SyncUtils {
 		// TODO
 		Account account = AccountUtils.getActiveAccount(context);
 		if (account != null) {
-			// ContentResolver.setIsSyncable(account, SailHeroContract.CONTENT_AUTHORITY, 1);
+			ContentResolver.setSyncAutomatically(account, SailHeroContract.CONTENT_AUTHORITY, true);
+			ContentResolver.setIsSyncable(account, SailHeroContract.CONTENT_AUTHORITY, 1);
 
 			Bundle bundle = createSyncNowBundle();
 			bundle.putInt(SYNC_EXTRAS_ITEMS_MASK, syncItemsMask);

@@ -1,18 +1,14 @@
 package put.sailhero.sync;
 
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpDelete;
 
 import put.sailhero.provider.SailHeroContract;
 import android.content.Context;
 import android.net.Uri;
 
-public class DenyFriendshipRequestHelper extends FriendshipResponseRequestHelper {
+public class DeleteFriendshipRequestHelper extends FriendshipResponseRequestHelper {
 
-	public final static String TAG = "sailhero";
-
-	private final static String PATH_DENY = "deny";
-
-	public DenyFriendshipRequestHelper(Context context, Integer friendshipId) {
+	public DeleteFriendshipRequestHelper(Context context, Integer friendshipId) {
 		super(context, friendshipId);
 	}
 
@@ -21,10 +17,9 @@ public class DenyFriendshipRequestHelper extends FriendshipResponseRequestHelper
 		Uri uri = API_BASE_URI.buildUpon()
 				.appendPath(PATH_FRIENDSHIPS)
 				.appendPath(mSentFriendshipId.toString())
-				.appendPath(PATH_DENY)
 				.build();
 
-		mHttpUriRequest = new HttpPost(uri.toString());
+		mHttpUriRequest = new HttpDelete(uri.toString());
 	}
 
 	@Override

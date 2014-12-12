@@ -11,7 +11,6 @@ public class Friendship {
 	private Integer mId;
 	private Integer mStatus;
 
-	private User mUser;
 	private User mFriend;
 
 	public Friendship() {
@@ -20,9 +19,6 @@ public class Friendship {
 	public Friendship(JSONObject friendshipObject) {
 		setId(Integer.valueOf(friendshipObject.get("id").toString()));
 		setStatus(Integer.valueOf(friendshipObject.get("status").toString()));
-
-		JSONObject userObject = (JSONObject) friendshipObject.get("user");
-		mUser = new User(userObject);
 
 		JSONObject friendObject = (JSONObject) friendshipObject.get("friend");
 		mFriend = new User(friendObject);
@@ -45,13 +41,6 @@ public class Friendship {
 		mStatus = status;
 	}
 
-	public User getUser() {
-		return mUser;
-	}
-
-	public void setUser(User user) {
-		mUser = user;
-	}
 
 	public User getFriend() {
 		return mFriend;

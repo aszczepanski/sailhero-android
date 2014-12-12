@@ -17,6 +17,8 @@ import put.sailhero.exception.SameUserException;
 import put.sailhero.exception.SystemException;
 import put.sailhero.exception.UnauthorizedException;
 import put.sailhero.model.Friendship;
+import put.sailhero.provider.SailHeroContract;
+import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 
@@ -90,6 +92,7 @@ public class CreateFriendshipRequestHelper extends RequestHelper {
 
 				JSONObject friendshipObject = (JSONObject) obj.get("friendship");
 				mReceivedFriendship = new Friendship(friendshipObject);
+				mReceivedFriendship.setStatus(SailHeroContract.Friendship.STATUS_SENT);
 
 			} catch (ParseException | org.json.simple.parser.ParseException | NullPointerException
 					| NumberFormatException e) {
@@ -110,6 +113,16 @@ public class CreateFriendshipRequestHelper extends RequestHelper {
 
 	@Override
 	public void storeData() {
-		// TODO: save using content resolver
+		ContentValues values = new ContentValues();
+		values.put(SailHeroContract.Friendship.COLUMN_NAME_ID, mReceivedFriendship.getId());
+		values.put(SailHeroContract.Friendship.COLUMN_NAME_STATUS, mReceivedFriendship.getStatus());
+		values.put(SailHeroContract.Friendship.COLUMN_NAME_FRIEND_ID, mReceivedFriendship.getFriend().getId());
+		values.put(SailHeroContract.Friendship.COLUMN_NAME_FRIEND_EMAIL, mReceivedFriendship.getFriend().getEmail());
+		values.put(SailHeroContract.Friendship.COLUMN_NAME_FRIEND_NAME, mReceivedFriendship.getFriend().getName());
+		values.put(SailHeroContract.Friendship.COLUMN_NAME_FRIEND_SURNAME, mReceivedFriendship.getFriend().getSurname());
+		values.put(SailHeroContract.Friendship.COLUMN_NAME_FRIEND_AVATAR_URL, mReceivedFriendship.getFriend()
+				.getAvatarUrl());
+
+		mContext.getContentResolver().insert(SailHeroContract.Friendship.CONTENT_URI, values);
 	}
 }

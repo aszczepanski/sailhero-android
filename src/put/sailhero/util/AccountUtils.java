@@ -1,9 +1,7 @@
 package put.sailhero.util;
 
-import put.sailhero.provider.SailHeroContract;
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.content.ContentResolver;
 import android.content.Context;
 
 public class AccountUtils {
@@ -21,8 +19,6 @@ public class AccountUtils {
 		accountManager.setAuthToken(account, REFRESH_TOKEN_TYPE, refreshToken);
 		// store refresh token instead of password:
 		// accountManager.setPassword(account, refreshToken);
-		
-		ContentResolver.setIsSyncable(account, SailHeroContract.CONTENT_AUTHORITY, 1);
 	}
 
 	public static Account getActiveAccount(Context context) {

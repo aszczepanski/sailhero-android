@@ -54,26 +54,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			}
 		}
 		if ((syncItemsMask & SyncUtils.SYNC_FRIENDSHIPS) > 0) {
-			RetrieveSentFriendshipsRequestHelper retrieveSentFriendshipsRequestHelper = new RetrieveSentFriendshipsRequestHelper(
-					getContext());
-			try {
-				retrieveSentFriendshipsRequestHelper.doRequest();
-				retrieveSentFriendshipsRequestHelper.storeData();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			RetrievePendingFriendshipsRequestHelper retrievePendingFriendshipsRequestHelper = new RetrievePendingFriendshipsRequestHelper(
-					getContext());
-			try {
-				retrievePendingFriendshipsRequestHelper.doRequest();
-				retrievePendingFriendshipsRequestHelper.storeData();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
 			RetrieveFriendshipsRequestHelper retrieveFriendshipsRequestHelper = new RetrieveFriendshipsRequestHelper(
 					getContext());
 			try {
