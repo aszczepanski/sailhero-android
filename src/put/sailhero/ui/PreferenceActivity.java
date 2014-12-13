@@ -12,6 +12,7 @@ import put.sailhero.util.AccountUtils;
 import put.sailhero.util.PrefUtils;
 import put.sailhero.util.SyncUtils;
 import put.sailhero.util.ThrottledContentObserver;
+import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -66,7 +67,13 @@ public class PreferenceActivity extends BaseActivity {
 
 		private Context mContext;
 
-		private ThrottledContentObserver mRegionsObserver;
+		private ThrottledContentObserver mRegionsObserver = new ThrottledContentObserver(
+				new ThrottledContentObserver.Callbacks() {
+					@Override
+					public void onThrottledContentObserverFired() {
+						onRegionsChanged();
+					}
+				});
 
 		private ListPreference mRegionListPreference;
 
@@ -143,15 +150,6 @@ public class PreferenceActivity extends BaseActivity {
 		public void onResume() {
 			super.onResume();
 
-			mRegionsObserver = new ThrottledContentObserver(new ThrottledContentObserver.Callbacks() {
-				@Override
-				public void onThrottledContentObserverFired() {
-					onRegionsChanged();
-				}
-			});
-			getActivity().getContentResolver().registerContentObserver(SailHeroContract.Region.CONTENT_URI, true,
-					mRegionsObserver);
-
 			SyncUtils.syncAll(mContext);
 
 			onRegionsChanged();
@@ -160,6 +158,19 @@ public class PreferenceActivity extends BaseActivity {
 		@Override
 		public void onPause() {
 			super.onPause();
+		}
+
+		@Override
+		public void onAttach(Activity activity) {
+			super.onAttach(activity);
+
+			getActivity().getContentResolver().registerContentObserver(SailHeroContract.Region.CONTENT_URI, true,
+					mRegionsObserver);
+		}
+
+		@Override
+		public void onDetach() {
+			super.onDetach();
 
 			getActivity().getContentResolver().unregisterContentObserver(mRegionsObserver);
 		}
@@ -193,7 +204,7 @@ public class PreferenceActivity extends BaseActivity {
 
 		@Override
 		public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-			if (getActivity() == null) {
+			if (getActivity() == null || !isAdded()) {
 				return;
 			}
 

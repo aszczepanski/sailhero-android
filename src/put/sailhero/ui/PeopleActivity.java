@@ -10,7 +10,6 @@ import put.sailhero.model.User;
 import put.sailhero.provider.SailHeroContract;
 import put.sailhero.ui.widget.SlidingTabLayout;
 import put.sailhero.util.SyncUtils;
-import put.sailhero.util.ThrottledContentObserver;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ListFragment;

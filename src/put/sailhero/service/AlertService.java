@@ -250,8 +250,6 @@ public class AlertService extends Service implements GooglePlayServicesClient.Co
 	}
 
 	private interface AlertQuery {
-		int _TOKEN = 0x1;
-
 		String[] PROJECTION = {
 				SailHeroContract.Alert.COLUMN_NAME_ID,
 				SailHeroContract.Alert.COLUMN_NAME_TYPE,

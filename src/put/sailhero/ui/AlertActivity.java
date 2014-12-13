@@ -1,7 +1,6 @@
 package put.sailhero.ui;
 
 import put.sailhero.R;
-import put.sailhero.model.Alert;
 import put.sailhero.provider.SailHeroContract;
 import put.sailhero.sync.CreateAlertRequestHelper;
 import put.sailhero.sync.RequestHelper;
@@ -11,14 +10,11 @@ import put.sailhero.util.ThrottledContentObserver;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
-import android.content.SyncStatusObserver;
 import android.database.Cursor;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
@@ -40,8 +36,6 @@ import com.google.android.gms.location.LocationRequest;
 
 public class AlertActivity extends BaseActivity implements GooglePlayServicesClient.ConnectionCallbacks,
 		GooglePlayServicesClient.OnConnectionFailedListener, LocationListener {
-
-	private static final String TAG = "sailhero";
 
 	private static final int MILLISECONDS_PER_SECOND = 1000;
 	public static final int UPDATE_INTERVAL_IN_SECONDS = 5;
@@ -95,13 +89,17 @@ public class AlertActivity extends BaseActivity implements GooglePlayServicesCli
 
 		private Context mContext;
 
-		private Object mSyncObserverHandle;
-
 		private Spinner mSpinner;
 		private Button mSubmitAlertButton;
 		private Button mRefreshButton;
 
-		private ThrottledContentObserver mAlertsObserver;
+		private ThrottledContentObserver mAlertsObserver = new ThrottledContentObserver(
+				new ThrottledContentObserver.Callbacks() {
+					@Override
+					public void onThrottledContentObserverFired() {
+						onAlertsChanged();
+					}
+				});
 
 		private SimpleCursorAdapter mAdapter;
 
@@ -213,21 +211,7 @@ public class AlertActivity extends BaseActivity implements GooglePlayServicesCli
 		public void onResume() {
 			super.onResume();
 
-			Uri uri = SailHeroContract.Alert.CONTENT_URI;
-			mAlertsObserver = new ThrottledContentObserver(new ThrottledContentObserver.Callbacks() {
-				@Override
-				public void onThrottledContentObserverFired() {
-					onAlertsChanged();
-				}
-			});
-			getActivity().getContentResolver().registerContentObserver(uri, true, mAlertsObserver);
-
-			mSyncStatusObserver.onStatusChanged(0);
-
-			final int mask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING | ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE;
-			mSyncObserverHandle = ContentResolver.addStatusChangeListener(mask, mSyncStatusObserver);
-
-			SyncUtils.syncAll(mContext);
+			SyncUtils.syncAlerts(mContext);
 
 			onAlertsChanged();
 		}
@@ -237,13 +221,6 @@ public class AlertActivity extends BaseActivity implements GooglePlayServicesCli
 			super.onPause();
 
 			Log.e(TAG, "onPause");
-
-			if (mSyncObserverHandle != null) {
-				ContentResolver.removeStatusChangeListener(mSyncObserverHandle);
-				mSyncObserverHandle = null;
-			}
-
-			getActivity().getContentResolver().unregisterContentObserver(mAlertsObserver);
 		}
 
 		@Override
@@ -251,28 +228,17 @@ public class AlertActivity extends BaseActivity implements GooglePlayServicesCli
 			super.onAttach(activity);
 
 			mContext = getActivity();
+
+			getActivity().getContentResolver().registerContentObserver(SailHeroContract.Alert.CONTENT_URI, true,
+					mAlertsObserver);
 		}
 
 		@Override
 		public void onDetach() {
 			super.onDetach();
+
+			getActivity().getContentResolver().unregisterContentObserver(mAlertsObserver);
 		}
-
-		private SyncStatusObserver mSyncStatusObserver = new SyncStatusObserver() {
-			@Override
-			public void onStatusChanged(int which) {
-				Log.d(TAG, "status changed(" + which + ")");
-
-				//				Account account = AccountUtils.getActiveAccount(mContext);
-				//
-				//				boolean syncActive = ContentResolver.isSyncActive(account, "put.sailhero");
-				//				boolean syncPending = ContentResolver.isSyncPending(account, "put.sailhero");
-				//
-				//				if (!(syncActive || syncPending)) {
-				//					onAlertsChanged();
-				//				}
-			}
-		};
 
 		@Override
 		public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -319,37 +285,11 @@ public class AlertActivity extends BaseActivity implements GooglePlayServicesCli
 
 	@Override
 	public void onLocationChanged(Location location) {
-		Alert closestAlert = null;
-
-		float minDistance = Float.MAX_VALUE;
-
 		if (location.hasSpeed()) {
 			Toast.makeText(AlertActivity.this, "Speed: " + location.getSpeed(), Toast.LENGTH_SHORT).show();
 		} else {
 			Toast.makeText(AlertActivity.this, "No speed attached.", Toast.LENGTH_SHORT).show();
 		}
-
-		/*
-				AbstractList<Alert> alerts = mSettings.getAlerts();
-				if (alerts != null) {
-					for (final Alert alert : alerts) {
-						float distance = location.distanceTo(alert.getLocation());
-						if (distance < minDistance) {
-							closestAlert = alert;
-							minDistance = distance;
-						}
-					}
-				}
-
-				String msg = "Updated Location: " + Double.toString(location.getLatitude()) + ","
-						+ Double.toString(location.getLongitude());
-				// Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-				if (closestAlert != null) {
-					Toast.makeText(this, "Closest alert id: " + closestAlert.getId(), Toast.LENGTH_SHORT).show();
-					Log.i(TAG, "Closest alert id: " + closestAlert.getId());
-				}
-		*/
-
 	}
 
 }
