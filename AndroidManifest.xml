@@ -173,11 +173,11 @@
                 android:resource="@xml/searchable_user" />
         </activity>
         <activity
-            android:name=".ui.HelpActivity"
-            android:label="@string/title_activity_help" >
+            android:name=".ui.AboutActivity"
+            android:label="@string/title_activity_about" >
         </activity>
         <activity
-            android:name="put.sailhero.ui.UserActivity"
+            android:name=".ui.UserActivity"
             android:label="@string/title_activity_user"
             android:parentActivityName=".ui.PreferenceActivity" >
             <meta-data

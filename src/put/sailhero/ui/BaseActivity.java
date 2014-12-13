@@ -60,7 +60,7 @@ public class BaseActivity extends ActionBarActivity {
 	protected static final int NAVDRAWER_ITEM_PEOPLE = 4;
 	protected static final int NAVDRAWER_ITEM_MESSAGES = 5;
 	protected static final int NAVDRAWER_ITEM_SETTINGS = 6;
-	protected static final int NAVDRAWER_ITEM_HELP = 7;
+	protected static final int NAVDRAWER_ITEM_ABOUT = 7;
 	protected static final int NAVDRAWER_ITEM_INVALID = -1;
 	protected static final int NAVDRAWER_ITEM_SEPARATOR = -2;
 
@@ -72,7 +72,7 @@ public class BaseActivity extends ActionBarActivity {
 			R.string.navdrawer_item_people,
 			R.string.navdrawer_item_messages,
 			R.string.navdrawer_item_settings,
-			R.string.navdrawer_item_help
+			R.string.navdrawer_item_about
 	};
 
 	private static final int[] NAVDRAWER_ICON_RES_ID = new int[] {
@@ -541,7 +541,7 @@ public class BaseActivity extends ActionBarActivity {
 		mNavDrawerItems.add(NAVDRAWER_ITEM_SEPARATOR);
 
 		mNavDrawerItems.add(NAVDRAWER_ITEM_SETTINGS);
-		mNavDrawerItems.add(NAVDRAWER_ITEM_HELP);
+		mNavDrawerItems.add(NAVDRAWER_ITEM_ABOUT);
 
 		createNavDrawerItems();
 	}
@@ -618,8 +618,8 @@ public class BaseActivity extends ActionBarActivity {
 		case NAVDRAWER_ITEM_SETTINGS:
 			intent = new Intent(this, PreferenceActivity.class);
 			break;
-		case NAVDRAWER_ITEM_HELP:
-			intent = new Intent(this, HelpActivity.class);
+		case NAVDRAWER_ITEM_ABOUT:
+			intent = new Intent(this, AboutActivity.class);
 			break;
 		default:
 			return;
@@ -716,7 +716,7 @@ public class BaseActivity extends ActionBarActivity {
 	}
 
 	private boolean isSpecialItem(int itemId) {
-		return (itemId == NAVDRAWER_ITEM_SETTINGS || itemId == NAVDRAWER_ITEM_HELP || itemId == NAVDRAWER_ITEM_WEATHER);
+		return (itemId == NAVDRAWER_ITEM_SETTINGS || itemId == NAVDRAWER_ITEM_ABOUT || itemId == NAVDRAWER_ITEM_WEATHER);
 	}
 
 	private boolean isSeparator(int itemId) {
