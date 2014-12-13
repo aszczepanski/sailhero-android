@@ -104,14 +104,17 @@ public class UpdateUserRequestHelper extends RequestHelper {
 		JSONObject userObject = new JSONObject();
 		userObject.put("email", mEmail);
 
-		if (!(TextUtils.isEmpty(mPassword) && TextUtils.isEmpty(mPasswordConfirmation))) {
+		if (!TextUtils.isEmpty(mPassword) || !TextUtils.isEmpty(mPasswordConfirmation)) {
 			userObject.put("password", mPassword);
 			userObject.put("password_confirmation", mPasswordConfirmation);
 		}
 
 		userObject.put("name", mName);
 		userObject.put("surname", mSurname);
-		userObject.put("avatar_data", "data:image/jpg;base64," + mEncodedAvatar);
+
+		if (mEncodedAvatar != null) {
+			userObject.put("avatar_data", "data:image/jpg;base64," + mEncodedAvatar);
+		}
 
 		obj.put("user", userObject);
 

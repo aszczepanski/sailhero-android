@@ -91,12 +91,41 @@ public class UserActivity extends BaseActivity {
 			public void onClick(View v) {
 				User user = PrefUtils.getUser(UserActivity.this);
 				UpdateUserRequestHelper requestHelper = new UpdateUserRequestHelper(UserActivity.this, user.getId(),
-						user.getEmail(), null, null, user.getName(), user.getSurname(), mEncodedAvatar);
+						mEmailEditText.getText().toString().trim(), mPasswordEditText.getText().toString(),
+						mPasswordConfirmationEditText.getText().toString(), mNameEditText.getText().toString().trim(),
+						mSurnameEditText.getText().toString().trim(), mEncodedAvatar);
 				RequestHelperAsyncTask updateTask = new RequestHelperAsyncTask(UserActivity.this, requestHelper,
 						new RequestHelperAsyncTask.AsyncRequestListener() {
 							@Override
 							public void onSuccess(RequestHelper requestHelper) {
-								// TODO Auto-generated method stub
+								Log.d(TAG, "updated user with id " + PrefUtils.getUser(UserActivity.this).getId());
+
+								Toast.makeText(UserActivity.this, "User has been saved", Toast.LENGTH_SHORT).show();
+								finish();
+							}
+
+							@Override
+							public void onUnprocessableEntityException(RequestHelper requestHelper,
+									String entityErrorsJson) {
+								RegisterUserEntityErrorsHolder errorsHolder = new RegisterUserEntityErrorsHolder(
+										entityErrorsJson);
+
+								if (!errorsHolder.getEmailErrors().isEmpty()) {
+									mEmailEditText.setError(errorsHolder.getEmailErrors().getFirst());
+								}
+								if (!errorsHolder.getPasswordErrors().isEmpty()) {
+									mPasswordEditText.setError(errorsHolder.getPasswordErrors().getFirst());
+								}
+								if (!errorsHolder.getPasswordConfirmationErrors().isEmpty()) {
+									mPasswordConfirmationEditText.setError(errorsHolder.getPasswordConfirmationErrors()
+											.getFirst());
+								}
+								if (!errorsHolder.getNameErrors().isEmpty()) {
+									mNameEditText.setError(errorsHolder.getNameErrors().getFirst());
+								}
+								if (!errorsHolder.getSurnameErrors().isEmpty()) {
+									mSurnameEditText.setError(errorsHolder.getSurnameErrors().getFirst());
+								}
 							}
 						});
 				updateTask.execute();
