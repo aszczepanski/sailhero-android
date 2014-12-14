@@ -125,25 +125,35 @@ public class PreferenceActivity extends BaseActivity {
 							mContext), new RequestHelperAsyncTask.AsyncRequestListener() {
 						@Override
 						public void onSuccess(RequestHelper requestHelper) {
-							// TODO: perform clear in background
+							Log.i(Config.TAG, "token succesfully revoked");
 
-							Log.w(Config.TAG, "token succesfully revoked");
-
-							PrefUtils.clear(getActivity());
-
-							AccountUtils.removeActiveAccount(getActivity());
-
-							getActivity().getContentResolver().delete(SailHeroContract.Friendship.CONTENT_URI, null,
-									null);
-							getActivity().getContentResolver().delete(SailHeroContract.Alert.CONTENT_URI, null, null);
-
-							getActivity().finish();
+							logoutUser();
+						}
+						@Override
+						public void onSystemException(RequestHelper requestHelper) {
+							Log.w(Config.TAG, "token not revoked");
+							
+							logoutUser();
 						}
 					});
 					logoutTask.execute();
 					return true;
 				}
 			});
+		}
+		
+		private void logoutUser() {
+			// TODO: perform clear in background
+			
+			PrefUtils.clear(getActivity());
+
+			AccountUtils.removeActiveAccount(getActivity());
+
+			getActivity().getContentResolver().delete(SailHeroContract.Friendship.CONTENT_URI, null,
+					null);
+			getActivity().getContentResolver().delete(SailHeroContract.Alert.CONTENT_URI, null, null);
+
+			getActivity().finish();
 		}
 
 		@Override
