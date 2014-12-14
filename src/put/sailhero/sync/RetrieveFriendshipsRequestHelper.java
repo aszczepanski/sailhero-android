@@ -32,7 +32,6 @@ public class RetrieveFriendshipsRequestHelper extends RequestHelper {
 	public final static String TAG = "sailhero";
 
 	private final static String PATH_FRIENDSHIPS = "friendships";
-	private final static String PATH_ALL = "all";
 
 	private LinkedList<Friendship> mRetrievedFriendships;
 
@@ -42,7 +41,7 @@ public class RetrieveFriendshipsRequestHelper extends RequestHelper {
 
 	@Override
 	protected void createMethodClient() {
-		Uri uri = API_BASE_URI.buildUpon().appendPath(PATH_FRIENDSHIPS).appendPath(PATH_ALL).build();
+		Uri uri = API_BASE_URI.buildUpon().appendPath(PATH_FRIENDSHIPS).build();
 
 		mHttpUriRequest = new HttpGet(uri.toString());
 	}

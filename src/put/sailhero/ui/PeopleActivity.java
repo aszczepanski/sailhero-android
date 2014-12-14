@@ -29,7 +29,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 public class PeopleActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor>,
-		UsersListFragment.Listener {
+		SailHeroListFragment.Listener {
 
 	private static final String ARG_FRIENDSHIP_STATUS = "put.sailhero.ARG_FRIENDSHIP_STATUS";
 
@@ -37,7 +37,7 @@ public class PeopleActivity extends BaseActivity implements LoaderManager.Loader
 	private ViewPager mViewPager;
 
 	private UsersAdapter[] mUserAdapters = new UsersAdapter[3];
-	private Set<UsersListFragment> mUserListFragments = new HashSet<UsersListFragment>();
+	private Set<SailHeroListFragment> mUserListFragments = new HashSet<SailHeroListFragment>();
 
 	int FRIENDSHIP_ACCEPTED_FRAGMENT = 0;
 	int FRIENDSHIP_SENT_FRAGMENT = 1;
@@ -146,7 +146,7 @@ public class PeopleActivity extends BaseActivity implements LoaderManager.Loader
 		@Override
 		public Fragment getItem(int position) {
 			Log.d(Config.TAG, "Creating fragment #" + position);
-			UsersListFragment fragment = new UsersListFragment();
+			SailHeroListFragment fragment = new SailHeroListFragment();
 			Bundle args = new Bundle();
 			switch (position) {
 			case 0:
@@ -253,12 +253,12 @@ public class PeopleActivity extends BaseActivity implements LoaderManager.Loader
 	}
 
 	@Override
-	public void onFragmentAttached(UsersListFragment fragment) {
+	public void onFragmentAttached(SailHeroListFragment fragment) {
 		mUserListFragments.add(fragment);
 	}
 
 	@Override
-	public void onFragmentDetached(UsersListFragment fragment) {
+	public void onFragmentDetached(SailHeroListFragment fragment) {
 		mUserListFragments.remove(fragment);
 	}
 }

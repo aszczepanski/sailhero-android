@@ -212,6 +212,8 @@ public class AlertService extends Service implements GooglePlayServicesClient.Co
 			}
 		}
 
+		cursor.close();
+
 		if (mAlertServiceListener != null) {
 			mAlertServiceListener.onClosestAlertUpdate(location, closestAlert);
 			mAlertServiceListener.onClosestAlertToRespondUpdate(location, closestAlertToRespond);

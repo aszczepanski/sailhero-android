@@ -26,12 +26,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-public class SearchUserActivity extends BaseActivity implements UsersListFragment.Listener {
+public class SearchUserActivity extends BaseActivity implements SailHeroListFragment.Listener {
 
 	private LinkedList<User> mFoundUsers;
 
 	private UsersAdapter[] mUserAdapters = new UsersAdapter[1];
-	private Set<UsersListFragment> mUserListFragments = new HashSet<UsersListFragment>();
+	private Set<SailHeroListFragment> mUserListFragments = new HashSet<SailHeroListFragment>();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -45,7 +45,7 @@ public class SearchUserActivity extends BaseActivity implements UsersListFragmen
 		}
 
 		if (savedInstanceState == null) {
-			getFragmentManager().beginTransaction().add(R.id.main_content, new UsersListFragment()).commit();
+			getFragmentManager().beginTransaction().add(R.id.main_content, new SailHeroListFragment()).commit();
 		}
 
 		getContentResolver().registerContentObserver(SailHeroContract.Friendship.CONTENT_URI, true,
@@ -186,12 +186,12 @@ public class SearchUserActivity extends BaseActivity implements UsersListFragmen
 	}
 
 	@Override
-	public void onFragmentAttached(UsersListFragment fragment) {
+	public void onFragmentAttached(SailHeroListFragment fragment) {
 		mUserListFragments.add(fragment);
 	}
 
 	@Override
-	public void onFragmentDetached(UsersListFragment fragment) {
+	public void onFragmentDetached(SailHeroListFragment fragment) {
 		mUserListFragments.remove(fragment);
 	}
 

@@ -328,7 +328,7 @@ public class SailHeroContentProvider extends ContentProvider {
 	}
 
 	static class SailHeroDatabaseHelper extends SQLiteOpenHelper {
-		public static final int DATABASE_VERSION = 19;
+		public static final int DATABASE_VERSION = 20;
 		public static final String DATABASE_NAME = "sailhero.db";
 
 		private static final String SQL_CREATE_ALERTS = "CREATE TABLE " + SailHeroContract.Alert.TABLE_NAME + " ("

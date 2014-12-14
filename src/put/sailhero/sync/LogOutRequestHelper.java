@@ -76,7 +76,7 @@ public class LogOutRequestHelper extends RequestHelper {
 		if (statusCode == 200) {
 			// logged out
 		} else {
-			throw new SystemException("Invalid status code");
+			throw new SystemException("Invalid status code (" + statusCode + ")");
 		}
 	}
 }
