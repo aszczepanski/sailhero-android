@@ -55,18 +55,20 @@ public class BaseActivity extends ActionBarActivity {
 
 	protected static final int NAVDRAWER_ITEM_DASHBOARD = 0;
 	protected static final int NAVDRAWER_ITEM_ALERT = 1;
-	protected static final int NAVDRAWER_ITEM_MAP = 2;
-	protected static final int NAVDRAWER_ITEM_WEATHER = 3;
-	protected static final int NAVDRAWER_ITEM_PEOPLE = 4;
-	protected static final int NAVDRAWER_ITEM_MESSAGES = 5;
-	protected static final int NAVDRAWER_ITEM_SETTINGS = 6;
-	protected static final int NAVDRAWER_ITEM_ABOUT = 7;
+	protected static final int NAVDRAWER_ITEM_POI = 2;
+	protected static final int NAVDRAWER_ITEM_MAP = 3;
+	protected static final int NAVDRAWER_ITEM_WEATHER = 4;
+	protected static final int NAVDRAWER_ITEM_PEOPLE = 5;
+	protected static final int NAVDRAWER_ITEM_MESSAGES = 6;
+	protected static final int NAVDRAWER_ITEM_SETTINGS = 7;
+	protected static final int NAVDRAWER_ITEM_ABOUT = 8;
 	protected static final int NAVDRAWER_ITEM_INVALID = -1;
 	protected static final int NAVDRAWER_ITEM_SEPARATOR = -2;
 
 	private static final int[] NAVDRAWER_TITLE_RES_ID = new int[] {
 			R.string.navdrawer_item_dashboard,
 			R.string.navdrawer_item_alert,
+			R.string.navdrawer_item_poi,
 			R.string.navdrawer_item_map,
 			R.string.navdrawer_item_weather,
 			R.string.navdrawer_item_people,
@@ -76,6 +78,7 @@ public class BaseActivity extends ActionBarActivity {
 	};
 
 	private static final int[] NAVDRAWER_ICON_RES_ID = new int[] {
+			R.drawable.ic_launcher,
 			R.drawable.ic_launcher,
 			R.drawable.ic_launcher,
 			R.drawable.ic_drawer_map,
@@ -530,6 +533,7 @@ public class BaseActivity extends ActionBarActivity {
 
 		mNavDrawerItems.add(NAVDRAWER_ITEM_DASHBOARD);
 		mNavDrawerItems.add(NAVDRAWER_ITEM_ALERT);
+		mNavDrawerItems.add(NAVDRAWER_ITEM_POI);
 		mNavDrawerItems.add(NAVDRAWER_ITEM_MAP);
 		mNavDrawerItems.add(NAVDRAWER_ITEM_WEATHER);
 
@@ -604,6 +608,9 @@ public class BaseActivity extends ActionBarActivity {
 			break;
 		case NAVDRAWER_ITEM_ALERT:
 			intent = new Intent(this, AlertActivity.class);
+			break;
+		case NAVDRAWER_ITEM_POI:
+			intent = new Intent(this, PoiActivity.class);
 			break;
 		case NAVDRAWER_ITEM_MAP:
 			intent = new Intent(this, MapActivity.class);

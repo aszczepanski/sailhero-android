@@ -22,6 +22,7 @@
     <string name="title_activity_search_user">Search User</string>
     <string name="title_activity_about">About</string>
     <string name="title_activity_user">User profile</string>
+    <string name="title_activity_poi">Points of Interest</string>
 
     <string-array name="alert_names">
         <item>Bad weather conditions</item>
@@ -32,6 +33,7 @@
     <!-- navdrawer items -->
     <string name="navdrawer_item_dashboard">Dashboard</string>
     <string name="navdrawer_item_alert">Alert</string>
+    <string name="navdrawer_item_poi">POI</string>
     <string name="navdrawer_item_map">Map</string>
     <string name="navdrawer_item_weather">Weather</string>
     <string name="navdrawer_item_people">People</string>
