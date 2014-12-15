@@ -17,11 +17,9 @@ import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
-import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -64,15 +62,12 @@ public class PeopleActivity extends BaseActivity implements LoaderManager.Loader
 			mUserAdapters[i] = new UsersAdapter(this);
 		}
 
-		getContentResolver().registerContentObserver(SailHeroContract.Friendship.CONTENT_URI, true,
-				mFriendshipsObserver);
+		getLoaderManager().initLoader(FriendshipQuery._TOKEN, null, this);
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-
-		getContentResolver().unregisterContentObserver(mFriendshipsObserver);
 	}
 
 	@Override
@@ -80,18 +75,12 @@ public class PeopleActivity extends BaseActivity implements LoaderManager.Loader
 		return NAVDRAWER_ITEM_PEOPLE;
 	}
 
-	private final ContentObserver mFriendshipsObserver = new ContentObserver(new Handler()) {
-		@Override
-		public void onChange(boolean selfChange) {
-			getLoaderManager().restartLoader(FriendshipQuery._TOKEN, null, PeopleActivity.this);
-		}
-	};
-
 	@Override
 	protected void onResume() {
 		super.onResume();
 
-		getLoaderManager().restartLoader(FriendshipQuery._TOKEN, null, PeopleActivity.this);
+		Log.d(TAG, "PeopleActivity::onResume");
+
 		SyncUtils.syncFriendships(PeopleActivity.this);
 	}
 
@@ -175,7 +164,8 @@ public class PeopleActivity extends BaseActivity implements LoaderManager.Loader
 				SailHeroContract.Friendship.COLUMN_NAME_FRIEND_ID,
 				SailHeroContract.Friendship.COLUMN_NAME_FRIEND_EMAIL,
 				SailHeroContract.Friendship.COLUMN_NAME_FRIEND_NAME,
-				SailHeroContract.Friendship.COLUMN_NAME_FRIEND_SURNAME
+				SailHeroContract.Friendship.COLUMN_NAME_FRIEND_SURNAME,
+				SailHeroContract.Friendship.COLUMN_NAME_FRIEND_AVATAR_URL
 		};
 
 		int FRIENDSHIP_ID = 0;
@@ -184,6 +174,7 @@ public class PeopleActivity extends BaseActivity implements LoaderManager.Loader
 		int FRIENDSHIP_FRIEND_EMAIL = 3;
 		int FRIENDSHIP_FRIEND_NAME = 4;
 		int FRIENDSHIP_FRIEND_SURNAME = 5;
+		int FRIENDSHIP_FRIEND_AVATAR_URL = 6;
 	}
 
 	private void onFriendshipLoaderComplete(Cursor cursor) {
@@ -191,6 +182,7 @@ public class PeopleActivity extends BaseActivity implements LoaderManager.Loader
 		LinkedList<UsersAdapter.UserContext> friendshipsPending = new LinkedList<UsersAdapter.UserContext>();
 		LinkedList<UsersAdapter.UserContext> friendshipsSent = new LinkedList<UsersAdapter.UserContext>();
 
+		Log.e(TAG, "!!1!!!!!!!!!!!!!!!!!!!!!!!!!");
 		Log.e(TAG, "size: " + cursor.getCount());
 
 		while (cursor.moveToNext()) {
@@ -199,6 +191,7 @@ public class PeopleActivity extends BaseActivity implements LoaderManager.Loader
 			friend.setEmail(cursor.getString(FriendshipQuery.FRIENDSHIP_FRIEND_EMAIL));
 			friend.setName(cursor.getString(FriendshipQuery.FRIENDSHIP_FRIEND_NAME));
 			friend.setSurname(cursor.getString(FriendshipQuery.FRIENDSHIP_FRIEND_SURNAME));
+			friend.setAvatarUrl(cursor.getString(FriendshipQuery.FRIENDSHIP_FRIEND_AVATAR_URL));
 
 			int status = cursor.getInt(FriendshipQuery.FRIENDSHIP_STATUS);
 			int friendshipId = cursor.getInt(FriendshipQuery.FRIENDSHIP_ID);
@@ -212,8 +205,6 @@ public class PeopleActivity extends BaseActivity implements LoaderManager.Loader
 
 			Log.e(TAG, "friendship: " + friend.getEmail() + " " + status);
 		}
-
-		cursor.close();
 
 		mUserAdapters[FRIENDSHIP_ACCEPTED_FRAGMENT].updateItems(friendshipsAccepted);
 		mUserAdapters[FRIENDSHIP_PENDING_FRAGMENT].updateItems(friendshipsPending);
@@ -243,6 +234,7 @@ public class PeopleActivity extends BaseActivity implements LoaderManager.Loader
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
+		Log.w(TAG, "PeopleActivity::onLoaderReset");
 	}
 
 	@Override
