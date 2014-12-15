@@ -1,6 +1,8 @@
 package put.sailhero.ui;
 
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 import put.sailhero.Config;
 import put.sailhero.R;
@@ -14,11 +16,9 @@ import android.app.ListFragment;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Loader;
-import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -34,7 +34,7 @@ public class PoiActivity extends BaseActivity implements LoaderManager.LoaderCal
 	private ViewPager mViewPager;
 
 	private PortsAdapter mPortsAdapter;
-	// private Set<UsersListFragment> mPoiFragments = new HashSet<UsersListFragment>();
+	private Set<SailHeroListFragment> mPoiFragments = new HashSet<SailHeroListFragment>();
 
 	private static final int PORTS_FRAGMENT = 0;
 	private static final int INVALID_FRAGMENT = -1;
@@ -58,14 +58,12 @@ public class PoiActivity extends BaseActivity implements LoaderManager.LoaderCal
 
 		mPortsAdapter = new PortsAdapter(this);
 
-		getContentResolver().registerContentObserver(SailHeroContract.Port.CONTENT_URI, true, mPortsObserver);
+		getLoaderManager().initLoader(PortQuery._TOKEN, null, this);
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-
-		getContentResolver().unregisterContentObserver(mPortsObserver);
 	}
 
 	@Override
@@ -73,18 +71,10 @@ public class PoiActivity extends BaseActivity implements LoaderManager.LoaderCal
 		return NAVDRAWER_ITEM_POI;
 	}
 
-	private final ContentObserver mPortsObserver = new ContentObserver(new Handler()) {
-		@Override
-		public void onChange(boolean selfChange) {
-			getLoaderManager().restartLoader(PortQuery._TOKEN, null, PoiActivity.this);
-		}
-	};
-
 	@Override
 	protected void onResume() {
 		super.onResume();
 
-		getLoaderManager().restartLoader(PortQuery._TOKEN, null, PoiActivity.this);
 		SyncUtils.syncPorts(PoiActivity.this);
 	}
 
@@ -97,7 +87,7 @@ public class PoiActivity extends BaseActivity implements LoaderManager.LoaderCal
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 
-		// getMenuInflater().inflate(R.menu.people, menu);
+		// getMenuInflater().inflate(R.menu.poi, menu);
 		return true;
 	}
 
@@ -183,8 +173,6 @@ public class PoiActivity extends BaseActivity implements LoaderManager.LoaderCal
 			Log.e(TAG, "port: " + port.getName());
 		}
 
-		cursor.close();
-
 		mPortsAdapter.updateItems(ports);
 	}
 
@@ -225,11 +213,11 @@ public class PoiActivity extends BaseActivity implements LoaderManager.LoaderCal
 
 	@Override
 	public void onFragmentAttached(SailHeroListFragment fragment) {
-		// TODO Auto-generated method stub		
+		mPoiFragments.add(fragment);
 	}
 
 	@Override
 	public void onFragmentDetached(SailHeroListFragment fragment) {
-		// TODO Auto-generated method stub		
+		mPoiFragments.remove(fragment);
 	}
 }

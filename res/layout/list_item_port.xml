@@ -4,57 +4,55 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingBottom="8dp"
     android:paddingLeft="@dimen/keyline_1"
     android:paddingRight="@dimen/keyline_1" >
 
     <LinearLayout
-        android:id="@+id/main_box"
+        android:id="@+id/port_content"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/user_item_main_box_height"
+        android:layout_height="@dimen/port_item_main_box_height"
         android:layout_weight="1"
-        android:background="@drawable/user_item_background_normal"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:paddingBottom="8dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="8dp" >
 
-        <LinearLayout
-            android:id="@+id/port_content"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/slot_port_name"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:ellipsize="end"
+            android:gravity="bottom"
+            android:maxLines="1"
+            android:text="Placeholder port name"
+            android:textSize="@dimen/text_size_large" />
+
+        <TextView
+            android:id="@+id/slot_port_city"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingBottom="8dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="8dp" >
-
-            <TextView
-                android:id="@+id/slot_port_name"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:ellipsize="end"
-                android:gravity="bottom"
-                android:maxLines="1"
-                android:text="Placeholder port name"
-                android:textSize="@dimen/text_size_large" />
-
-            <TextView
-                android:id="@+id/slot_port_city"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Placeholder port city"
-                android:textSize="@dimen/text_size_small" />
-        </LinearLayout>
+            android:text="Placeholder port city"
+            android:textSize="@dimen/text_size_small" />
     </LinearLayout>
 
     <FrameLayout
         android:id="@+id/right_box"
-        android:layout_width="@dimen/user_item_right_box_width"
+        android:layout_width="@dimen/port_item_right_box_width"
         android:layout_height="match_parent" >
 
-        <Button
-            android:id="@+id/details_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <TextView
+            android:id="@+id/details_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
             android:layout_gravity="center"
-            android:text="details" />
+            android:background="@drawable/list_button_chip"
+            android:drawablePadding="4dp"
+            android:gravity="center"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:text="details"
+            android:textColor="@color/body_text_1"
+            android:textSize="@dimen/text_size_medium" />
     </FrameLayout>
 
 </LinearLayout>

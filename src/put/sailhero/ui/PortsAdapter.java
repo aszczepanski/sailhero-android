@@ -15,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
@@ -101,7 +100,7 @@ public class PortsAdapter implements ListAdapter {
 		TextView portNameTextView = (TextView) convertView.findViewById(R.id.slot_port_name);
 		TextView portCityTextView = (TextView) convertView.findViewById(R.id.slot_port_city);
 
-		Button detailsButton = (Button) convertView.findViewById(R.id.details_button);
+		TextView detailsButton = (TextView) convertView.findViewById(R.id.details_text_view);
 
 		portNameTextView.setText(port.getName());
 		portNameTextView.setTextColor(mContext.getResources().getColor(R.color.body_text_1));
