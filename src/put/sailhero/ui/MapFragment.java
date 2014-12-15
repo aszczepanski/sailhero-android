@@ -1,15 +1,18 @@
 package put.sailhero.ui;
 
+import java.util.HashMap;
+
 import put.sailhero.Config;
 import put.sailhero.R;
 import put.sailhero.model.Alert;
 import put.sailhero.model.Port;
 import put.sailhero.provider.SailHeroContract;
-import put.sailhero.util.ThrottledContentObserver;
+import put.sailhero.util.PrefUtils;
 import android.app.Activity;
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.location.Location;
@@ -21,7 +24,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -31,6 +38,9 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 		LoaderCallbacks<Cursor> {
 
 	private GoogleMap mMap;
+
+	private HashMap<Marker, Integer> markerPortIdMap;
+	private HashMap<Marker, Integer> markerAlertIdMap;
 
 	public static MapFragment newInstance() {
 		return new MapFragment();
@@ -66,16 +76,11 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-
-		activity.getContentResolver().registerContentObserver(SailHeroContract.Alert.CONTENT_URI, true, mObserver);
-		activity.getContentResolver().registerContentObserver(SailHeroContract.Port.CONTENT_URI, true, mObserver);
 	}
 
 	@Override
 	public void onDetach() {
 		super.onDetach();
-
-		getActivity().getContentResolver().unregisterContentObserver(mObserver);
 	}
 
 	private void clearMap() {
@@ -94,42 +99,44 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 		mMap.setOnMapLoadedCallback(this);
 		mMap.setMyLocationEnabled(true);
 
+		Location lastKnownLocation = PrefUtils.getLastKnownLocation(getActivity());
+		if (lastKnownLocation != null) {
+			final float CAMERA_ZOOM = 15.0f;
+
+			CameraUpdate camera = CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder().bearing(
+					lastKnownLocation.getBearing())
+					.target(new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()))
+					.zoom(CAMERA_ZOOM)
+					.tilt(0f)
+					.build());
+
+			// mMap.animateCamera(camera);
+			mMap.moveCamera(camera);
+		}
+
 		Log.d(Config.TAG, "Map setup complete.");
 	}
 
 	@Override
 	public void onMapLoaded() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
-	public boolean onMarkerClick(Marker arg0) {
-		// TODO Auto-generated method stub
+	public boolean onMarkerClick(Marker marker) {
 		return false;
 	}
 
 	@Override
-	public void onInfoWindowClick(Marker arg0) {
-		// TODO Auto-generated method stub
+	public void onInfoWindowClick(Marker marker) {
+		Integer portId = markerPortIdMap.get(marker);
 
+		if (portId != null) {
+			Intent intent = new Intent(getActivity(), PortActivity.class);
+			intent.putExtra("port_id", portId);
+			startActivity(intent);
+		}
 	}
-
-	private final ThrottledContentObserver mObserver = new ThrottledContentObserver(
-			new ThrottledContentObserver.Callbacks() {
-				@Override
-				public void onThrottledContentObserverFired() {
-					if (!isAdded()) {
-						return;
-					}
-
-					clearMap();
-
-					LoaderManager lm = getActivity().getLoaderManager();
-					lm.restartLoader(AlertQuery._TOKEN, null, MapFragment.this);
-					lm.restartLoader(PortQuery._TOKEN, null, MapFragment.this);
-				}
-			});
 
 	private interface AlertQuery {
 		int _TOKEN = 0x1;
@@ -166,6 +173,14 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 	}
 
 	private void onAlertLoaderComplete(Cursor cursor) {
+		if (markerAlertIdMap == null) {
+			markerAlertIdMap = new HashMap<Marker, Integer>();
+		} else {
+			for (Marker marker : markerAlertIdMap.keySet()) {
+				marker.remove();
+			}
+		}
+
 		if (cursor != null && cursor.getCount() > 0) {
 			cursor.moveToPosition(-1);
 
@@ -181,11 +196,21 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 
 				LatLng pos = new LatLng(alert.getLocation().getLatitude(), alert.getLocation().getLongitude());
 				Marker marker = mMap.addMarker(new MarkerOptions().position(pos).title(alert.getAlertType()));
+
+				markerAlertIdMap.put(marker, alert.getId());
 			}
 		}
 	}
 
 	private void onPortLoaderComplete(Cursor cursor) {
+		if (markerPortIdMap == null) {
+			markerPortIdMap = new HashMap<Marker, Integer>();
+		} else {
+			for (Marker marker : markerPortIdMap.keySet()) {
+				marker.remove();
+			}
+		}
+
 		if (cursor != null && cursor.getCount() > 0) {
 			cursor.moveToPosition(-1);
 
@@ -199,7 +224,12 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 				port.setLocation(portLocation);
 
 				LatLng pos = new LatLng(port.getLocation().getLatitude(), port.getLocation().getLongitude());
-				Marker marker = mMap.addMarker(new MarkerOptions().position(pos).title(port.getName()));
+				Marker marker = mMap.addMarker(new MarkerOptions().position(pos)
+						.title(port.getName())
+						.snippet("click to see the details")
+						.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+
+				markerPortIdMap.put(marker, port.getId());
 			}
 		}
 	}
