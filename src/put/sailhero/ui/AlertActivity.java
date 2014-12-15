@@ -6,7 +6,6 @@ import put.sailhero.sync.CreateAlertRequestHelper;
 import put.sailhero.sync.RequestHelper;
 import put.sailhero.sync.RequestHelperAsyncTask;
 import put.sailhero.util.SyncUtils;
-import put.sailhero.util.ThrottledContentObserver;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager;
@@ -93,14 +92,6 @@ public class AlertActivity extends BaseActivity implements GooglePlayServicesCli
 		private Button mSubmitAlertButton;
 		private Button mRefreshButton;
 
-		private ThrottledContentObserver mAlertsObserver = new ThrottledContentObserver(
-				new ThrottledContentObserver.Callbacks() {
-					@Override
-					public void onThrottledContentObserverFired() {
-						onAlertsChanged();
-					}
-				});
-
 		private SimpleCursorAdapter mAdapter;
 
 		private ListView mListView;
@@ -153,6 +144,8 @@ public class AlertActivity extends BaseActivity implements GooglePlayServicesCli
 				}
 			});
 
+			getLoaderManager().initLoader(0, null, this);
+
 			return rootView;
 		}
 
@@ -190,13 +183,6 @@ public class AlertActivity extends BaseActivity implements GooglePlayServicesCli
 			}
 		}
 
-		private void onAlertsChanged() {
-			Toast.makeText(mContext, "onAlertsChanged()", Toast.LENGTH_SHORT).show();
-			Log.d(TAG, "onAlertsChanged()");
-
-			getLoaderManager().restartLoader(1, null, AlertFragment.this);
-		}
-
 		@Override
 		public void onStart() {
 			super.onStart();
@@ -212,8 +198,6 @@ public class AlertActivity extends BaseActivity implements GooglePlayServicesCli
 			super.onResume();
 
 			SyncUtils.syncAlerts(mContext);
-
-			onAlertsChanged();
 		}
 
 		@Override
@@ -228,16 +212,11 @@ public class AlertActivity extends BaseActivity implements GooglePlayServicesCli
 			super.onAttach(activity);
 
 			mContext = getActivity();
-
-			getActivity().getContentResolver().registerContentObserver(SailHeroContract.Alert.CONTENT_URI, true,
-					mAlertsObserver);
 		}
 
 		@Override
 		public void onDetach() {
 			super.onDetach();
-
-			getActivity().getContentResolver().unregisterContentObserver(mAlertsObserver);
 		}
 
 		@Override

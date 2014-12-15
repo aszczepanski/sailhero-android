@@ -85,7 +85,14 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			}
 		}
 		if ((syncItemsMask & SyncUtils.SYNC_USER_DATA) > 0) {
-			// TODO
+			RetrieveUserRequestHelper retrieveUserRequestHelper = new RetrieveUserRequestHelper(getContext());
+			try {
+				retrieveUserRequestHelper.doRequest();
+				retrieveUserRequestHelper.storeData();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 }

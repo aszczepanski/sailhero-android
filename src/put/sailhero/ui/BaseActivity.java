@@ -2,8 +2,6 @@ package put.sailhero.ui;
 
 import java.util.ArrayList;
 
-import com.bumptech.glide.Glide;
-
 import put.sailhero.Config;
 import put.sailhero.R;
 import put.sailhero.gcm.GcmRegistrationAsyncTask;
@@ -27,6 +25,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.SyncStatusObserver;
 import android.location.Location;
 import android.net.Uri;
@@ -34,6 +33,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -49,7 +49,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class BaseActivity extends ActionBarActivity {
+import com.bumptech.glide.Glide;
+
+public class BaseActivity extends ActionBarActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
 	public final static String TAG = "sailhero";
 
@@ -125,6 +127,9 @@ public class BaseActivity extends ActionBarActivity {
 
 		Intent alertServiceIntent = new Intent(this, AlertService.class);
 		bindService(alertServiceIntent, mConnection, Context.BIND_AUTO_CREATE);
+
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+		sp.registerOnSharedPreferenceChangeListener(this);
 	}
 
 	@Override
@@ -132,6 +137,9 @@ public class BaseActivity extends ActionBarActivity {
 		super.onDestroy();
 
 		unbindService(mConnection);
+
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+		sp.unregisterOnSharedPreferenceChangeListener(this);
 	}
 
 	private void setupAlertBar() {
@@ -743,6 +751,13 @@ public class BaseActivity extends ActionBarActivity {
 				: getResources().getColor(R.color.navdrawer_text_color));
 		iconView.setColorFilter(selected ? getResources().getColor(R.color.navdrawer_icon_tint_selected)
 				: getResources().getColor(R.color.navdrawer_icon_tint));
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+		if (key.equals(PrefUtils.PREF_USER)) {
+			setupAccountBox();
+		}
 	}
 
 }
