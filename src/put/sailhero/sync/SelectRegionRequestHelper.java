@@ -51,18 +51,24 @@ public class SelectRegionRequestHelper extends RequestHelper {
 	@Override
 	protected void parseResponse() throws SystemException, UnauthorizedException, NotFoundException {
 		int statusCode = mHttpResponse.getStatusLine().getStatusCode();
-
+		String responseBody = "";
+		try {
+			responseBody = EntityUtils.toString(mHttpResponse.getEntity());
+		} catch (ParseException | IOException e) {
+			e.printStackTrace();
+		}
+		
 		if (statusCode == 200) {
 			try {
 				JSONParser parser = new JSONParser();
 				JSONObject obj;
-				obj = (JSONObject) parser.parse(EntityUtils.toString(mHttpResponse.getEntity()));
+				obj = (JSONObject) parser.parse(responseBody);
 
 				JSONObject regionObject = (JSONObject) obj.get("region");
 				mRetrievedRegion = new Region(regionObject);
 
 			} catch (ParseException | org.json.simple.parser.ParseException | NullPointerException
-					| NumberFormatException | IOException e) {
+					| NumberFormatException e) {
 				throw new SystemException(e.getMessage());
 			}
 		} else if (statusCode == 401) {

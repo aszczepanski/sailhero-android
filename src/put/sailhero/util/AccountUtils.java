@@ -15,10 +15,11 @@ public class AccountUtils {
 
 		Account account = new Account(userName, ACCOUNT_TYPE);
 		accountManager.addAccountExplicitly(account, null, null);
+		// store access token instead of password (in order to use refresh token):
+		accountManager.setPassword(account, accessToken);
+
 		accountManager.setAuthToken(account, ACCESS_TOKEN_TYPE, accessToken);
 		accountManager.setAuthToken(account, REFRESH_TOKEN_TYPE, refreshToken);
-		// store refresh token instead of password:
-		// accountManager.setPassword(account, refreshToken);
 	}
 
 	public static Account getActiveAccount(Context context) {

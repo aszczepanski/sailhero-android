@@ -73,6 +73,13 @@ public class LogOutRequestHelper extends RequestHelper {
 	protected void parseResponse() throws SystemException {
 		int statusCode = mHttpResponse.getStatusLine().getStatusCode();
 
+		try {
+			mHttpResponse.getEntity().consumeContent();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		if (statusCode == 200) {
 			// logged out
 		} else {

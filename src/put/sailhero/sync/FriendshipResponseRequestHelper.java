@@ -1,5 +1,7 @@
 package put.sailhero.sync;
 
+import java.io.IOException;
+
 import put.sailhero.exception.ForbiddenException;
 import put.sailhero.exception.NotFoundException;
 import put.sailhero.exception.SystemException;
@@ -32,6 +34,12 @@ public abstract class FriendshipResponseRequestHelper extends RequestHelper {
 	@Override
 	protected void parseResponse() throws SystemException, UnauthorizedException, ForbiddenException, NotFoundException {
 		int statusCode = mHttpResponse.getStatusLine().getStatusCode();
+
+		try {
+			mHttpResponse.getEntity().consumeContent();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		if (statusCode == 200) {
 			// friendship accepted

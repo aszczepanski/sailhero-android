@@ -42,7 +42,7 @@ public class RetrieveRegionsRequestHelper extends RequestHelper {
 		Uri uri = API_BASE_URI.buildUpon().appendPath(PATH_REGIONS).build();
 
 		Log.e(TAG, uri.toString());
-		
+
 		mHttpUriRequest = new HttpGet(uri.toString());
 	}
 
@@ -54,11 +54,17 @@ public class RetrieveRegionsRequestHelper extends RequestHelper {
 	@Override
 	protected void parseResponse() throws UnauthorizedException, SystemException {
 		int statusCode = mHttpResponse.getStatusLine().getStatusCode();
+		String responseBody = "";
+		try {
+			responseBody = EntityUtils.toString(mHttpResponse.getEntity());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		if (statusCode == 200) {
 			try {
 				JSONParser parser = new JSONParser();
-				JSONObject obj = (JSONObject) parser.parse(EntityUtils.toString(mHttpResponse.getEntity()));
+				JSONObject obj = (JSONObject) parser.parse(responseBody);
 
 				LinkedList<Region> regions = new LinkedList<Region>();
 
@@ -79,8 +85,6 @@ public class RetrieveRegionsRequestHelper extends RequestHelper {
 			} catch (ParseException e) {
 				throw new SystemException(e.getMessage());
 			} catch (org.apache.http.ParseException e) {
-				throw new SystemException(e.getMessage());
-			} catch (IOException e) {
 				throw new SystemException(e.getMessage());
 			}
 		} else if (statusCode == 401) {

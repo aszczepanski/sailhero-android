@@ -20,6 +20,8 @@ import put.sailhero.util.AccountUtils;
 import put.sailhero.util.PrefUtils;
 import put.sailhero.util.SyncUtils;
 import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.accounts.OnAccountsUpdateListener;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -130,13 +132,32 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		sp.registerOnSharedPreferenceChangeListener(this);
+
+		AccountManager.get(this).addOnAccountsUpdatedListener(mOnAccountsUpdateListener, null, true);
 	}
+
+	OnAccountsUpdateListener mOnAccountsUpdateListener = new OnAccountsUpdateListener() {
+		@Override
+		public void onAccountsUpdated(Account[] accounts) {
+			// TODO: present nice notification instead of starting new activity
+			Account account = AccountUtils.getActiveAccount(BaseActivity.this);
+			if (account == null) {
+				Intent loginIntent = new Intent(BaseActivity.this, LoginActivity.class);
+				loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(loginIntent);
+				finish();
+				return;
+			}
+		}
+	};
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 
 		unbindService(mConnection);
+
+		AccountManager.get(this).removeOnAccountsUpdatedListener(mOnAccountsUpdateListener);
 
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		sp.unregisterOnSharedPreferenceChangeListener(this);
@@ -403,10 +424,12 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 
 					boolean syncActive = ContentResolver.isSyncActive(account, SailHeroContract.CONTENT_AUTHORITY);
 					boolean syncPending = ContentResolver.isSyncPending(account, SailHeroContract.CONTENT_AUTHORITY);
+					// Log.d(TAG, "syncActive: " + syncActive + ", syncPending: " + syncPending);
 					if (!syncActive && !syncPending) {
 						mManualSyncRequest = false;
 					}
-					onRefreshingStateChanged(syncActive || (mManualSyncRequest && syncPending));
+					// onRefreshingStateChanged(syncActive || (mManualSyncRequest && syncPending));
+					onRefreshingStateChanged(syncActive);
 				}
 			});
 		}

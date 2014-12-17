@@ -1,10 +1,15 @@
 package put.sailhero.util;
 
+import put.sailhero.Config;
+import put.sailhero.exception.UnauthorizedException;
 import put.sailhero.provider.SailHeroContract;
+import put.sailhero.sync.RequestHelper;
 import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 
 public class SyncUtils {
 
@@ -15,6 +20,46 @@ public class SyncUtils {
 	public static final int SYNC_PORTS = 1 << 2;
 	public static final int SYNC_REGIONS = 1 << 3;
 	public static final int SYNC_USER_DATA = 1 << 4;
+
+	private static void doOneAuthenticatedRequest(final Context context, RequestHelper requestHelper) throws Exception {
+		try {
+			requestHelper.doRequest();
+			requestHelper.storeData();
+		} catch (UnauthorizedException e) {
+			AccountManager accountManager = AccountManager.get(context);
+			Account account = AccountUtils.getActiveAccount(context);
+			String accessToken = accountManager.peekAuthToken(account, AccountUtils.ACCESS_TOKEN_TYPE);
+			accountManager.invalidateAuthToken(AccountUtils.ACCOUNT_TYPE, accessToken);
+
+			Log.d(Config.TAG, "auth token invalidated");
+
+			throw e;
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+
+	public static synchronized void doAuthenticatedRequest(final Context context, RequestHelper requestHelper)
+			throws Exception {
+		boolean authorizedRequest = false;
+		Exception exception = null;
+
+		do {
+			try {
+				doOneAuthenticatedRequest(context, requestHelper);
+				authorizedRequest = true;
+			} catch (UnauthorizedException e) {
+				// try again
+			} catch (Exception e) {
+				exception = e;
+				authorizedRequest = true;
+			}
+		} while (!authorizedRequest);
+
+		if (exception != null) {
+			throw exception;
+		}
+	}
 
 	private static Bundle createSyncNowBundle() {
 		Bundle bundle = new Bundle();

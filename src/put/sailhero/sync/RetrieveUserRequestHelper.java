@@ -47,11 +47,17 @@ public class RetrieveUserRequestHelper extends RequestHelper {
 	@Override
 	protected void parseResponse() throws UnauthorizedException, SystemException {
 		int statusCode = mHttpResponse.getStatusLine().getStatusCode();
+		String responseBody = "";
+		try {
+			responseBody = EntityUtils.toString(mHttpResponse.getEntity());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		if (statusCode == 200) {
 			try {
 				JSONParser parser = new JSONParser();
-				JSONObject obj = (JSONObject) parser.parse(EntityUtils.toString(mHttpResponse.getEntity()));
+				JSONObject obj = (JSONObject) parser.parse(responseBody);
 
 				JSONObject userObject = (JSONObject) obj.get("user");
 				mRetrievedUser = new User(userObject);
@@ -77,8 +83,6 @@ public class RetrieveUserRequestHelper extends RequestHelper {
 			} catch (ParseException e) {
 				throw new SystemException(e.getMessage());
 			} catch (org.apache.http.ParseException e) {
-				throw new SystemException(e.getMessage());
-			} catch (IOException e) {
 				throw new SystemException(e.getMessage());
 			}
 		} else if (statusCode == 401) {

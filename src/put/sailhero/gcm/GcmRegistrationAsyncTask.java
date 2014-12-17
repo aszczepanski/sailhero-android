@@ -3,6 +3,7 @@ package put.sailhero.gcm;
 import put.sailhero.Config;
 import put.sailhero.sync.RegisterGcmRequestHelper;
 import put.sailhero.util.PrefUtils;
+import put.sailhero.util.SyncUtils;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
@@ -37,8 +38,11 @@ public class GcmRegistrationAsyncTask extends AsyncTask<Void, Void, Void> {
 			// msg = "Device registered, registration ID=" + regId;
 
 			RegisterGcmRequestHelper requestHelper = new RegisterGcmRequestHelper(mContext, mRegistrationId);
-			requestHelper.doRequest();
-			requestHelper.storeData();
+			try {
+				SyncUtils.doAuthenticatedRequest(mContext, requestHelper);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
 			PrefUtils.setGcmRegistrationId(mContext, mRegistrationId);
 		} catch (Exception ex) {

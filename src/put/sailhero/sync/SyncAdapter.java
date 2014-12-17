@@ -46,10 +46,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		if ((syncItemsMask & SyncUtils.SYNC_ALERTS) > 0) {
 			RetrieveAlertsRequestHelper retrieveAlertsRequestHelper = new RetrieveAlertsRequestHelper(getContext());
 			try {
-				retrieveAlertsRequestHelper.doRequest();
-				retrieveAlertsRequestHelper.storeData();
+				SyncUtils.doAuthenticatedRequest(getContext(), retrieveAlertsRequestHelper);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -57,40 +55,32 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			RetrieveFriendshipsRequestHelper retrieveFriendshipsRequestHelper = new RetrieveFriendshipsRequestHelper(
 					getContext());
 			try {
-				retrieveFriendshipsRequestHelper.doRequest();
-				retrieveFriendshipsRequestHelper.storeData();
+				SyncUtils.doAuthenticatedRequest(getContext(), retrieveFriendshipsRequestHelper);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 		if ((syncItemsMask & SyncUtils.SYNC_PORTS) > 0) {
 			RetrievePortsRequestHelper retrievePortsRequestHelper = new RetrievePortsRequestHelper(getContext());
 			try {
-				retrievePortsRequestHelper.doRequest();
-				retrievePortsRequestHelper.storeData();
+				SyncUtils.doAuthenticatedRequest(getContext(), retrievePortsRequestHelper);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 		if ((syncItemsMask & SyncUtils.SYNC_REGIONS) > 0) {
 			RetrieveRegionsRequestHelper retrieveRegionsRequestHelper = new RetrieveRegionsRequestHelper(getContext());
 			try {
-				retrieveRegionsRequestHelper.doRequest();
-				retrieveRegionsRequestHelper.storeData();
+				SyncUtils.doAuthenticatedRequest(getContext(), retrieveRegionsRequestHelper);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 		if ((syncItemsMask & SyncUtils.SYNC_USER_DATA) > 0) {
 			RetrieveUserRequestHelper retrieveUserRequestHelper = new RetrieveUserRequestHelper(getContext());
 			try {
-				retrieveUserRequestHelper.doRequest();
-				retrieveUserRequestHelper.storeData();
+				SyncUtils.doAuthenticatedRequest(getContext(), retrieveUserRequestHelper);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

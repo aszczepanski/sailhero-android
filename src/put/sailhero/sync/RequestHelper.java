@@ -6,6 +6,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 import put.sailhero.Config;
 import put.sailhero.exception.ForbiddenException;
@@ -54,6 +55,16 @@ public abstract class RequestHelper {
 
 	public RequestHelper(Context context) {
 		mContext = context;
+
+//		HttpParams httpParameters = new BasicHttpParams();
+//
+//		int timeoutConnection = 3000;
+//		HttpConnectionParams.setConnectionTimeout(httpParameters, timeoutConnection);
+//
+//		int timeoutSocket = 5000;
+//		HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
+
+//		mHttpClient = new DefaultHttpClient(httpParameters);
 	}
 
 	private void prepareHttpUriRequest() {

@@ -11,6 +11,7 @@ import put.sailhero.exception.TransportException;
 import put.sailhero.exception.UnauthorizedException;
 import put.sailhero.exception.UnprocessableEntityException;
 import put.sailhero.exception.YachtAlreadyCreatedException;
+import put.sailhero.util.SyncUtils;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -44,10 +45,8 @@ public class RequestHelperAsyncTask extends AsyncTask<Void, Void, Void> {
 	@Override
 	protected Void doInBackground(Void... params) {
 		try {
-			mRequestHelper.doRequest();
-			mRequestHelper.storeData();
+			SyncUtils.doAuthenticatedRequest(mContext, mRequestHelper);
 		} catch (Exception e) {
-			mException = e;
 			e.printStackTrace();
 		}
 

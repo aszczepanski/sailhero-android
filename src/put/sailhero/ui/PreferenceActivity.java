@@ -105,10 +105,16 @@ public class PreferenceActivity extends BaseActivity {
 							Integer.valueOf(newEntryValue));
 					RequestHelperAsyncTask selectRegionTask = new RequestHelperAsyncTask(mContext,
 							selectRegionRequestHelper, new RequestHelperAsyncTask.AsyncRequestListener() {
-
 								@Override
 								public void onSuccess(RequestHelper requestHelper) {
 									mRegionListPreference.setValueIndex(newValueIndex);
+
+									SyncUtils.syncAlerts(mContext);
+								}
+
+								@Override
+								public void onNotFoundException(RequestHelper requestHelper) {
+									mRegionListPreference.setValueIndex(PrefUtils.getRegion(mContext).getId());
 								}
 							});
 					selectRegionTask.execute();
@@ -129,10 +135,11 @@ public class PreferenceActivity extends BaseActivity {
 
 							logoutUser();
 						}
+
 						@Override
 						public void onSystemException(RequestHelper requestHelper) {
 							Log.w(Config.TAG, "token not revoked");
-							
+
 							logoutUser();
 						}
 					});
@@ -141,16 +148,15 @@ public class PreferenceActivity extends BaseActivity {
 				}
 			});
 		}
-		
+
 		private void logoutUser() {
 			// TODO: perform clear in background
-			
+
 			PrefUtils.clear(getActivity());
 
 			AccountUtils.removeActiveAccount(getActivity());
 
-			getActivity().getContentResolver().delete(SailHeroContract.Friendship.CONTENT_URI, null,
-					null);
+			getActivity().getContentResolver().delete(SailHeroContract.Friendship.CONTENT_URI, null, null);
 			getActivity().getContentResolver().delete(SailHeroContract.Alert.CONTENT_URI, null, null);
 
 			getActivity().finish();
