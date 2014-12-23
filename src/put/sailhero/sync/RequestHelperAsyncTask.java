@@ -45,9 +45,15 @@ public class RequestHelperAsyncTask extends AsyncTask<Void, Void, Void> {
 	@Override
 	protected Void doInBackground(Void... params) {
 		try {
-			SyncUtils.doAuthenticatedRequest(mContext, mRequestHelper);
+			if (mRequestHelper.requiresAuthentication()) {
+				SyncUtils.doAuthenticatedRequest(mContext, mRequestHelper);
+			} else {
+				mRequestHelper.doRequest();
+				mRequestHelper.storeData();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			mException = e;
 		}
 
 		return null;

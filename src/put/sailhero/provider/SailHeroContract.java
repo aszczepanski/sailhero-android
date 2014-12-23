@@ -15,6 +15,8 @@ final public class SailHeroContract {
 	private static final String PATH_REGIONS = "regions";
 	private static final String PATH_PORTS = "ports";
 	private static final String PATH_FRIENDSHIPS = "friendships";
+	private static final String PATH_ROUTES = "routes";
+	private static final String PATH_PINS = "pins";
 
 	public static class Alert {
 		public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd.put.sailhero.alerts";
@@ -93,6 +95,7 @@ final public class SailHeroContract {
 		public static final String COLUMN_NAME_PRICE_PARKING = "price_parking";
 		public static final String COLUMN_NAME_PRICE_WASHING_MACHINE = "price_washing_machine";
 		public static final String COLUMN_NAME_PRICE_EMPTYING_CHEMICAL_TOILET = "price_emptying_chemical_toilet";
+		public static final String COLUMN_NAME_CURRENCY = "currency";
 	}
 
 	public static class Friendship {
@@ -112,11 +115,48 @@ final public class SailHeroContract {
 		public static final String COLUMN_NAME_FRIEND_NAME = "friend_name";
 		public static final String COLUMN_NAME_FRIEND_SURNAME = "friend_surname";
 		public static final String COLUMN_NAME_FRIEND_AVATAR_URL = "friend_avatar_url";
+		public static final String COLUMN_NAME_FRIEND_LATITUDE = "friend_latitude";
+		public static final String COLUMN_NAME_FRIEND_LONGITUDE = "friend_longitude";
 
 		public static final int STATUS_STRANGER = -1;
 		public static final int STATUS_ACCEPTED = 0;
 		public static final int STATUS_PENDING = 1;
 		public static final int STATUS_SENT = 2;
+	}
+
+	public static class Route {
+		public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd.put.sailhero.routes";
+		public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE
+				+ "/vnd.put.sailhero.route";
+
+		public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_ROUTES).build();
+
+		public static final String TABLE_NAME = "routes";
+
+		public static final String COLUMN_NAME_ID = "id";
+		public static final String COLUMN_NAME_NAME = "name";
+
+		public static class Pin {
+			public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd.put.sailhero.pins";
+			public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE
+					+ "/vnd.put.sailhero.pin";
+
+			public static final String CONTENT_JOIN_ROUTES_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE
+					+ "/vnd.put.sailhero.routes.pins";
+
+			public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_PINS).build();
+			public static final Uri CONTENT_JOIN_ROUTES_URI = BASE_CONTENT_URI.buildUpon()
+					.appendPath("routes_pins")
+					.build();
+
+			public static final String TABLE_NAME = "pins";
+			public static final String ROUTES_VIEW_NAME = "routes_pins";
+
+			public static final String COLUMN_NAME_ROUTE_ID = "route_id";
+			public static final String COLUMN_NAME_POSITION_IN_ROUTE = "position_in_route";
+			public static final String COLUMN_NAME_LATITUDE = "latitude";
+			public static final String COLUMN_NAME_LONGITUDE = "longitude";
+		}
 	}
 
 }

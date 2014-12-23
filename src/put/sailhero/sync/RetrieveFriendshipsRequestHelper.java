@@ -15,7 +15,6 @@ import org.json.simple.parser.ParseException;
 import put.sailhero.exception.SystemException;
 import put.sailhero.exception.UnauthorizedException;
 import put.sailhero.model.Friendship;
-import put.sailhero.model.User;
 import put.sailhero.provider.SailHeroContract;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
@@ -24,7 +23,6 @@ import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.RemoteException;
-import android.text.TextUtils;
 import android.util.Log;
 
 public class RetrieveFriendshipsRequestHelper extends RequestHelper {
@@ -49,6 +47,7 @@ public class RetrieveFriendshipsRequestHelper extends RequestHelper {
 	@Override
 	protected void setHeaders() {
 		addHeaderAuthorization();
+		addHeaderPosition();
 	}
 
 	@Override
@@ -136,62 +135,30 @@ public class RetrieveFriendshipsRequestHelper extends RequestHelper {
 
 		ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
 
-		Log.i(TAG, SailHeroContract.Friendship.CONTENT_URI.toString());
-
-		String[] projection = new String[] {
-				SailHeroContract.Friendship.COLUMN_NAME_ID,
-				SailHeroContract.Friendship.COLUMN_NAME_STATUS,
-				SailHeroContract.Friendship.COLUMN_NAME_FRIEND_ID,
-				SailHeroContract.Friendship.COLUMN_NAME_FRIEND_EMAIL,
-				SailHeroContract.Friendship.COLUMN_NAME_FRIEND_NAME,
-				SailHeroContract.Friendship.COLUMN_NAME_FRIEND_SURNAME,
-				SailHeroContract.Friendship.COLUMN_NAME_FRIEND_AVATAR_URL
-		};
-
-		Cursor c = contentResolver.query(SailHeroContract.Friendship.CONTENT_URI, projection, null, null, null);
+		Cursor c = contentResolver.query(SailHeroContract.Friendship.CONTENT_URI, Friendship.Query.PROJECTION, null,
+				null, null);
 
 		while (c.moveToNext()) {
-			Log.i(TAG, "friendship: " + c.getInt(0) + " " + c.getInt(1));
-			Friendship dbFriendship = new Friendship();
-			dbFriendship.setId(c.getInt(0));
-			dbFriendship.setStatus(c.getInt(1));
-			User dbFriend = new User();
-			dbFriend.setId(c.getInt(2));
-			dbFriend.setEmail(c.getString(3));
-			dbFriend.setName(c.getString(4));
-			dbFriend.setSurname(c.getString(5));
-			dbFriend.setAvatarUrl(c.getString(6));
-			dbFriendship.setFriend(dbFriend);
+			Friendship dbFriendship = new Friendship(c);
+			Log.i(TAG, "friendship: " + dbFriendship.getId() + " " + dbFriendship.getStatus());
 
-			Friendship friendship = friendshipsMap.get(dbFriendship.getId());
-			if (friendship != null) {
-				// TODO: equals
-				if (friendship.getStatus() == dbFriendship.getStatus()
-						&& TextUtils.equals(friendship.getFriend().getEmail(), dbFriendship.getFriend().getEmail())
-						&& TextUtils.equals(friendship.getFriend().getAvatarUrl(), dbFriendship.getFriend()
-								.getAvatarUrl())) {
-					// already in db, remove from map
-					friendshipsMap.remove(friendship.getId());
+			Friendship retrievedFriendship = friendshipsMap.get(dbFriendship.getId());
+			if (retrievedFriendship != null) {
+				if (dbFriendship.equals(retrievedFriendship)) {
+					// do nothing
 				} else {
 					Uri updateUri = SailHeroContract.Friendship.CONTENT_URI.buildUpon()
-							.appendPath(Integer.toString(friendship.getId()))
+							.appendPath(dbFriendship.getId().toString())
 							.build();
 					batch.add(ContentProviderOperation.newUpdate(updateUri)
-							.withValue(SailHeroContract.Friendship.COLUMN_NAME_STATUS, friendship.getStatus())
-							.withValue(SailHeroContract.Friendship.COLUMN_NAME_FRIEND_EMAIL,
-									friendship.getFriend().getEmail())
-							.withValue(SailHeroContract.Friendship.COLUMN_NAME_FRIEND_NAME,
-									friendship.getFriend().getName())
-							.withValue(SailHeroContract.Friendship.COLUMN_NAME_FRIEND_SURNAME,
-									friendship.getFriend().getSurname())
-							.withValue(SailHeroContract.Friendship.COLUMN_NAME_FRIEND_AVATAR_URL,
-									friendship.getFriend().getAvatarUrl())
+							.withValues(retrievedFriendship.toContentValues())
 							.build());
 				}
+				friendshipsMap.remove(dbFriendship.getId());
 			} else {
 				// friendship doesn't exist anymore
 				Uri deleteUri = SailHeroContract.Friendship.CONTENT_URI.buildUpon()
-						.appendPath(Integer.toString(dbFriendship.getId()))
+						.appendPath(dbFriendship.getId().toString())
 						.build();
 				Log.i(TAG, "Scheduling delete: " + deleteUri);
 				batch.add(ContentProviderOperation.newDelete(deleteUri).build());
@@ -203,15 +170,7 @@ public class RetrieveFriendshipsRequestHelper extends RequestHelper {
 			Log.i(TAG, "Scheduling insert: friendship_id=" + friendship.getId());
 
 			batch.add(ContentProviderOperation.newInsert(SailHeroContract.Friendship.CONTENT_URI)
-					.withValue(SailHeroContract.Friendship.COLUMN_NAME_ID, friendship.getId())
-					.withValue(SailHeroContract.Friendship.COLUMN_NAME_STATUS, friendship.getStatus())
-					.withValue(SailHeroContract.Friendship.COLUMN_NAME_FRIEND_ID, friendship.getFriend().getId())
-					.withValue(SailHeroContract.Friendship.COLUMN_NAME_FRIEND_EMAIL, friendship.getFriend().getEmail())
-					.withValue(SailHeroContract.Friendship.COLUMN_NAME_FRIEND_NAME, friendship.getFriend().getName())
-					.withValue(SailHeroContract.Friendship.COLUMN_NAME_FRIEND_SURNAME,
-							friendship.getFriend().getSurname())
-					.withValue(SailHeroContract.Friendship.COLUMN_NAME_FRIEND_AVATAR_URL,
-							friendship.getFriend().getAvatarUrl())
+					.withValues(friendship.toContentValues())
 					.build());
 		}
 

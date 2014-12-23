@@ -6,7 +6,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 
 import put.sailhero.Config;
 import put.sailhero.exception.ForbiddenException;
@@ -20,12 +19,15 @@ import put.sailhero.exception.TransportException;
 import put.sailhero.exception.UnauthorizedException;
 import put.sailhero.exception.UnprocessableEntityException;
 import put.sailhero.exception.YachtAlreadyCreatedException;
+import put.sailhero.model.User;
 import put.sailhero.util.AccountUtils;
+import put.sailhero.util.PrefUtils;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.content.Context;
+import android.location.Location;
 import android.net.Uri;
 
 public abstract class RequestHelper {
@@ -56,15 +58,19 @@ public abstract class RequestHelper {
 	public RequestHelper(Context context) {
 		mContext = context;
 
-//		HttpParams httpParameters = new BasicHttpParams();
-//
-//		int timeoutConnection = 3000;
-//		HttpConnectionParams.setConnectionTimeout(httpParameters, timeoutConnection);
-//
-//		int timeoutSocket = 5000;
-//		HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
+		//		HttpParams httpParameters = new BasicHttpParams();
+		//
+		//		int timeoutConnection = 3000;
+		//		HttpConnectionParams.setConnectionTimeout(httpParameters, timeoutConnection);
+		//
+		//		int timeoutSocket = 5000;
+		//		HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
 
-//		mHttpClient = new DefaultHttpClient(httpParameters);
+		//		mHttpClient = new DefaultHttpClient(httpParameters);
+	}
+
+	public boolean requiresAuthentication() {
+		return true;
 	}
 
 	private void prepareHttpUriRequest() {
@@ -91,6 +97,17 @@ public abstract class RequestHelper {
 
 	protected void addHeaderContentJson() {
 		mHttpUriRequest.addHeader("Content-Type", "application/json");
+	}
+
+	protected void addHeaderPosition() {
+		User user = PrefUtils.getUser(mContext);
+		if (user != null && user.getSharePosition()) {
+			Location lastKnownLocation = PrefUtils.getLastKnownLocation(mContext);
+			if (lastKnownLocation != null) {
+				mHttpUriRequest.addHeader("Latitude", String.valueOf(lastKnownLocation.getLatitude()));
+				mHttpUriRequest.addHeader("longitude", String.valueOf(lastKnownLocation.getLongitude()));
+			}
+		}
 	}
 
 	protected void setHeaders() {

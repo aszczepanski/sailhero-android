@@ -2,41 +2,49 @@ package put.sailhero.model;
 
 import org.json.simple.JSONObject;
 
+import put.sailhero.Config;
+import put.sailhero.provider.SailHeroContract;
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.location.Location;
+import android.text.TextUtils;
+import android.util.Log;
 
-public class Port {
+public class Port extends BaseModel {
 
-	private Integer id;
-	private String name;
-	private Location location;
-	private String website;
-	private String city;
-	private String street;
-	private String telephone;
-	private String additionalInfo;
-	private Integer spots;
-	private Integer depth;
-	private Boolean hasPowerConnection;
-	private Boolean hasWC;
-	private Boolean hasShower;
-	private Boolean hasWashbasin;
-	private Boolean hasDishes;
-	private Boolean hasWifi;
-	private Boolean hasParking;
-	private Boolean hasSlip;
-	private Boolean hasWashingMachine;
-	private Boolean hasFuelStation;
-	private Boolean hasEmptyingChemicalToilet;
-	private Float pricePerPerson;
-	private Float pricePowerConnection;
-	private Float priceWC;
-	private Float priceShower;
-	private Float priceWashbasin;
-	private Float priceDishes;
-	private Float priceWifi;
-	private Float priceWashingMachine;
-	private Float priceEmptyingChemicalToilet;
-	private Float priceParking;
+	private Integer mId;
+	private String mName;
+	private Double mLatitude;
+	private Double mLongitude;
+	private String mWebsite;
+	private String mCity;
+	private String mStreet;
+	private String mTelephone;
+	private String mAdditionalInfo;
+	private Integer mSpots;
+	private Integer mDepth;
+	private Boolean mHasPowerConnection;
+	private Boolean mHasWC;
+	private Boolean mHasShower;
+	private Boolean mHasWashbasin;
+	private Boolean mHasDishes;
+	private Boolean mHasWifi;
+	private Boolean mHasParking;
+	private Boolean mHasSlip;
+	private Boolean mHasWashingMachine;
+	private Boolean mHasFuelStation;
+	private Boolean mHasEmptyingChemicalToilet;
+	private Float mPricePerPerson;
+	private Float mPricePowerConnection;
+	private Float mPriceWC;
+	private Float mPriceShower;
+	private Float mPriceWashbasin;
+	private Float mPriceDishes;
+	private Float mPriceWifi;
+	private Float mPriceWashingMachine;
+	private Float mPriceEmptyingChemicalToilet;
+	private Float mPriceParking;
+	private String mCurrency;
 
 	public Port() {
 	}
@@ -46,10 +54,8 @@ public class Port {
 
 		setId(Integer.valueOf(portObject.get("id").toString()));
 		setName(portObject.get("name").toString());
-		Location portLocation = new Location("sailhero");
-		portLocation.setLatitude(Double.valueOf(portObject.get("latitude").toString()));
-		portLocation.setLongitude(Double.valueOf(portObject.get("longitude").toString()));
-		setLocation(portLocation);
+		setLatitude(Double.valueOf(portObject.get("latitude").toString()));
+		setLongitude(Double.valueOf(portObject.get("longitude").toString()));
 		setWebsite(portObject.get("website").toString());
 		setCity(portObject.get("city").toString());
 		setStreet(portObject.get("street").toString());
@@ -67,8 +73,7 @@ public class Port {
 		setHasSlip(Boolean.valueOf(portObject.get("has_slip").toString()));
 		setHasWashingMachine(Boolean.valueOf(portObject.get("has_washing_machine").toString()));
 		setHasFuelStation(Boolean.valueOf(portObject.get("has_fuel_station").toString()));
-		setHasEmptyingChemicalToilet(Boolean.valueOf(portObject.get("has_emptying_chemical_toilet")
-				.toString()));
+		setHasEmptyingChemicalToilet(Boolean.valueOf(portObject.get("has_emptying_chemical_toilet").toString()));
 		setPricePerPerson(Float.valueOf(portObject.get("price_per_person").toString()));
 		setPricePowerConnection(Float.valueOf(portObject.get("price_power_connection").toString()));
 		setPriceWC(Float.valueOf(portObject.get("price_wc").toString()));
@@ -77,258 +82,447 @@ public class Port {
 		setPriceDishes(Float.valueOf(portObject.get("price_dishes").toString()));
 		setPriceWifi(Float.valueOf(portObject.get("price_wifi").toString()));
 		setPriceWashingMachine(Float.valueOf(portObject.get("price_washing_machine").toString()));
-		setPriceEmptyingChemicalToilet(Float.valueOf(portObject.get(
-				"price_emptying_chemical_toilet").toString()));
+		setPriceEmptyingChemicalToilet(Float.valueOf(portObject.get("price_emptying_chemical_toilet").toString()));
 		setPriceParking(Float.valueOf(portObject.get("price_parking").toString()));
+		setCurrency((String) portObject.get("currency"));
+	}
 
+	public Port(Cursor c) {
+		setId(c.getInt(Query.PORT_ID));
+		setName(c.getString(Query.PORT_NAME));
+		setLongitude(c.getDouble(Query.PORT_LONGITUDE));
+		setLatitude(c.getDouble(Query.PORT_LATITUDE));
+		setStreet(c.getString(Query.PORT_STREET));
+		setWebsite(c.getString(Query.PORT_WEBSITE));
+		setCity(c.getString(Query.PORT_CITY));
+		setTelephone(c.getString(Query.PORT_TELEPHONE));
+		setAdditionalInfo(c.getString(Query.PORT_ADDITIONAL_INFO));
+		setSpots(c.getInt(Query.PORT_SPOTS));
+		setDepth(c.getInt(Query.PORT_DEPTH));
+		setHasPowerConnection(c.getInt(Query.PORT_HAS_POWER_CONNECTION) != 0);
+		setHasWC(c.getInt(Query.PORT_HAS_WC) != 0);
+		setHasShower(c.getInt(Query.PORT_HAS_SHOWER) != 0);
+		setHasWashbasin(c.getInt(Query.PORT_HAS_WASHBASIN) != 0);
+		setHasDishes(c.getInt(Query.PORT_HAS_DISHES) != 0);
+		setHasWifi(c.getInt(Query.PORT_HAS_WIFI) != 0);
+		setHasParking(c.getInt(Query.PORT_HAS_PARKING) != 0);
+		setHasSlip(c.getInt(Query.PORT_HAS_SLIP) != 0);
+		setHasWashingMachine(c.getInt(Query.PORT_HAS_WASHING_MACHINE) != 0);
+		setHasFuelStation(c.getInt(Query.PORT_HAS_FUEL_STATION) != 0);
+		setHasEmptyingChemicalToilet(c.getInt(Query.PORT_HAS_EMPTYING_CHEMICAL_TOILET) != 0);
+		setPricePerPerson(c.getFloat(Query.PORT_PRICE_PER_PERSON));
+		setPricePowerConnection(c.getFloat(Query.PORT_PRICE_POWER_CONNECTION));
+		setPriceWC(c.getFloat(Query.PORT_PRICE_WC));
+		setPriceShower(c.getFloat(Query.PORT_PRICE_SHOWER));
+		setPriceWashbasin(c.getFloat(Query.PORT_PRICE_WASHBASIN));
+		setPriceDishes(c.getFloat(Query.PORT_PRICE_DISHES));
+		setPriceWifi(c.getFloat(Query.PORT_PRICE_WIFI));
+		setPriceWashingMachine(c.getFloat(Query.PORT_PRICE_WASHING_MACHINE));
+		setPriceEmptyingChemicalToilet(c.getFloat(Query.PORT_PRICE_EMPTYING_CHEMICAL_TOILET));
+		setPriceParking(c.getFloat(Query.PORT_PRICE_PARKING));
+		setCurrency(c.getString(Query.PORT_CURRENCY));
+	}
+
+	public interface Query {
+		String[] PROJECTION = {
+				SailHeroContract.Port.COLUMN_NAME_ID,
+				SailHeroContract.Port.COLUMN_NAME_NAME,
+				SailHeroContract.Port.COLUMN_NAME_LONGITUDE,
+				SailHeroContract.Port.COLUMN_NAME_LATITUDE,
+				SailHeroContract.Port.COLUMN_NAME_WEBSITE,
+				SailHeroContract.Port.COLUMN_NAME_CITY,
+				SailHeroContract.Port.COLUMN_NAME_STREET,
+				SailHeroContract.Port.COLUMN_NAME_TELEPHONE,
+				SailHeroContract.Port.COLUMN_NAME_ADDITIONAL_INFO,
+				SailHeroContract.Port.COLUMN_NAME_SPOTS,
+				SailHeroContract.Port.COLUMN_NAME_DEPTH,
+				SailHeroContract.Port.COLUMN_NAME_HAS_POWER_CONNECTION,
+				SailHeroContract.Port.COLUMN_NAME_HAS_WC,
+				SailHeroContract.Port.COLUMN_NAME_HAS_SHOWER,
+				SailHeroContract.Port.COLUMN_NAME_HAS_WASHBASIN,
+				SailHeroContract.Port.COLUMN_NAME_HAS_DISHES,
+				SailHeroContract.Port.COLUMN_NAME_HAS_WIFI,
+				SailHeroContract.Port.COLUMN_NAME_HAS_PARKING,
+				SailHeroContract.Port.COLUMN_NAME_HAS_SLIP,
+				SailHeroContract.Port.COLUMN_NAME_HAS_WASHING_MACHINE,
+				SailHeroContract.Port.COLUMN_NAME_HAS_FUEL_STATION,
+				SailHeroContract.Port.COLUMN_NAME_HAS_EMPTYING_CHEMICAL_TOILET,
+				SailHeroContract.Port.COLUMN_NAME_PRICE_PER_PERSON,
+				SailHeroContract.Port.COLUMN_NAME_PRICE_POWER_CONNECTION,
+				SailHeroContract.Port.COLUMN_NAME_PRICE_WC,
+				SailHeroContract.Port.COLUMN_NAME_PRICE_SHOWER,
+				SailHeroContract.Port.COLUMN_NAME_PRICE_WASHBASIN,
+				SailHeroContract.Port.COLUMN_NAME_PRICE_DISHES,
+				SailHeroContract.Port.COLUMN_NAME_PRICE_WIFI,
+				SailHeroContract.Port.COLUMN_NAME_PRICE_PARKING,
+				SailHeroContract.Port.COLUMN_NAME_PRICE_WASHING_MACHINE,
+				SailHeroContract.Port.COLUMN_NAME_PRICE_EMPTYING_CHEMICAL_TOILET,
+				SailHeroContract.Port.COLUMN_NAME_CURRENCY
+		};
+
+		int PORT_ID = 0;
+		int PORT_NAME = 1;
+		int PORT_LONGITUDE = 2;
+		int PORT_LATITUDE = 3;
+		int PORT_WEBSITE = 4;
+		int PORT_CITY = 5;
+		int PORT_STREET = 6;
+		int PORT_TELEPHONE = 7;
+		int PORT_ADDITIONAL_INFO = 8;
+		int PORT_SPOTS = 9;
+		int PORT_DEPTH = 10;
+		int PORT_HAS_POWER_CONNECTION = 11;
+		int PORT_HAS_WC = 12;
+		int PORT_HAS_SHOWER = 13;
+		int PORT_HAS_WASHBASIN = 14;
+		int PORT_HAS_DISHES = 15;
+		int PORT_HAS_WIFI = 16;
+		int PORT_HAS_PARKING = 17;
+		int PORT_HAS_SLIP = 18;
+		int PORT_HAS_WASHING_MACHINE = 19;
+		int PORT_HAS_FUEL_STATION = 20;
+		int PORT_HAS_EMPTYING_CHEMICAL_TOILET = 21;
+		int PORT_PRICE_PER_PERSON = 22;
+		int PORT_PRICE_POWER_CONNECTION = 23;
+		int PORT_PRICE_WC = 24;
+		int PORT_PRICE_SHOWER = 25;
+		int PORT_PRICE_WASHBASIN = 26;
+		int PORT_PRICE_DISHES = 27;
+		int PORT_PRICE_WIFI = 28;
+		int PORT_PRICE_PARKING = 29;
+		int PORT_PRICE_WASHING_MACHINE = 30;
+		int PORT_PRICE_EMPTYING_CHEMICAL_TOILET = 31;
+		int PORT_CURRENCY = 32;
 	}
 
 	public Integer getId() {
-		return id;
+		return mId;
 	}
 
 	public void setId(Integer id) {
-		this.id = id;
+		mId = id;
 	}
 
 	public String getName() {
-		return name;
+		return mName;
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		mName = name;
 	}
 
 	public Location getLocation() {
+		Location location = new Location("sailhero");
+		location.setLatitude(getLatitude());
+		location.setLongitude(getLongitude());
 		return location;
 	}
 
-	public void setLocation(Location location) {
-		this.location = location;
+	public void setLatitude(Double latitude) {
+		mLatitude = latitude;
+	}
+
+	public Double getLatitude() {
+		return mLatitude;
+	}
+
+	public void setLongitude(Double longitude) {
+		mLongitude = longitude;
+	}
+
+	public Double getLongitude() {
+		return mLongitude;
 	}
 
 	public String getWebsite() {
-		return website;
+		return mWebsite;
 	}
 
 	public void setWebsite(String website) {
-		this.website = website;
+		mWebsite = website;
 	}
 
 	public String getCity() {
-		return city;
+		return mCity;
 	}
 
 	public void setCity(String city) {
-		this.city = city;
+		mCity = city;
 	}
 
 	public String getStreet() {
-		return street;
+		return mStreet;
 	}
 
 	public void setStreet(String street) {
-		this.street = street;
+		mStreet = street;
 	}
 
 	public String getTelephone() {
-		return telephone;
+		return mTelephone;
 	}
 
 	public void setTelephone(String telephone) {
-		this.telephone = telephone;
+		mTelephone = telephone;
 	}
 
 	public String getAdditionalInfo() {
-		return additionalInfo;
+		return mAdditionalInfo;
 	}
 
 	public void setAdditionalInfo(String additionalInfo) {
-		this.additionalInfo = additionalInfo;
+		mAdditionalInfo = additionalInfo;
 	}
 
 	public Integer getSpots() {
-		return spots;
+		return mSpots;
 	}
 
 	public void setSpots(Integer spots) {
-		this.spots = spots;
+		mSpots = spots;
 	}
 
 	public Integer getDepth() {
-		return depth;
+		return mDepth;
 	}
 
 	public void setDepth(Integer depth) {
-		this.depth = depth;
+		mDepth = depth;
 	}
 
 	public boolean isHasPowerConnection() {
-		return hasPowerConnection;
+		return mHasPowerConnection;
 	}
 
 	public void setHasPowerConnection(boolean hasPowerConnection) {
-		this.hasPowerConnection = hasPowerConnection;
+		mHasPowerConnection = hasPowerConnection;
 	}
 
 	public boolean isHasWC() {
-		return hasWC;
+		return mHasWC;
 	}
 
 	public void setHasWC(boolean hasWC) {
-		this.hasWC = hasWC;
+		mHasWC = hasWC;
 	}
 
 	public boolean isHasShower() {
-		return hasShower;
+		return mHasShower;
 	}
 
 	public void setHasShower(boolean hasShower) {
-		this.hasShower = hasShower;
+		mHasShower = hasShower;
 	}
 
 	public boolean isHasWashbasin() {
-		return hasWashbasin;
+		return mHasWashbasin;
 	}
 
 	public void setHasWashbasin(boolean hasWashbasin) {
-		this.hasWashbasin = hasWashbasin;
+		mHasWashbasin = hasWashbasin;
 	}
 
 	public boolean isHasDishes() {
-		return hasDishes;
+		return mHasDishes;
 	}
 
 	public void setHasDishes(boolean hasDishes) {
-		this.hasDishes = hasDishes;
+		mHasDishes = hasDishes;
 	}
 
 	public boolean isHasWifi() {
-		return hasWifi;
+		return mHasWifi;
 	}
 
 	public void setHasWifi(boolean hasWifi) {
-		this.hasWifi = hasWifi;
+		mHasWifi = hasWifi;
 	}
 
 	public boolean isHasParking() {
-		return hasParking;
+		return mHasParking;
 	}
 
 	public void setHasParking(boolean hasParking) {
-		this.hasParking = hasParking;
+		mHasParking = hasParking;
 	}
 
 	public boolean isHasSlip() {
-		return hasSlip;
+		return mHasSlip;
 	}
 
 	public void setHasSlip(boolean hasSlip) {
-		this.hasSlip = hasSlip;
+		mHasSlip = hasSlip;
 	}
 
 	public boolean isHasWashingMachine() {
-		return hasWashingMachine;
+		return mHasWashingMachine;
 	}
 
 	public void setHasWashingMachine(boolean hasWashingMachine) {
-		this.hasWashingMachine = hasWashingMachine;
+		mHasWashingMachine = hasWashingMachine;
 	}
 
 	public boolean isHasFuelStation() {
-		return hasFuelStation;
+		return mHasFuelStation;
 	}
 
 	public void setHasFuelStation(boolean hasFuelStation) {
-		this.hasFuelStation = hasFuelStation;
+		mHasFuelStation = hasFuelStation;
 	}
 
 	public boolean isHasEmptyingChemicalToilet() {
-		return hasEmptyingChemicalToilet;
+		return mHasEmptyingChemicalToilet;
 	}
 
 	public void setHasEmptyingChemicalToilet(boolean hasEmptyingChemicalToilet) {
-		this.hasEmptyingChemicalToilet = hasEmptyingChemicalToilet;
+		mHasEmptyingChemicalToilet = hasEmptyingChemicalToilet;
 	}
 
 	public Float getPricePerPerson() {
-		return pricePerPerson;
+		return mPricePerPerson;
 	}
 
 	public void setPricePerPerson(Float pricePerPerson) {
-		this.pricePerPerson = pricePerPerson;
+		mPricePerPerson = pricePerPerson;
 	}
 
 	public Float getPricePowerConnection() {
-		return pricePowerConnection;
+		return mPricePowerConnection;
 	}
 
 	public void setPricePowerConnection(Float pricePowerConnection) {
-		this.pricePowerConnection = pricePowerConnection;
+		mPricePowerConnection = pricePowerConnection;
 	}
 
 	public Float getPriceWC() {
-		return priceWC;
+		return mPriceWC;
 	}
 
 	public void setPriceWC(Float priceWC) {
-		this.priceWC = priceWC;
+		mPriceWC = priceWC;
 	}
 
 	public Float getPriceShower() {
-		return priceShower;
+		return mPriceShower;
 	}
 
 	public void setPriceShower(Float priceShower) {
-		this.priceShower = priceShower;
+		mPriceShower = priceShower;
 	}
 
 	public Float getPriceWashbasin() {
-		return priceWashbasin;
+		return mPriceWashbasin;
 	}
 
 	public void setPriceWashbasin(Float priceWashbasin) {
-		this.priceWashbasin = priceWashbasin;
+		mPriceWashbasin = priceWashbasin;
 	}
 
 	public Float getPriceDishes() {
-		return priceDishes;
+		return mPriceDishes;
 	}
 
 	public void setPriceDishes(Float priceDishes) {
-		this.priceDishes = priceDishes;
+		mPriceDishes = priceDishes;
 	}
 
 	public Float getPriceWifi() {
-		return priceWifi;
+		return mPriceWifi;
 	}
 
 	public void setPriceWifi(Float priceWifi) {
-		this.priceWifi = priceWifi;
+		mPriceWifi = priceWifi;
 	}
 
 	public Float getPriceWashingMachine() {
-		return priceWashingMachine;
+		return mPriceWashingMachine;
 	}
 
 	public void setPriceWashingMachine(Float priceWashingMachine) {
-		this.priceWashingMachine = priceWashingMachine;
+		mPriceWashingMachine = priceWashingMachine;
 	}
 
 	public Float getPriceEmptyingChemicalToilet() {
-		return priceEmptyingChemicalToilet;
+		return mPriceEmptyingChemicalToilet;
 	}
 
 	public void setPriceEmptyingChemicalToilet(Float priceEmptyingChemicalToilet) {
-		this.priceEmptyingChemicalToilet = priceEmptyingChemicalToilet;
+		mPriceEmptyingChemicalToilet = priceEmptyingChemicalToilet;
 	}
 
 	public Float getPriceParking() {
-		return priceParking;
+		return mPriceParking;
 	}
 
 	public void setPriceParking(Float priceParking) {
-		this.priceParking = priceParking;
+		mPriceParking = priceParking;
 	}
 
+	public String getCurrency() {
+		return mCurrency;
+	}
+
+	public void setCurrency(String currency) {
+		mCurrency = currency;
+	}
+
+	@Override
+	public ContentValues toContentValues() {
+		ContentValues values = new ContentValues();
+		values.put(SailHeroContract.Port.COLUMN_NAME_ID, getId());
+		values.put(SailHeroContract.Port.COLUMN_NAME_NAME, getName());
+		values.put(SailHeroContract.Port.COLUMN_NAME_LATITUDE, getLatitude());
+		values.put(SailHeroContract.Port.COLUMN_NAME_LONGITUDE, getLongitude());
+		values.put(SailHeroContract.Port.COLUMN_NAME_WEBSITE, getWebsite());
+		values.put(SailHeroContract.Port.COLUMN_NAME_CITY, getCity());
+		values.put(SailHeroContract.Port.COLUMN_NAME_STREET, getStreet());
+		values.put(SailHeroContract.Port.COLUMN_NAME_TELEPHONE, getTelephone());
+		values.put(SailHeroContract.Port.COLUMN_NAME_ADDITIONAL_INFO, getAdditionalInfo());
+		values.put(SailHeroContract.Port.COLUMN_NAME_SPOTS, getSpots());
+		values.put(SailHeroContract.Port.COLUMN_NAME_DEPTH, getDepth());
+		values.put(SailHeroContract.Port.COLUMN_NAME_HAS_POWER_CONNECTION, isHasPowerConnection() ? 1 : 0);
+		values.put(SailHeroContract.Port.COLUMN_NAME_HAS_WC, isHasWC() ? 1 : 0);
+		values.put(SailHeroContract.Port.COLUMN_NAME_HAS_SHOWER, isHasShower() ? 1 : 0);
+		values.put(SailHeroContract.Port.COLUMN_NAME_HAS_WASHBASIN, isHasWashbasin() ? 1 : 0);
+		values.put(SailHeroContract.Port.COLUMN_NAME_HAS_DISHES, isHasDishes() ? 1 : 0);
+		values.put(SailHeroContract.Port.COLUMN_NAME_HAS_WIFI, isHasWifi() ? 1 : 0);
+		values.put(SailHeroContract.Port.COLUMN_NAME_HAS_PARKING, isHasParking() ? 1 : 0);
+		values.put(SailHeroContract.Port.COLUMN_NAME_HAS_SLIP, isHasParking() ? 1 : 0);
+		values.put(SailHeroContract.Port.COLUMN_NAME_HAS_WASHING_MACHINE, isHasWashingMachine() ? 1 : 0);
+		values.put(SailHeroContract.Port.COLUMN_NAME_HAS_FUEL_STATION, isHasFuelStation() ? 1 : 0);
+		values.put(SailHeroContract.Port.COLUMN_NAME_HAS_EMPTYING_CHEMICAL_TOILET, isHasEmptyingChemicalToilet() ? 1
+				: 0);
+		values.put(SailHeroContract.Port.COLUMN_NAME_PRICE_PER_PERSON, getPricePerPerson());
+		values.put(SailHeroContract.Port.COLUMN_NAME_PRICE_POWER_CONNECTION, getPricePowerConnection());
+		values.put(SailHeroContract.Port.COLUMN_NAME_PRICE_WC, getPriceWC());
+		values.put(SailHeroContract.Port.COLUMN_NAME_PRICE_SHOWER, getPriceShower());
+		values.put(SailHeroContract.Port.COLUMN_NAME_PRICE_WASHBASIN, getPriceWashbasin());
+		values.put(SailHeroContract.Port.COLUMN_NAME_PRICE_DISHES, getPriceDishes());
+		values.put(SailHeroContract.Port.COLUMN_NAME_PRICE_WIFI, getPriceWifi());
+		values.put(SailHeroContract.Port.COLUMN_NAME_PRICE_PARKING, getPriceParking());
+		values.put(SailHeroContract.Port.COLUMN_NAME_PRICE_WASHING_MACHINE, getPriceWashingMachine());
+		values.put(SailHeroContract.Port.COLUMN_NAME_PRICE_EMPTYING_CHEMICAL_TOILET, getPriceEmptyingChemicalToilet());
+		values.put(SailHeroContract.Port.COLUMN_NAME_CURRENCY, getCurrency());
+
+		return values;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Port)) {
+			return false;
+		}
+
+		Port portToCompare = (Port) o;
+
+		return getId().equals(portToCompare.getId()) && TextUtils.equals(getName(), portToCompare.getName())
+				&& getLatitude().equals(portToCompare.getLatitude())
+				&& getLongitude().equals(portToCompare.getLongitude())
+				&& TextUtils.equals(getWebsite(), portToCompare.getWebsite())
+				&& TextUtils.equals(getCity(), portToCompare.getCity())
+				&& TextUtils.equals(getStreet(), portToCompare.getStreet())
+				&& TextUtils.equals(getTelephone(), portToCompare.getTelephone())
+				&& TextUtils.equals(getAdditionalInfo(), portToCompare.getAdditionalInfo())
+				&& getSpots().equals(portToCompare.getSpots()) && getDepth().equals(portToCompare.getDepth());
+	}
 }

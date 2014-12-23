@@ -29,6 +29,7 @@ public abstract class FriendshipResponseRequestHelper extends RequestHelper {
 	@Override
 	protected void setHeaders() {
 		addHeaderAuthorization();
+		addHeaderPosition();
 	}
 
 	@Override

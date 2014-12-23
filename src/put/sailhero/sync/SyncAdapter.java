@@ -84,5 +84,13 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 				e.printStackTrace();
 			}
 		}
+		if ((syncItemsMask & SyncUtils.SYNC_ROUTES) > 0) {
+			RetrieveRoutesRequestHelper retrieveRoutesRequestHelper = new RetrieveRoutesRequestHelper(getContext());
+			try {
+				SyncUtils.doAuthenticatedRequest(getContext(), retrieveRoutesRequestHelper);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

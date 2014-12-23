@@ -41,6 +41,7 @@ public abstract class AlertResponseRequestHelper extends RequestHelper {
 	@Override
 	protected void setHeaders() {
 		addHeaderAuthorization();
+		addHeaderPosition();
 	}
 
 	@Override

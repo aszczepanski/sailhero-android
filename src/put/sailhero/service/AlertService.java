@@ -188,10 +188,8 @@ public class AlertService extends Service implements GooglePlayServicesClient.Co
 			alert.setId(cursor.getInt(AlertQuery.ALERT_ID));
 			alert.setAlertType(cursor.getString(AlertQuery.ALERT_TYPE));
 
-			Location alertLocation = new Location("sailhero");
-			alertLocation.setLatitude(cursor.getDouble(AlertQuery.ALERT_LATITUDE));
-			alertLocation.setLongitude(cursor.getDouble(AlertQuery.ALERT_LONGITUDE));
-			alert.setLocation(alertLocation);
+			alert.setLatitude(cursor.getDouble(AlertQuery.ALERT_LATITUDE));
+			alert.setLongitude(cursor.getDouble(AlertQuery.ALERT_LONGITUDE));
 
 			alert.setUserId(cursor.getInt(AlertQuery.ALERT_USER_ID));
 			alert.setAdditionalInfo(cursor.getString(AlertQuery.ALERT_ADDITIONAL_INFO));

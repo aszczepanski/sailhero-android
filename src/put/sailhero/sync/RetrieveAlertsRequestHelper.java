@@ -19,6 +19,7 @@ import put.sailhero.model.Alert;
 import put.sailhero.provider.SailHeroContract;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
@@ -48,6 +49,7 @@ public class RetrieveAlertsRequestHelper extends RequestHelper {
 	@Override
 	protected void setHeaders() {
 		addHeaderAuthorization();
+		addHeaderPosition();
 	}
 
 	@Override
@@ -112,42 +114,42 @@ public class RetrieveAlertsRequestHelper extends RequestHelper {
 
 		Log.i(TAG, SailHeroContract.Alert.CONTENT_URI.toString());
 
-		String[] projection = new String[] {
-				SailHeroContract.Alert.COLUMN_NAME_ID,
-				SailHeroContract.Alert.COLUMN_NAME_TYPE
-		};
-
-		int id;
-
-		Cursor c = contentResolver.query(SailHeroContract.Alert.CONTENT_URI, projection, null, null, null);
+		Cursor c = contentResolver.query(SailHeroContract.Alert.CONTENT_URI, Alert.Query.PROJECTION, null, null, null);
 
 		while (c.moveToNext()) {
-			Log.i(TAG, c.getInt(0) + " " + c.getString(1));
-			id = c.getInt(0);
+			Alert dbAlert = new Alert(c);
+			Log.i(TAG, dbAlert.getId() + " " + dbAlert.getAlertType());
 
-			Alert alert = alertMap.get(id);
-			if (alert != null) {
+			Alert retrievedAlert = alertMap.get(dbAlert.getId());
+			if (retrievedAlert != null) {
 				// alert already in database
-				alertMap.remove(id);
+				if (dbAlert.equals(retrievedAlert)) {
+					// do nothing
+				} else {
+					Uri updateUri = SailHeroContract.Alert.CONTENT_URI.buildUpon()
+							.appendPath(Integer.toString(dbAlert.getId()))
+							.build();
+					Log.i(TAG, "Scheduling update: " + updateUri);
+
+					ContentValues values = retrievedAlert.toContentValues();
+					batch.add(ContentProviderOperation.newUpdate(updateUri).withValues(values).build());
+				}
+				alertMap.remove(dbAlert.getId());
 			} else {
 				// alert should be deleted from database
-				Uri deleteUri = SailHeroContract.Alert.CONTENT_URI.buildUpon().appendPath(Integer.toString(id)).build();
+				Uri deleteUri = SailHeroContract.Alert.CONTENT_URI.buildUpon()
+						.appendPath(Integer.toString(dbAlert.getId()))
+						.build();
 				Log.i(TAG, "Scheduling delete: " + deleteUri);
 				batch.add(ContentProviderOperation.newDelete(deleteUri).build());
 			}
 		}
 		c.close();
 
-		for (Alert alert : alertMap.values()) {
-			Log.i(TAG, "Scheduling insert: alert_id=" + alert.getId());
-			batch.add(ContentProviderOperation.newInsert(SailHeroContract.Alert.CONTENT_URI)
-					.withValue(SailHeroContract.Alert.COLUMN_NAME_ID, alert.getId())
-					.withValue(SailHeroContract.Alert.COLUMN_NAME_TYPE, alert.getAlertType())
-					.withValue(SailHeroContract.Alert.COLUMN_NAME_LATITUDE, alert.getLocation().getLatitude())
-					.withValue(SailHeroContract.Alert.COLUMN_NAME_LONGITUDE, alert.getLocation().getLongitude())
-					.withValue(SailHeroContract.Alert.COLUMN_NAME_USER_ID, alert.getUserId())
-					.withValue(SailHeroContract.Alert.COLUMN_NAME_ADDITIONAL_INFO, alert.getAdditionalInfo())
-					.build());
+		for (Alert retrievedAlert : alertMap.values()) {
+			Log.i(TAG, "Scheduling insert: alert_id=" + retrievedAlert.getId());
+			ContentValues values = retrievedAlert.toContentValues();
+			batch.add(ContentProviderOperation.newInsert(SailHeroContract.Alert.CONTENT_URI).withValues(values).build());
 		}
 
 		try {

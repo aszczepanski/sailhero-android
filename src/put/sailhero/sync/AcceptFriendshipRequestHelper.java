@@ -31,6 +31,7 @@ public class AcceptFriendshipRequestHelper extends FriendshipResponseRequestHelp
 	@Override
 	protected void setHeaders() {
 		addHeaderAuthorization();
+		addHeaderPosition();
 	}
 
 	@Override

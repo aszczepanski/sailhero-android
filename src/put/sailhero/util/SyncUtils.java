@@ -20,6 +20,7 @@ public class SyncUtils {
 	public static final int SYNC_PORTS = 1 << 2;
 	public static final int SYNC_REGIONS = 1 << 3;
 	public static final int SYNC_USER_DATA = 1 << 4;
+	public static final int SYNC_ROUTES = 1 << 5;
 
 	private static void doOneAuthenticatedRequest(final Context context, RequestHelper requestHelper) throws Exception {
 		try {
@@ -86,7 +87,7 @@ public class SyncUtils {
 	}
 
 	public static void syncAll(final Context context) {
-		int syncItemsMask = SYNC_ALERTS | SYNC_FRIENDSHIPS | SYNC_PORTS | SYNC_REGIONS | SYNC_USER_DATA;
+		int syncItemsMask = SYNC_ALERTS | SYNC_FRIENDSHIPS | SYNC_PORTS | SYNC_REGIONS | SYNC_USER_DATA | SYNC_ROUTES;
 		performSync(context, syncItemsMask);
 	}
 
@@ -112,6 +113,11 @@ public class SyncUtils {
 
 	public static void syncUserData(final Context context) {
 		int syncItemsMask = SYNC_USER_DATA;
+		performSync(context, syncItemsMask);
+	}
+
+	public static void syncRoutes(final Context context) {
+		int syncItemsMask = SYNC_ROUTES;
 		performSync(context, syncItemsMask);
 	}
 }

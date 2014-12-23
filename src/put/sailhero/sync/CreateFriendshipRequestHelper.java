@@ -55,6 +55,7 @@ public class CreateFriendshipRequestHelper extends RequestHelper {
 	@Override
 	protected void setHeaders() {
 		addHeaderAuthorization();
+		addHeaderPosition();
 		addHeaderContentJson();
 	}
 

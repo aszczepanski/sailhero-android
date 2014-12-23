@@ -16,7 +16,6 @@ import put.sailhero.exception.SystemException;
 import put.sailhero.exception.UnauthorizedException;
 import put.sailhero.model.Alert;
 import android.content.Context;
-import android.location.Location;
 import android.net.Uri;
 
 public class CreateAlertRequestHelper extends RequestHelper {
@@ -28,14 +27,16 @@ public class CreateAlertRequestHelper extends RequestHelper {
 	private Alert mSentAlert;
 	private Alert mRetrievedAlert;
 
-	public CreateAlertRequestHelper(Context context, String alertType, Location location, String additionalInfo) {
+	public CreateAlertRequestHelper(Context context, String alertType, Double latitude, Double longitude,
+			String additionalInfo) {
 		super(context);
 
 		mContext = context;
 
 		mSentAlert = new Alert();
 		mSentAlert.setAlertType(alertType);
-		mSentAlert.setLocation(location);
+		mSentAlert.setLatitude(latitude);
+		mSentAlert.setLongitude(longitude);
 		mSentAlert.setAdditionalInfo(additionalInfo);
 	}
 
@@ -57,6 +58,7 @@ public class CreateAlertRequestHelper extends RequestHelper {
 	@Override
 	protected void setHeaders() {
 		addHeaderAuthorization();
+		addHeaderPosition();
 		addHeaderContentJson();
 	}
 

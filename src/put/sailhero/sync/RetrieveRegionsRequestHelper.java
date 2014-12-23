@@ -49,6 +49,7 @@ public class RetrieveRegionsRequestHelper extends RequestHelper {
 	@Override
 	protected void setHeaders() {
 		addHeaderAuthorization();
+		addHeaderPosition();
 	}
 
 	@Override
@@ -107,31 +108,31 @@ public class RetrieveRegionsRequestHelper extends RequestHelper {
 
 		ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
 
-		String[] projection = new String[] {
-				SailHeroContract.Region.COLUMN_NAME_ID,
-				SailHeroContract.Region.COLUMN_NAME_CODE_NAME,
-				SailHeroContract.Region.COLUMN_NAME_FULL_NAME
-		};
-
-		int id;
-		String type;
-
-		Cursor c = contentResolver.query(SailHeroContract.Region.CONTENT_URI, projection, null, null, null);
+		Cursor c = contentResolver.query(SailHeroContract.Region.CONTENT_URI, Region.Query.PROJECTION, null, null, null);
 
 		while (c.moveToNext()) {
+			Region dbRegion = new Region(c);
 			Log.i(TAG, c.getInt(0) + " " + c.getString(2));
-			id = c.getInt(0);
-			type = c.getString(1);
 
-			Region region = regionMap.get(id);
-			if (region != null) {
+			Region retrievedRegion = regionMap.get(dbRegion.getId());
+			if (retrievedRegion != null) {
 				// alert already in database
-				regionMap.remove(id);
-				/// TODO: update maybe?
+				if (retrievedRegion.equals(dbRegion)) {
+					// do nothing
+				} else {
+					Uri updateUri = SailHeroContract.Region.CONTENT_URI.buildUpon()
+							.appendPath(dbRegion.getId().toString())
+							.build();
+					Log.i(TAG, "Scheduling update: " + updateUri);
+					batch.add(ContentProviderOperation.newUpdate(updateUri)
+							.withValues(retrievedRegion.toContentValues())
+							.build());
+				}
+				regionMap.remove(dbRegion.getId());
 			} else {
 				// alert should be deleted from database
 				Uri deleteUri = SailHeroContract.Region.CONTENT_URI.buildUpon()
-						.appendPath(Integer.toString(id))
+						.appendPath(Integer.toString(dbRegion.getId()))
 						.build();
 				Log.i(TAG, "Scheduling delete: " + deleteUri);
 				batch.add(ContentProviderOperation.newDelete(deleteUri).build());
@@ -142,9 +143,7 @@ public class RetrieveRegionsRequestHelper extends RequestHelper {
 		for (Region region : regionMap.values()) {
 			Log.i(TAG, "Scheduling insert: region_id=" + region.getId());
 			batch.add(ContentProviderOperation.newInsert(SailHeroContract.Region.CONTENT_URI)
-					.withValue(SailHeroContract.Region.COLUMN_NAME_ID, region.getId())
-					.withValue(SailHeroContract.Region.COLUMN_NAME_CODE_NAME, region.getCodeName())
-					.withValue(SailHeroContract.Region.COLUMN_NAME_FULL_NAME, region.getFullName())
+					.withValues(region.toContentValues())
 					.build());
 		}
 

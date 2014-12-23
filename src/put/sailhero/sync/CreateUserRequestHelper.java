@@ -134,4 +134,9 @@ public class CreateUserRequestHelper extends RequestHelper {
 			throw new SystemException("Invalid status code");
 		}
 	}
+	
+	@Override
+	public boolean requiresAuthentication() {
+		return false;
+	}
 }

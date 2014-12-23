@@ -29,31 +29,28 @@ public class UpdateUserRequestHelper extends RequestHelper {
 	private final static String PATH_USERS = "users";
 
 	private Integer mId;
-	private String mEmail, mPassword, mPasswordConfirmation, mName, mSurname, mEncodedAvatar;
+	private String mPassword, mPasswordConfirmation, mName, mSurname, mEncodedAvatar;
+	private Boolean mSharePosition;
 
 	private RegisterUserEntityErrorsHolder mRegisterUserEntityErrorsHolder;
 
 	private User mRetrievedUser;
 
-	public UpdateUserRequestHelper(Context context, Integer id, String email, String password,
-			String passwordConfirmation, String name, String surname, String encodedAvatar) {
+	public UpdateUserRequestHelper(Context context, Integer id, String password, String passwordConfirmation,
+			String name, String surname, String encodedAvatar, Boolean sharePosition) {
 		super(context);
 
 		mId = id;
-		mEmail = email;
 		mPassword = password;
 		mPasswordConfirmation = passwordConfirmation;
 		mName = name;
 		mSurname = surname;
 		mEncodedAvatar = encodedAvatar;
+		mSharePosition = sharePosition;
 	}
 
 	public Integer getId() {
 		return mId;
-	}
-
-	public String getEmail() {
-		return mEmail;
 	}
 
 	public String getPassword() {
@@ -76,6 +73,10 @@ public class UpdateUserRequestHelper extends RequestHelper {
 		return mEncodedAvatar;
 	}
 
+	public Boolean getSharePosition() {
+		return mSharePosition;
+	}
+
 	public User getRetrievedUser() {
 		return mRetrievedUser;
 	}
@@ -94,6 +95,7 @@ public class UpdateUserRequestHelper extends RequestHelper {
 	@Override
 	protected void setHeaders() {
 		addHeaderAuthorization();
+		addHeaderPosition();
 		addHeaderContentJson();
 	}
 
@@ -102,7 +104,6 @@ public class UpdateUserRequestHelper extends RequestHelper {
 		JSONObject obj = new JSONObject();
 
 		JSONObject userObject = new JSONObject();
-		userObject.put("email", mEmail);
 
 		if (!TextUtils.isEmpty(mPassword) || !TextUtils.isEmpty(mPasswordConfirmation)) {
 			userObject.put("password", mPassword);
@@ -115,6 +116,8 @@ public class UpdateUserRequestHelper extends RequestHelper {
 		if (mEncodedAvatar != null) {
 			userObject.put("avatar_data", "data:image/jpg;base64," + mEncodedAvatar);
 		}
+
+		userObject.put("share_position", mSharePosition);
 
 		obj.put("user", userObject);
 

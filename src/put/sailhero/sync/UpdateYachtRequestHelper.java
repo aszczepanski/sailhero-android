@@ -61,6 +61,7 @@ public class UpdateYachtRequestHelper extends RequestHelper {
 	@Override
 	protected void setHeaders() {
 		addHeaderAuthorization();
+		addHeaderPosition();
 		addHeaderContentJson();
 	}
 

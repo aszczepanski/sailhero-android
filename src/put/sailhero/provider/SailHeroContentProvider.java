@@ -27,6 +27,12 @@ public class SailHeroContentProvider extends ContentProvider {
 	private static final int ROUTE_FRIENDSHIPS = 30;
 	private static final int ROUTE_FRIENDSHIPS_ID = 31;
 
+	private static final int ROUTE_ROUTES = 40;
+	private static final int ROUTE_ROUTES_ID = 41;
+	private static final int ROUTE_PINS = 42;
+	private static final int ROUTE_PINS_ID = 43;
+	private static final int ROUTE_ROUTES_PINS = 45;
+
 	private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 	static {
 		sUriMatcher.addURI(SailHeroContract.CONTENT_AUTHORITY, "alerts", ROUTE_ALERTS);
@@ -37,6 +43,11 @@ public class SailHeroContentProvider extends ContentProvider {
 		sUriMatcher.addURI(SailHeroContract.CONTENT_AUTHORITY, "ports/#", ROUTE_PORTS_ID);
 		sUriMatcher.addURI(SailHeroContract.CONTENT_AUTHORITY, "friendships", ROUTE_FRIENDSHIPS);
 		sUriMatcher.addURI(SailHeroContract.CONTENT_AUTHORITY, "friendships/#", ROUTE_FRIENDSHIPS_ID);
+		sUriMatcher.addURI(SailHeroContract.CONTENT_AUTHORITY, "routes", ROUTE_ROUTES);
+		sUriMatcher.addURI(SailHeroContract.CONTENT_AUTHORITY, "routes/#", ROUTE_ROUTES_ID);
+		sUriMatcher.addURI(SailHeroContract.CONTENT_AUTHORITY, "pins", ROUTE_PINS);
+		sUriMatcher.addURI(SailHeroContract.CONTENT_AUTHORITY, "pins/#", ROUTE_PINS_ID);
+		sUriMatcher.addURI(SailHeroContract.CONTENT_AUTHORITY, "routes_pins", ROUTE_ROUTES_PINS);
 	}
 
 	public SailHeroContentProvider() {
@@ -68,6 +79,16 @@ public class SailHeroContentProvider extends ContentProvider {
 			return SailHeroContract.Friendship.CONTENT_TYPE;
 		case ROUTE_FRIENDSHIPS_ID:
 			return SailHeroContract.Friendship.CONTENT_ITEM_TYPE;
+		case ROUTE_ROUTES:
+			return SailHeroContract.Route.CONTENT_TYPE;
+		case ROUTE_ROUTES_ID:
+			return SailHeroContract.Route.CONTENT_ITEM_TYPE;
+		case ROUTE_PINS:
+			return SailHeroContract.Route.Pin.CONTENT_TYPE;
+		case ROUTE_PINS_ID:
+			return SailHeroContract.Route.Pin.CONTENT_ITEM_TYPE;
+		case ROUTE_ROUTES_PINS:
+			return SailHeroContract.Route.Pin.CONTENT_JOIN_ROUTES_TYPE;
 		default:
 			throw new UnsupportedOperationException("Unknown uri: " + uri);
 		}
@@ -112,6 +133,20 @@ public class SailHeroContentProvider extends ContentProvider {
 					.where(selection, selectionArgs)
 					.delete(db);
 			break;
+		case ROUTE_ROUTES_ID:
+			id = uri.getLastPathSegment();
+			count = builder.table(SailHeroContract.Route.TABLE_NAME)
+					.where("id" + "=?", id)
+					.where(selection, selectionArgs)
+					.delete(db);
+			break;
+		case ROUTE_PINS_ID:
+			id = uri.getLastPathSegment();
+			count = builder.table(SailHeroContract.Route.Pin.TABLE_NAME)
+					.where("id" + "=?", id)
+					.where(selection, selectionArgs)
+					.delete(db);
+			break;
 		case ROUTE_ALERTS:
 			count = builder.table(SailHeroContract.Alert.TABLE_NAME).where(selection, selectionArgs).delete(db);
 			break;
@@ -124,6 +159,14 @@ public class SailHeroContentProvider extends ContentProvider {
 		case ROUTE_FRIENDSHIPS:
 			count = builder.table(SailHeroContract.Friendship.TABLE_NAME).where(selection, selectionArgs).delete(db);
 			break;
+		case ROUTE_ROUTES:
+			count = builder.table(SailHeroContract.Route.TABLE_NAME).where(selection, selectionArgs).delete(db);
+			break;
+		case ROUTE_PINS:
+			count = builder.table(SailHeroContract.Route.Pin.TABLE_NAME).where(selection, selectionArgs).delete(db);
+			break;
+		case ROUTE_ROUTES_PINS:
+			throw new UnsupportedOperationException("Delete not supported on URI: " + uri);
 		default:
 			throw new UnsupportedOperationException("Unknown uri: " + uri);
 		}
@@ -189,10 +232,33 @@ public class SailHeroContentProvider extends ContentProvider {
 			ctx.getContentResolver().notifyChange(uri, null, false);
 
 			return result;
+		case ROUTE_ROUTES:
+			id = db.insertOrThrow(SailHeroContract.Route.TABLE_NAME, null, values);
+
+			result = Uri.parse(SailHeroContract.Route.CONTENT_URI + "/" + id);
+
+			ctx = getContext();
+			assert ctx != null;
+			ctx.getContentResolver().notifyChange(uri, null, false);
+
+			return result;
+		case ROUTE_PINS:
+			id = db.insertOrThrow(SailHeroContract.Route.Pin.TABLE_NAME, null, values);
+
+			result = Uri.parse(SailHeroContract.Route.Pin.CONTENT_URI + "/" + id);
+
+			ctx = getContext();
+			assert ctx != null;
+			ctx.getContentResolver().notifyChange(uri, null, false);
+
+			return result;
 		case ROUTE_ALERTS_ID:
 		case ROUTE_REGIONS_ID:
 		case ROUTE_PORTS_ID:
 		case ROUTE_FRIENDSHIPS_ID:
+		case ROUTE_ROUTES_ID:
+		case ROUTE_PINS_ID:
+		case ROUTE_ROUTES_PINS:
 			throw new UnsupportedOperationException("Insert not supported on URI: " + uri);
 		default:
 			throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -263,6 +329,29 @@ public class SailHeroContentProvider extends ContentProvider {
 			cursor.setNotificationUri(ctx.getContentResolver(), uri);
 
 			return cursor;
+		case ROUTE_ROUTES_ID:
+			id = uri.getLastPathSegment();
+			builder.where("id" + "=?", id);
+		case ROUTE_ROUTES:
+			builder.table(SailHeroContract.Route.TABLE_NAME).where(selection, selectionArgs);
+			cursor = builder.query(db, projection, sortOrder);
+
+			// TODO: make sure this is accurate
+			ctx = getContext();
+			assert ctx != null;
+			cursor.setNotificationUri(ctx.getContentResolver(), uri);
+
+			return cursor;
+		case ROUTE_ROUTES_PINS:
+			builder.table(SailHeroContract.Route.Pin.ROUTES_VIEW_NAME).where(selection, selectionArgs);
+			cursor = builder.query(db, projection, sortOrder);
+
+			// TODO: make sure this is accurate
+			ctx = getContext();
+			assert ctx != null;
+			cursor.setNotificationUri(ctx.getContentResolver(), uri);
+
+			return cursor;
 		default:
 			throw new UnsupportedOperationException("Unknown uri: " + uri);
 		}
@@ -309,10 +398,27 @@ public class SailHeroContentProvider extends ContentProvider {
 					.where(selection, selectionArgs)
 					.update(db, values);
 			break;
+		case ROUTE_ROUTES_ID:
+			id = uri.getLastPathSegment();
+			count = builder.table(SailHeroContract.Route.TABLE_NAME)
+					.where("id" + "=?", id)
+					.where(selection, selectionArgs)
+					.update(db, values);
+			break;
+		case ROUTE_PINS_ID:
+			id = uri.getLastPathSegment();
+			count = builder.table(SailHeroContract.Route.Pin.TABLE_NAME)
+					.where("id" + "=?", id)
+					.where(selection, selectionArgs)
+					.update(db, values);
+			break;
 		case ROUTE_ALERTS:
 		case ROUTE_REGIONS:
 		case ROUTE_PORTS:
 		case ROUTE_FRIENDSHIPS:
+		case ROUTE_ROUTES:
+		case ROUTE_PINS:
+		case ROUTE_ROUTES_PINS:
 			throw new UnsupportedOperationException("Update not supported on URI: " + uri);
 		default:
 			throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -328,7 +434,7 @@ public class SailHeroContentProvider extends ContentProvider {
 	}
 
 	static class SailHeroDatabaseHelper extends SQLiteOpenHelper {
-		public static final int DATABASE_VERSION = 20;
+		public static final int DATABASE_VERSION = 27;
 		public static final String DATABASE_NAME = "sailhero.db";
 
 		private static final String SQL_CREATE_ALERTS = "CREATE TABLE " + SailHeroContract.Alert.TABLE_NAME + " ("
@@ -378,7 +484,8 @@ public class SailHeroContentProvider extends ContentProvider {
 				+ SailHeroContract.Port.COLUMN_NAME_PRICE_WIFI + " REAL" + ","
 				+ SailHeroContract.Port.COLUMN_NAME_PRICE_WASHING_MACHINE + " REAL" + ","
 				+ SailHeroContract.Port.COLUMN_NAME_PRICE_EMPTYING_CHEMICAL_TOILET + " REAL" + ","
-				+ SailHeroContract.Port.COLUMN_NAME_PRICE_PARKING + " REAL" + ")";
+				+ SailHeroContract.Port.COLUMN_NAME_PRICE_PARKING + " REAL" + ","
+				+ SailHeroContract.Port.COLUMN_NAME_CURRENCY + " TEXT" + ")";
 
 		private static final String SQL_DELETE_PORTS = "DROP TABLE IF EXISTS " + SailHeroContract.Port.TABLE_NAME;
 
@@ -389,10 +496,40 @@ public class SailHeroContentProvider extends ContentProvider {
 				+ SailHeroContract.Friendship.COLUMN_NAME_FRIEND_EMAIL + " TEXT" + ","
 				+ SailHeroContract.Friendship.COLUMN_NAME_FRIEND_NAME + " TEXT" + ","
 				+ SailHeroContract.Friendship.COLUMN_NAME_FRIEND_SURNAME + " TEXT" + ","
-				+ SailHeroContract.Friendship.COLUMN_NAME_FRIEND_AVATAR_URL + " TEXT" + ")";
+				+ SailHeroContract.Friendship.COLUMN_NAME_FRIEND_AVATAR_URL + " TEXT" + ","
+				+ SailHeroContract.Friendship.COLUMN_NAME_FRIEND_LATITUDE + " REAL" + ","
+				+ SailHeroContract.Friendship.COLUMN_NAME_FRIEND_LONGITUDE + " REAL" + ")";
 
 		private static final String SQL_DELETE_FRIENDSHIPS = "DROP TABLE IF EXISTS "
 				+ SailHeroContract.Friendship.TABLE_NAME;
+
+		private static final String SQL_CREATE_ROUTES = "CREATE TABLE " + SailHeroContract.Route.TABLE_NAME + " ("
+				+ SailHeroContract.Route.COLUMN_NAME_ID + " INTEGER PRIMARY KEY,"
+				+ SailHeroContract.Route.COLUMN_NAME_NAME + " TEXT" + ")";
+
+		private static final String SQL_DELETE_ROUTES = "DROP TABLE IF EXISTS " + SailHeroContract.Route.TABLE_NAME;
+
+		private static final String SQL_CREATE_PINS = "CREATE TABLE " + SailHeroContract.Route.Pin.TABLE_NAME + " ("
+				+ SailHeroContract.Route.Pin.COLUMN_NAME_LATITUDE + " REAL" + ","
+				+ SailHeroContract.Route.Pin.COLUMN_NAME_LONGITUDE + " REAL" + ","
+				+ SailHeroContract.Route.Pin.COLUMN_NAME_ROUTE_ID + " INTEGER" + ","
+				+ SailHeroContract.Route.Pin.COLUMN_NAME_POSITION_IN_ROUTE + " INTEGER" + "," + " FOREIGN KEY ("
+				+ SailHeroContract.Route.Pin.COLUMN_NAME_ROUTE_ID + ") REFERENCES " + SailHeroContract.Route.TABLE_NAME
+				+ " (" + SailHeroContract.Route.COLUMN_NAME_ID + ") ON DELETE CASCADE" + ")";
+
+		private static final String SQL_DELETE_PINS = "DROP TABLE IF EXISTS " + SailHeroContract.Route.Pin.TABLE_NAME;
+
+		private static final String SQL_CREATE_ROUTES_PINS_VIEW = "CREATE VIEW "
+				+ SailHeroContract.Route.Pin.ROUTES_VIEW_NAME + " AS SELECT " + SailHeroContract.Route.COLUMN_NAME_ID
+				+ "," + SailHeroContract.Route.COLUMN_NAME_NAME + "," + SailHeroContract.Route.Pin.COLUMN_NAME_LATITUDE
+				+ "," + SailHeroContract.Route.Pin.COLUMN_NAME_LONGITUDE + " FROM " + SailHeroContract.Route.TABLE_NAME
+				+ "," + SailHeroContract.Route.Pin.TABLE_NAME + " WHERE " + SailHeroContract.Route.COLUMN_NAME_ID + "="
+				+ SailHeroContract.Route.Pin.COLUMN_NAME_ROUTE_ID + " ORDER BY "
+				+ SailHeroContract.Route.COLUMN_NAME_ID + ","
+				+ SailHeroContract.Route.Pin.COLUMN_NAME_POSITION_IN_ROUTE;
+
+		private static final String SQL_DELETE_ROUTES_PINS_VIEW = "DROP VIEW IF EXISTS "
+				+ SailHeroContract.Route.Pin.ROUTES_VIEW_NAME;
 
 		public SailHeroDatabaseHelper(Context context) {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -404,6 +541,9 @@ public class SailHeroContentProvider extends ContentProvider {
 			db.execSQL(SQL_CREATE_REGIONS);
 			db.execSQL(SQL_CREATE_PORTS);
 			db.execSQL(SQL_CREATE_FRIENDSHIPS);
+			db.execSQL(SQL_CREATE_ROUTES);
+			db.execSQL(SQL_CREATE_PINS);
+			db.execSQL(SQL_CREATE_ROUTES_PINS_VIEW);
 		}
 
 		@Override
@@ -412,6 +552,9 @@ public class SailHeroContentProvider extends ContentProvider {
 			db.execSQL(SQL_DELETE_REGIONS);
 			db.execSQL(SQL_DELETE_PORTS);
 			db.execSQL(SQL_DELETE_FRIENDSHIPS);
+			db.execSQL(SQL_DELETE_ROUTES);
+			db.execSQL(SQL_DELETE_PINS);
+			db.execSQL(SQL_DELETE_ROUTES_PINS_VIEW);
 			onCreate(db);
 		}
 	}

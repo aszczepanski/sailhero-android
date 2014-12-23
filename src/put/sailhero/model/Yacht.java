@@ -21,16 +21,16 @@ public class Yacht {
 		setWidth(Integer.valueOf(yachtObject.get("width").toString()));
 		setCrew(Integer.valueOf(yachtObject.get("crew").toString()));
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public JSONObject toJSONObject() {
 		JSONObject yachtObject = new JSONObject();
-		
+
 		yachtObject.put("name", name);
 		yachtObject.put("length", length);
 		yachtObject.put("width", width);
 		yachtObject.put("crew", crew);
-		
+
 		return yachtObject;
 	}
 
@@ -72,5 +72,18 @@ public class Yacht {
 
 	public void setCrew(Integer crew) {
 		this.crew = crew;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Yacht)) {
+			return false;
+		}
+
+		Yacht yachtToCompare = (Yacht) o;
+
+		return getId().equals(yachtToCompare.getId()) && getName().equals(yachtToCompare.getName())
+				&& getLength().equals(yachtToCompare.getLength()) && getWidth().equals(yachtToCompare.getWidth())
+				&& getCrew().equals(yachtToCompare.getCrew());
 	}
 }

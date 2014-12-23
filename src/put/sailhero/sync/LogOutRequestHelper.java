@@ -41,6 +41,7 @@ public class LogOutRequestHelper extends RequestHelper {
 	@Override
 	protected void setHeaders() {
 		addHeaderAuthorization();
+		addHeaderPosition();
 		addHeaderContentJson();
 	}
 
@@ -79,7 +80,7 @@ public class LogOutRequestHelper extends RequestHelper {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		if (statusCode == 200) {
 			// logged out
 		} else {

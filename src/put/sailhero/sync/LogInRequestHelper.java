@@ -151,4 +151,9 @@ public class LogInRequestHelper extends RequestHelper {
 			throw new SystemException("Invalid status code");
 		}
 	}
+
+	@Override
+	public boolean requiresAuthentication() {
+		return false;
+	}
 }

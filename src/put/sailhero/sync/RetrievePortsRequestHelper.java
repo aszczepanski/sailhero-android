@@ -48,6 +48,7 @@ public class RetrievePortsRequestHelper extends RequestHelper {
 	@Override
 	protected void setHeaders() {
 		addHeaderAuthorization();
+		addHeaderPosition();
 	}
 
 	@Override
@@ -106,29 +107,33 @@ public class RetrievePortsRequestHelper extends RequestHelper {
 
 		ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
 
-		Log.i(TAG, SailHeroContract.Port.CONTENT_URI.toString());
-
-		String[] projection = new String[] {
-				SailHeroContract.Port.COLUMN_NAME_ID,
-				SailHeroContract.Port.COLUMN_NAME_NAME
-		};
-
-		int id;
-
-		Cursor c = contentResolver.query(SailHeroContract.Port.CONTENT_URI, projection, null, null, null);
+		Cursor c = contentResolver.query(SailHeroContract.Port.CONTENT_URI, Port.Query.PROJECTION, null, null, null);
 
 		while (c.moveToNext()) {
-			Log.i(TAG, c.getInt(0) + " " + c.getString(1));
-			id = c.getInt(0);
+			Port dbPort = new Port(c);
+			Log.i(TAG, dbPort.getId() + " " + dbPort.getName());
 
-			Port port = portMap.get(id);
-			if (port != null) {
+			Port retrievedPort = portMap.get(dbPort.getId());
+			if (retrievedPort != null) {
 				// alert already in database
-				portMap.remove(id);
-				// TODO: check if are equal
+				if (dbPort.equals(retrievedPort)) {
+					// do nothing
+				} else {
+					Uri updateUri = SailHeroContract.Port.CONTENT_URI.buildUpon()
+							.appendPath(retrievedPort.getId().toString())
+							.build();
+					Log.i(TAG, "Scheduling update: " + updateUri);
+					batch.add(ContentProviderOperation.newUpdate(updateUri)
+							.withValues(retrievedPort.toContentValues())
+							.build());
+
+				}
+				portMap.remove(dbPort.getId());
 			} else {
 				// alert should be deleted from database
-				Uri deleteUri = SailHeroContract.Port.CONTENT_URI.buildUpon().appendPath(Integer.toString(id)).build();
+				Uri deleteUri = SailHeroContract.Port.CONTENT_URI.buildUpon()
+						.appendPath(dbPort.getId().toString())
+						.build();
 				Log.i(TAG, "Scheduling delete: " + deleteUri);
 				batch.add(ContentProviderOperation.newDelete(deleteUri).build());
 			}
@@ -138,42 +143,7 @@ public class RetrievePortsRequestHelper extends RequestHelper {
 		for (Port port : portMap.values()) {
 			Log.i(TAG, "Scheduling insert: port_id=" + port.getId());
 			batch.add(ContentProviderOperation.newInsert(SailHeroContract.Port.CONTENT_URI)
-					.withValue(SailHeroContract.Port.COLUMN_NAME_ID, port.getId())
-					.withValue(SailHeroContract.Port.COLUMN_NAME_NAME, port.getName())
-					.withValue(SailHeroContract.Port.COLUMN_NAME_LATITUDE, port.getLocation().getLatitude())
-					.withValue(SailHeroContract.Port.COLUMN_NAME_LONGITUDE, port.getLocation().getLongitude())
-					.withValue(SailHeroContract.Port.COLUMN_NAME_WEBSITE, port.getWebsite())
-					.withValue(SailHeroContract.Port.COLUMN_NAME_CITY, port.getName())
-					.withValue(SailHeroContract.Port.COLUMN_NAME_STREET, port.getStreet())
-					.withValue(SailHeroContract.Port.COLUMN_NAME_TELEPHONE, port.getTelephone())
-					.withValue(SailHeroContract.Port.COLUMN_NAME_ADDITIONAL_INFO, port.getAdditionalInfo())
-					.withValue(SailHeroContract.Port.COLUMN_NAME_SPOTS, port.getSpots())
-					.withValue(SailHeroContract.Port.COLUMN_NAME_DEPTH, port.getDepth())
-					.withValue(SailHeroContract.Port.COLUMN_NAME_HAS_POWER_CONNECTION,
-							port.isHasPowerConnection() ? 1 : 0)
-					.withValue(SailHeroContract.Port.COLUMN_NAME_HAS_WC, port.isHasWC() ? 1 : 0)
-					.withValue(SailHeroContract.Port.COLUMN_NAME_HAS_SHOWER, port.isHasShower() ? 1 : 0)
-					.withValue(SailHeroContract.Port.COLUMN_NAME_HAS_WASHBASIN, port.isHasWashbasin() ? 1 : 0)
-					.withValue(SailHeroContract.Port.COLUMN_NAME_HAS_DISHES, port.isHasDishes() ? 1 : 0)
-					.withValue(SailHeroContract.Port.COLUMN_NAME_HAS_WIFI, port.isHasWifi() ? 1 : 0)
-					.withValue(SailHeroContract.Port.COLUMN_NAME_HAS_PARKING, port.isHasParking() ? 1 : 0)
-					.withValue(SailHeroContract.Port.COLUMN_NAME_HAS_SLIP, port.isHasParking() ? 1 : 0)
-					.withValue(SailHeroContract.Port.COLUMN_NAME_HAS_WASHING_MACHINE,
-							port.isHasWashingMachine() ? 1 : 0)
-					.withValue(SailHeroContract.Port.COLUMN_NAME_HAS_FUEL_STATION, port.isHasFuelStation() ? 1 : 0)
-					.withValue(SailHeroContract.Port.COLUMN_NAME_HAS_EMPTYING_CHEMICAL_TOILET,
-							port.isHasEmptyingChemicalToilet() ? 1 : 0)
-					.withValue(SailHeroContract.Port.COLUMN_NAME_PRICE_PER_PERSON, port.getPricePerPerson())
-					.withValue(SailHeroContract.Port.COLUMN_NAME_PRICE_POWER_CONNECTION, port.getPricePowerConnection())
-					.withValue(SailHeroContract.Port.COLUMN_NAME_PRICE_WC, port.getPriceWC())
-					.withValue(SailHeroContract.Port.COLUMN_NAME_PRICE_SHOWER, port.getPriceShower())
-					.withValue(SailHeroContract.Port.COLUMN_NAME_PRICE_WASHBASIN, port.getPriceWashbasin())
-					.withValue(SailHeroContract.Port.COLUMN_NAME_PRICE_DISHES, port.getPriceDishes())
-					.withValue(SailHeroContract.Port.COLUMN_NAME_PRICE_WIFI, port.getPriceWifi())
-					.withValue(SailHeroContract.Port.COLUMN_NAME_PRICE_PARKING, port.getPriceParking())
-					.withValue(SailHeroContract.Port.COLUMN_NAME_PRICE_WASHING_MACHINE, port.getPriceWashingMachine())
-					.withValue(SailHeroContract.Port.COLUMN_NAME_PRICE_EMPTYING_CHEMICAL_TOILET,
-							port.getPriceEmptyingChemicalToilet())
+					.withValues(port.toContentValues())
 					.build());
 		}
 
