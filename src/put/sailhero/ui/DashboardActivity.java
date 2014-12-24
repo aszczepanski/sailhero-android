@@ -45,6 +45,7 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 	private float[] mOrientation = new float[3];
 	private int mCount;
 
+	// TODO:
 	private Alert mClosestAlert;
 
 	private TextView mLocationTextView;
@@ -121,7 +122,7 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 		final Location currentLocation = mLocationClient.getLastLocation();
 
 		final CreateAlertRequestHelper createAlertRequestHelper = new CreateAlertRequestHelper(mContext, alertType,
-				currentLocation, "");
+				currentLocation.getLatitude(), currentLocation.getLongitude(), "");
 		RequestHelperAsyncTask createAlertTask = new RequestHelperAsyncTask(mContext, createAlertRequestHelper,
 				new RequestHelperAsyncTask.AsyncRequestListener() {
 					@Override

@@ -1,11 +1,15 @@
 package put.sailhero.ui;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import put.sailhero.Config;
 import put.sailhero.R;
 import put.sailhero.model.Alert;
+import put.sailhero.model.Friendship;
 import put.sailhero.model.Port;
+import put.sailhero.model.Route;
+import put.sailhero.model.User;
 import put.sailhero.provider.SailHeroContract;
 import put.sailhero.util.PrefUtils;
 import android.app.Activity;
@@ -15,6 +19,7 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,6 +37,8 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 public class MapFragment extends com.google.android.gms.maps.MapFragment implements
 		GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapLoadedCallback,
@@ -41,6 +48,8 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 
 	private HashMap<Marker, Integer> markerPortIdMap;
 	private HashMap<Marker, Integer> markerAlertIdMap;
+	private HashMap<Marker, Integer> markerFriendshipIdMap;
+	private HashMap<Polyline, Integer> polylineRouteIdMap;
 
 	public static MapFragment newInstance() {
 		return new MapFragment();
@@ -69,6 +78,8 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 		LoaderManager lm = getLoaderManager();
 		lm.initLoader(AlertQuery._TOKEN, null, this);
 		lm.initLoader(PortQuery._TOKEN, null, this);
+		lm.initLoader(FriendshipQuery._TOKEN, null, this);
+		lm.initLoader(RouteQuery._TOKEN, null, this);
 
 		return v;
 	}
@@ -172,6 +183,42 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 		int PORT_LONGITUDE = 3;
 	}
 
+	private interface FriendshipQuery {
+		int _TOKEN = 0x5;
+
+		String[] PROJECTION = {
+				SailHeroContract.Friendship.COLUMN_NAME_ID,
+				SailHeroContract.Friendship.COLUMN_NAME_FRIEND_NAME,
+				SailHeroContract.Friendship.COLUMN_NAME_FRIEND_SURNAME,
+				SailHeroContract.Friendship.COLUMN_NAME_FRIEND_LATITUDE,
+				SailHeroContract.Friendship.COLUMN_NAME_FRIEND_LONGITUDE,
+				SailHeroContract.Friendship.COLUMN_NAME_FRIEND_AVATAR_URL
+		};
+
+		int FRIENDSHIP_ID = 0;
+		int FRIEND_NAME = 1;
+		int FRIEND_SURNAME = 2;
+		int FRIEND_LATITUDE = 3;
+		int FRIEND_LONGITUDE = 4;
+		int FRIEND_AVATAR_URL = 5;
+	}
+
+	private interface RouteQuery {
+		int _TOKEN = 0x7;
+
+		String[] PROJECTION = {
+				SailHeroContract.Route.COLUMN_NAME_ID,
+				SailHeroContract.Route.COLUMN_NAME_NAME,
+				SailHeroContract.Route.Pin.COLUMN_NAME_LATITUDE,
+				SailHeroContract.Route.Pin.COLUMN_NAME_LONGITUDE
+		};
+
+		int ROUTE_ID = 0;
+		int ROUTE_NAME = 1;
+		int ROUTE_PIN_LATITUDE = 2;
+		int ROUTE_PIN_LONGITUDE = 3;
+	}
+
 	private void onAlertLoaderComplete(Cursor cursor) {
 		if (markerAlertIdMap == null) {
 			markerAlertIdMap = new HashMap<Marker, Integer>();
@@ -188,10 +235,8 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 				Alert alert = new Alert();
 				alert.setId(cursor.getInt(AlertQuery.ALERT_ID));
 				alert.setAlertType(cursor.getString(AlertQuery.ALERT_TYPE));
-				Location alertLocation = new Location("sailhero");
-				alertLocation.setLatitude(cursor.getDouble(AlertQuery.ALERT_LATITUDE));
-				alertLocation.setLongitude(cursor.getDouble(AlertQuery.ALERT_LONGITUDE));
-				alert.setLocation(alertLocation);
+				alert.setLatitude(cursor.getDouble(AlertQuery.ALERT_LATITUDE));
+				alert.setLongitude(cursor.getDouble(AlertQuery.ALERT_LONGITUDE));
 				alert.setAdditionalInfo(cursor.getString(AlertQuery.ALERT_ADDITIONAL_INFO));
 
 				LatLng pos = new LatLng(alert.getLocation().getLatitude(), alert.getLocation().getLongitude());
@@ -218,10 +263,8 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 				Port port = new Port();
 				port.setId(cursor.getInt(PortQuery.PORT_ID));
 				port.setName(cursor.getString(PortQuery.PORT_NAME));
-				Location portLocation = new Location("sailhero");
-				portLocation.setLatitude(cursor.getDouble(PortQuery.PORT_LATITUDE));
-				portLocation.setLongitude(cursor.getDouble(PortQuery.PORT_LONGITUDE));
-				port.setLocation(portLocation);
+				port.setLatitude(cursor.getDouble(PortQuery.PORT_LATITUDE));
+				port.setLongitude(cursor.getDouble(PortQuery.PORT_LONGITUDE));
 
 				LatLng pos = new LatLng(port.getLocation().getLatitude(), port.getLocation().getLongitude());
 				Marker marker = mMap.addMarker(new MarkerOptions().position(pos)
@@ -230,6 +273,105 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 						.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 
 				markerPortIdMap.put(marker, port.getId());
+			}
+		}
+	}
+
+	private void onFriendshipLoaderComplete(Cursor cursor) {
+		// TODO: DRY
+		if (markerFriendshipIdMap == null) {
+			markerFriendshipIdMap = new HashMap<Marker, Integer>();
+		} else {
+			for (Marker marker : markerFriendshipIdMap.keySet()) {
+				marker.remove();
+			}
+		}
+
+		if (cursor != null && cursor.getCount() > 0) {
+			cursor.moveToPosition(-1);
+
+			while (cursor.moveToNext()) {
+				Log.d(Config.TAG, "friendship element");
+
+				Friendship friendship = new Friendship();
+				friendship.setId(cursor.getInt(FriendshipQuery.FRIENDSHIP_ID));
+				User friend = new User();
+				friend.setName(cursor.getString(FriendshipQuery.FRIEND_NAME));
+				friend.setSurname(cursor.getString(FriendshipQuery.FRIEND_SURNAME));
+				friend.setAvatarUrl(cursor.getString(FriendshipQuery.FRIEND_AVATAR_URL));
+
+				Double friendLatitude = cursor.getDouble(FriendshipQuery.FRIEND_LATITUDE);
+				Double friendLongitude = cursor.getDouble(FriendshipQuery.FRIEND_LONGITUDE);
+
+				friendship.setFriend(friend);
+
+				if (friendLatitude != null && friendLongitude != null) {
+					Log.d(Config.TAG, "friendship element: " + friendLatitude + ", " + friendLongitude);
+
+					LatLng pos = new LatLng(friendLatitude, friendLongitude);
+
+					Marker marker = mMap.addMarker(new MarkerOptions().position(pos)
+							.title(friendship.getFriend().getName() + " " + friendship.getFriend().getSurname())
+							.snippet("last known position")
+							.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+
+					markerFriendshipIdMap.put(marker, friendship.getId());
+				}
+
+			}
+		}
+	}
+
+	private void onRouteLoaderComplete(Cursor cursor) {
+		// TODO: DRY
+		if (polylineRouteIdMap == null) {
+			polylineRouteIdMap = new HashMap<Polyline, Integer>();
+		} else {
+			for (Polyline polyline : polylineRouteIdMap.keySet()) {
+				polyline.remove();
+			}
+		}
+
+		if (cursor != null && cursor.getCount() > 0) {
+			cursor.moveToPosition(-1);
+
+			HashMap<Integer, Route> routesMap = new HashMap<Integer, Route>();
+
+			while (cursor.moveToNext()) {
+				Route.Pin pin = new Route.Pin();
+				pin.setLatitude(cursor.getDouble(RouteQuery.ROUTE_PIN_LATITUDE));
+				pin.setLongitude(cursor.getDouble(RouteQuery.ROUTE_PIN_LONGITUDE));
+
+				Integer routeId = cursor.getInt(RouteQuery.ROUTE_ID);
+
+				Route route = routesMap.get(routeId);
+				if (route == null) {
+					route = new Route();
+					route.setId(routeId);
+					route.setName(cursor.getString(RouteQuery.ROUTE_NAME));
+					LinkedList<Route.Pin> pins = new LinkedList<Route.Pin>();
+					pins.addLast(pin);
+					route.setPins(pins);
+
+					routesMap.put(routeId, route);
+				} else {
+					LinkedList<Route.Pin> pins = route.getPins();
+					pins.addLast(pin);
+					route.setPins(pins);
+				}
+			}
+
+			for (Route route : routesMap.values()) {
+				PolylineOptions routePolylineOptions = new PolylineOptions();
+				for (Route.Pin pin : route.getPins()) {
+					Log.d(Config.TAG, "adding: " + pin.getLatitude() + ", " + pin.getLongitude());
+					routePolylineOptions.add(new LatLng(pin.getLatitude(), pin.getLongitude()));
+				}
+
+				routePolylineOptions.color(Color.GREEN);
+				Polyline polyline = mMap.addPolyline(routePolylineOptions);
+
+				polylineRouteIdMap.put(polyline, route.getId());
 			}
 		}
 	}
@@ -244,6 +386,14 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 		case PortQuery._TOKEN: {
 			Uri uri = SailHeroContract.Port.CONTENT_URI;
 			return new CursorLoader(getActivity(), uri, PortQuery.PROJECTION, null, null, null);
+		}
+		case FriendshipQuery._TOKEN: {
+			Uri uri = SailHeroContract.Friendship.CONTENT_URI;
+			return new CursorLoader(getActivity(), uri, FriendshipQuery.PROJECTION, null, null, null);
+		}
+		case RouteQuery._TOKEN: {
+			Uri uri = SailHeroContract.Route.Pin.CONTENT_JOIN_ROUTES_URI;
+			return new CursorLoader(getActivity(), uri, RouteQuery.PROJECTION, null, null, null);
 		}
 		default:
 			return null;
@@ -261,6 +411,12 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 			break;
 		case PortQuery._TOKEN:
 			onPortLoaderComplete(data);
+			break;
+		case FriendshipQuery._TOKEN:
+			onFriendshipLoaderComplete(data);
+			break;
+		case RouteQuery._TOKEN:
+			onRouteLoaderComplete(data);
 			break;
 		}
 

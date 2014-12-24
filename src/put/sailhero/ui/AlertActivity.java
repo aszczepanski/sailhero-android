@@ -120,7 +120,8 @@ public class AlertActivity extends BaseActivity implements GooglePlayServicesCli
 					final Location currentLocation = mLocationClient.getLastLocation();
 
 					final CreateAlertRequestHelper createAlertRequestHelper = new CreateAlertRequestHelper(mContext,
-							getAlertTypeFromString(selectedAlert), currentLocation, "");
+							getAlertTypeFromString(selectedAlert), currentLocation.getLatitude(),
+							currentLocation.getLongitude(), "");
 					RequestHelperAsyncTask createAlertTask = new RequestHelperAsyncTask(mContext,
 							createAlertRequestHelper, new RequestHelperAsyncTask.AsyncRequestListener() {
 								@Override

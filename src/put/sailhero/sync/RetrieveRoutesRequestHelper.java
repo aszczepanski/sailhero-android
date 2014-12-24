@@ -20,8 +20,10 @@ import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.RemoteException;
 import android.util.Log;
 
 public class RetrieveRoutesRequestHelper extends RequestHelper {
@@ -204,7 +206,9 @@ public class RetrieveRoutesRequestHelper extends RequestHelper {
 						values.put(SailHeroContract.Route.Pin.COLUMN_NAME_LONGITUDE, pin.getLongitude());
 						values.put(SailHeroContract.Route.Pin.COLUMN_NAME_ROUTE_ID, retrievedRoute.getId());
 						values.put(SailHeroContract.Route.Pin.COLUMN_NAME_POSITION_IN_ROUTE, positionInRoute);
-						contentResolver.insert(SailHeroContract.Route.Pin.CONTENT_URI, values);
+						batch.add(ContentProviderOperation.newInsert(SailHeroContract.Route.Pin.CONTENT_URI)
+								.withValues(values)
+								.build());
 
 						positionInRoute++;
 					}
@@ -216,7 +220,9 @@ public class RetrieveRoutesRequestHelper extends RequestHelper {
 						.build();
 				Log.i(TAG, "Scheduling delete: " + deleteUri);
 				batch.add(ContentProviderOperation.newDelete(SailHeroContract.Route.Pin.CONTENT_URI)
-						.withValue(SailHeroContract.Route.Pin.COLUMN_NAME_ROUTE_ID, dbRoute.getId())
+						.withSelection(SailHeroContract.Route.Pin.COLUMN_NAME_ROUTE_ID + "=?", new String[] {
+							dbRoute.getId().toString()
+						})
 						.build());
 				batch.add(ContentProviderOperation.newDelete(deleteUri).build());
 			}
@@ -227,7 +233,7 @@ public class RetrieveRoutesRequestHelper extends RequestHelper {
 			ContentValues values = new ContentValues();
 			values.put(SailHeroContract.Route.COLUMN_NAME_ID, retrievedRoute.getId());
 			values.put(SailHeroContract.Route.COLUMN_NAME_NAME, retrievedRoute.getName());
-			contentResolver.insert(SailHeroContract.Route.CONTENT_URI, values);
+			batch.add(ContentProviderOperation.newInsert(SailHeroContract.Route.CONTENT_URI).withValues(values).build());
 
 			int positionInRoute = 0;
 
@@ -237,10 +243,18 @@ public class RetrieveRoutesRequestHelper extends RequestHelper {
 				values.put(SailHeroContract.Route.Pin.COLUMN_NAME_LONGITUDE, pin.getLongitude());
 				values.put(SailHeroContract.Route.Pin.COLUMN_NAME_ROUTE_ID, retrievedRoute.getId());
 				values.put(SailHeroContract.Route.Pin.COLUMN_NAME_POSITION_IN_ROUTE, positionInRoute);
-				contentResolver.insert(SailHeroContract.Route.Pin.CONTENT_URI, values);
+				batch.add(ContentProviderOperation.newInsert(SailHeroContract.Route.Pin.CONTENT_URI)
+						.withValues(values)
+						.build());
 
 				positionInRoute++;
 			}
+		}
+
+		try {
+			contentResolver.applyBatch(SailHeroContract.CONTENT_AUTHORITY, batch);
+		} catch (RemoteException | OperationApplicationException e) {
+			throw new SystemException(e.getMessage());
 		}
 	}
 }
