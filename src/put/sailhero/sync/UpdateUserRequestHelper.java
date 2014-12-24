@@ -115,12 +115,14 @@ public class UpdateUserRequestHelper extends RequestHelper {
 
 		if (mEncodedAvatar != null) {
 			userObject.put("avatar_data", "data:image/jpg;base64," + mEncodedAvatar);
+		} else {
+			userObject.put("avatar_data", null);
 		}
 
 		userObject.put("share_position", mSharePosition);
 
 		obj.put("user", userObject);
-
+		
 		HttpEntity entity = null;
 		try {
 			entity = new StringEntity(obj.toString());

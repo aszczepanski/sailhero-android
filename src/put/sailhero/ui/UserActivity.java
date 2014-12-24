@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -44,6 +45,8 @@ public class UserActivity extends BaseActivity {
 
 	private ImageView mProfileImageView;
 
+	private CheckBox mSharePositionCheckBox;
+
 	private User mUser;
 
 	// TODO: make it thread safe
@@ -66,8 +69,12 @@ public class UserActivity extends BaseActivity {
 		mSurnameEditText = (EditText) findViewById(R.id.surname_edit_text);
 
 		mEmailEditText.setText(mUser.getEmail());
+		mEmailEditText.setKeyListener(null);
 		mNameEditText.setText(mUser.getName());
 		mSurnameEditText.setText(mUser.getSurname());
+
+		mSharePositionCheckBox = (CheckBox) findViewById(R.id.share_position_check_box);
+		mSharePositionCheckBox.setChecked(mUser.getSharePosition());
 
 		mProfileImageView = (ImageView) findViewById(R.id.profile_image);
 		if (mUser.getAvatarUrl() != null) {
@@ -91,9 +98,9 @@ public class UserActivity extends BaseActivity {
 			public void onClick(View v) {
 				User user = PrefUtils.getUser(UserActivity.this);
 				UpdateUserRequestHelper requestHelper = new UpdateUserRequestHelper(UserActivity.this, user.getId(),
-						mEmailEditText.getText().toString().trim(), mPasswordEditText.getText().toString(),
-						mPasswordConfirmationEditText.getText().toString(), mNameEditText.getText().toString().trim(),
-						mSurnameEditText.getText().toString().trim(), mEncodedAvatar);
+						mPasswordEditText.getText().toString(), mPasswordConfirmationEditText.getText().toString(),
+						mNameEditText.getText().toString().trim(), mSurnameEditText.getText().toString().trim(),
+						mEncodedAvatar, mSharePositionCheckBox.isChecked());
 				RequestHelperAsyncTask updateTask = new RequestHelperAsyncTask(UserActivity.this, requestHelper,
 						new RequestHelperAsyncTask.AsyncRequestListener() {
 							@Override
@@ -171,14 +178,14 @@ public class UserActivity extends BaseActivity {
 								Log.e(Config.TAG, "Bitmap loading failed.");
 
 								mEncodedAvatar = null;
-								Glide.with(UserActivity.this)
-										.load(R.drawable.person_image_empty)
-										.asBitmap()
-										.into(mProfileImageView);
 							}
 						});
 
-				Glide.with(UserActivity.this).load(selectedImageUri).asBitmap().into(mProfileImageView);
+				Glide.with(UserActivity.this)
+						.load(selectedImageUri)
+						.asBitmap()
+						.error(R.drawable.person_image_empty)
+						.into(mProfileImageView);
 			}
 		}
 		super.onActivityResult(requestCode, resultCode, data);

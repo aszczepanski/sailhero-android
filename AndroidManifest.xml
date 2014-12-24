@@ -11,7 +11,6 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
@@ -173,6 +172,22 @@
                 android:resource="@xml/searchable_user" />
         </activity>
         <activity
+            android:name=".ui.SearchPoiActivity"
+            android:label="@string/title_activity_search_poi"
+            android:parentActivityName=".ui.PoiActivity"
+            android:theme="@style/Theme.SailHero.Search" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="put.sailhero.ui.PoiActivity" />
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable_poi" />
+        </activity>
+        <activity
             android:name=".ui.AboutActivity"
             android:label="@string/title_activity_about" >
         </activity>
@@ -193,6 +208,10 @@
         <activity
             android:name=".ui.PoiActivity"
             android:label="@string/title_activity_poi" >
+        </activity>
+        <activity
+            android:name="put.sailhero.ui.MessageActivity"
+            android:label="@string/title_activity_message" >
         </activity>
     </application>
 

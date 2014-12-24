@@ -538,6 +538,8 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 			profileImageView.setVisibility(View.VISIBLE);
 			if (currentUser.getAvatarUrl() != null) {
 				Glide.with(BaseActivity.this).load(currentUser.getAvatarUrl()).asBitmap().into(profileImageView);
+			} else {
+				Glide.with(BaseActivity.this).load(R.drawable.person_image_empty).asBitmap().into(profileImageView);
 			}
 		}
 
@@ -652,6 +654,9 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 			break;
 		case NAVDRAWER_ITEM_PEOPLE:
 			intent = new Intent(this, PeopleActivity.class);
+			break;
+		case NAVDRAWER_ITEM_MESSAGES:
+			intent = new Intent(this, MessageActivity.class);
 			break;
 		case NAVDRAWER_ITEM_SETTINGS:
 			intent = new Intent(this, PreferenceActivity.class);
