@@ -36,7 +36,7 @@
                         android:paddingBottom="16dp"
                         android:paddingLeft="16dp"
                         android:paddingRight="16dp"
-                        android:paddingTop="80dp" >
+                        android:paddingTop="40dp" >
 
                         <android.support.v7.widget.CardView
                             android:layout_width="match_parent"
@@ -55,7 +55,29 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="@string/hello_world" />
+                                    android:fontFamily="sans-serif"
+                                    android:text="@string/about_header"
+                                    android:textColor="@color/theme_primary"
+                                    android:textSize="@dimen/text_size_xlarge"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="16dp"
+                                    android:autoLink="web"
+                                    android:text="@string/about_text_1"
+                                    android:textColor="@color/body_text_2"
+                                    android:textSize="@dimen/text_size_medium" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="16dp"
+                                    android:autoLink="web"
+                                    android:text="@string/about_text_2"
+                                    android:textColor="@color/body_text_2"
+                                    android:textSize="@dimen/text_size_medium" />
                             </LinearLayout>
                         </android.support.v7.widget.CardView>
                     </FrameLayout>
