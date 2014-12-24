@@ -5,7 +5,7 @@ import java.util.LinkedList;
 
 import put.sailhero.Config;
 import put.sailhero.R;
-import put.sailhero.model.Port;
+import put.sailhero.model.PoiModel;
 import android.content.Context;
 import android.content.Intent;
 import android.database.DataSetObserver;
@@ -20,7 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
-public class PortsAdapter implements ListAdapter {
+public class PoiAdapter implements ListAdapter {
 
 	private static final int TAG_ID_FOR_VIEW_TYPE = R.id.port_viewtype_tagkey;
 	private static final int VIEW_TYPE_NORMAL = 0;
@@ -29,10 +29,10 @@ public class PortsAdapter implements ListAdapter {
 
 	private Context mContext;
 
-	private ArrayList<Port> mPorts = new ArrayList<Port>();
+	private ArrayList<PoiModel> mPoiList = new ArrayList<PoiModel>();
 	private ArrayList<DataSetObserver> mObservers = new ArrayList<DataSetObserver>();
 
-	public PortsAdapter(Context context) {
+	public PoiAdapter(Context context) {
 		mContext = context;
 	}
 
@@ -52,12 +52,12 @@ public class PortsAdapter implements ListAdapter {
 
 	@Override
 	public int getCount() {
-		return mPorts.size();
+		return mPoiList.size();
 	}
 
 	@Override
 	public Object getItem(int position) {
-		return position >= 0 && position < mPorts.size() ? mPorts.get(position) : null;
+		return position >= 0 && position < mPoiList.size() ? mPoiList.get(position) : null;
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class PortsAdapter implements ListAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		int itemViewType = getItemViewType(position);
-		int layoutResId = R.layout.list_item_port;
+		int layoutResId = R.layout.list_item_poi;
 
 		Log.d(Config.TAG, "getView()");
 
@@ -86,35 +86,34 @@ public class PortsAdapter implements ListAdapter {
 			convertView.setTag(TAG_ID_FOR_VIEW_TYPE, itemViewType);
 		}
 
-		if (position < 0 || position >= mPorts.size()) {
-			Log.e(Config.TAG, "Invalid view position passed to PortsAdapter: " + position);
+		if (position < 0 || position >= mPoiList.size()) {
+			Log.e(Config.TAG, "Invalid view position passed to PoiAdapter: " + position);
 			return convertView;
 		}
 
 		convertView.setTag(MY_VIEW_TAG);
 
-		final Port port = mPorts.get(position);
+		final PoiModel poi = mPoiList.get(position);
 
 		LinearLayout mainBoxView = (LinearLayout) convertView.findViewById(R.id.main_box);
 		FrameLayout rightBoxView = (FrameLayout) convertView.findViewById(R.id.right_box);
-		TextView portNameTextView = (TextView) convertView.findViewById(R.id.slot_port_name);
-		TextView portCityTextView = (TextView) convertView.findViewById(R.id.slot_port_city);
+		TextView poiNameTextView = (TextView) convertView.findViewById(R.id.slot_poi_name);
+		TextView poiCityTextView = (TextView) convertView.findViewById(R.id.slot_poi_city);
 
 		TextView detailsButton = (TextView) convertView.findViewById(R.id.details_text_view);
 
-		portNameTextView.setText(port.getName());
-		portNameTextView.setTextColor(mContext.getResources().getColor(R.color.body_text_1));
-		portNameTextView.setTypeface(Typeface.SANS_SERIF, Typeface.NORMAL);
+		poiNameTextView.setText(poi.getName());
+		poiNameTextView.setTextColor(mContext.getResources().getColor(R.color.body_text_1));
+		poiNameTextView.setTypeface(Typeface.SANS_SERIF, Typeface.NORMAL);
 
-		portCityTextView.setText(port.getCity());
-		portCityTextView.setTextColor(mContext.getResources().getColor(R.color.body_text_2));
+		poiCityTextView.setText(poi.getCity());
+		poiCityTextView.setTextColor(mContext.getResources().getColor(R.color.body_text_2));
 
 		detailsButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(mContext, PortActivity.class);
-				intent.putExtra("port_id", port.getId().intValue());
-				mContext.startActivity(intent);
+				Intent detailsIntent = poi.getDetailsIntent(mContext);
+				mContext.startActivity(detailsIntent);
 			}
 		});
 
@@ -123,7 +122,7 @@ public class PortsAdapter implements ListAdapter {
 
 	@Override
 	public int getItemViewType(int position) {
-		if (position < 0 || position >= mPorts.size()) {
+		if (position < 0 || position >= mPoiList.size()) {
 			Log.e(Config.TAG, "Invalid position passed to PortsAdapter (" + position + ")");
 			return VIEW_TYPE_NORMAL;
 		}
@@ -150,13 +149,13 @@ public class PortsAdapter implements ListAdapter {
 		notifyObservers();
 	}
 
-	public void updateItems(LinkedList<Port> ports) {
-		Log.e(Config.TAG, "size3: " + ports.size());
-		mPorts.clear();
-		if (ports != null) {
-			for (Port port : ports) {
-				Log.d(Config.TAG, "Adding port item: " + port.getName());
-				mPorts.add(port);
+	public void updateItems(LinkedList<PoiModel> poiList) {
+		Log.e(Config.TAG, "size3: " + poiList.size());
+		mPoiList.clear();
+		if (poiList != null) {
+			for (PoiModel poi : poiList) {
+				Log.d(Config.TAG, "Adding poi item: " + poi.getName());
+				mPoiList.add(poi);
 			}
 		}
 		notifyObservers();
@@ -164,7 +163,7 @@ public class PortsAdapter implements ListAdapter {
 
 	@Override
 	public boolean isEmpty() {
-		return mPorts.isEmpty();
+		return mPoiList.isEmpty();
 	}
 
 	@Override

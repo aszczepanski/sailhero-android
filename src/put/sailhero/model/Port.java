@@ -2,22 +2,20 @@ package put.sailhero.model;
 
 import org.json.simple.JSONObject;
 
-import put.sailhero.Config;
 import put.sailhero.provider.SailHeroContract;
+import put.sailhero.ui.PortActivity;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.location.Location;
 import android.text.TextUtils;
-import android.util.Log;
 
-public class Port extends BaseModel {
+public class Port extends PoiModel {
 
-	private Integer mId;
-	private String mName;
 	private Double mLatitude;
 	private Double mLongitude;
 	private String mWebsite;
-	private String mCity;
 	private String mStreet;
 	private String mTelephone;
 	private String mAdditionalInfo;
@@ -195,22 +193,6 @@ public class Port extends BaseModel {
 		int PORT_CURRENCY = 32;
 	}
 
-	public Integer getId() {
-		return mId;
-	}
-
-	public void setId(Integer id) {
-		mId = id;
-	}
-
-	public String getName() {
-		return mName;
-	}
-
-	public void setName(String name) {
-		mName = name;
-	}
-
 	public Location getLocation() {
 		Location location = new Location("sailhero");
 		location.setLatitude(getLatitude());
@@ -240,14 +222,6 @@ public class Port extends BaseModel {
 
 	public void setWebsite(String website) {
 		mWebsite = website;
-	}
-
-	public String getCity() {
-		return mCity;
-	}
-
-	public void setCity(String city) {
-		mCity = city;
 	}
 
 	public String getStreet() {
@@ -524,5 +498,13 @@ public class Port extends BaseModel {
 				&& TextUtils.equals(getTelephone(), portToCompare.getTelephone())
 				&& TextUtils.equals(getAdditionalInfo(), portToCompare.getAdditionalInfo())
 				&& getSpots().equals(portToCompare.getSpots()) && getDepth().equals(portToCompare.getDepth());
+	}
+
+	@Override
+	public Intent getDetailsIntent(Context context) {
+		Intent intent = new Intent(context, PortActivity.class);
+		intent.putExtra("port_id", getId().intValue());
+
+		return intent;
 	}
 }

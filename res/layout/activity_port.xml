@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="put.sailhero.ui.AlertActivity" >
+    tools:context="put.sailhero.ui.PortActivity" >
 
     <android.support.v4.widget.DrawerLayout
         android:id="@+id/drawer_layout"
@@ -19,11 +19,680 @@
 
             <include layout="@layout/toolbar_actionbar" />
 
-            <FrameLayout
-                android:id="@+id/main_content"
+            <put.sailhero.ui.widget.ObservableScrollView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/scroll_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:ignore="MergeRootFrame" />
+                android:background="#fff"
+                android:fillViewport="true"
+                android:overScrollMode="never" >
+
+                <FrameLayout
+                    android:id="@+id/scroll_view_child"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipChildren="false" >
+
+                    <!-- Background photo -->
+
+                    <FrameLayout
+                        android:id="@+id/session_photo_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" >
+
+                        <ImageView
+                            android:id="@+id/session_photo"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:contentDescription="Port image"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/mazury" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:id="@+id/details_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#fff"
+                        android:clipToPadding="false"
+                        android:orientation="vertical"
+                        android:paddingBottom="@dimen/port_details_extra_space_bottom"
+                        android:paddingLeft="@dimen/keyline_2_port_detail"
+                        android:paddingRight="@dimen/keyline_1"
+                        android:paddingTop="16dp" >
+
+                        <LinearLayout
+                            android:id="@+id/basic_info_block"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/element_spacing_normal"
+                            android:orientation="vertical" >
+
+                            <TextView
+                                android:id="@+id/basic_section_text_view"
+                                style="@style/PortDetailSectionHeader"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:text="Basic info" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="3"
+                                    android:text="Name"
+                                    android:textColor="@color/body_text_1"
+                                    android:textSize="@dimen/text_size_medium" />
+
+                                <TextView
+                                    android:id="@+id/name_text_view"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="2"
+                                    android:textColor="@color/body_text_1"
+                                    android:textSize="@dimen/text_size_large" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="3"
+                                    android:text="City"
+                                    android:textColor="@color/body_text_1"
+                                    android:textSize="@dimen/text_size_medium" />
+
+                                <TextView
+                                    android:id="@+id/city_text_view"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="2"
+                                    android:textColor="@color/body_text_1"
+                                    android:textSize="@dimen/text_size_large" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="3"
+                                    android:text="Street"
+                                    android:textColor="@color/body_text_1"
+                                    android:textSize="@dimen/text_size_medium" />
+
+                                <TextView
+                                    android:id="@+id/street_text_view"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="2"
+                                    android:textColor="@color/body_text_1"
+                                    android:textSize="@dimen/text_size_large" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="3"
+                                    android:text="Spots"
+                                    android:textColor="@color/body_text_1"
+                                    android:textSize="@dimen/text_size_medium" />
+
+                                <TextView
+                                    android:id="@+id/spots_text_view"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="2"
+                                    android:textColor="@color/body_text_1"
+                                    android:textSize="@dimen/text_size_large" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="3"
+                                    android:text="Depth"
+                                    android:textColor="@color/body_text_1"
+                                    android:textSize="@dimen/text_size_medium" />
+
+                                <TextView
+                                    android:id="@+id/depth_text_view"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="2"
+                                    android:textColor="@color/body_text_1"
+                                    android:textSize="@dimen/text_size_large" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="10dp"
+                                android:layout_marginTop="14dp"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:id="@+id/website_text_view"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="30dp"
+                                    android:layout_gravity="center"
+                                    android:layout_marginRight="6dp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/list_button_chip"
+                                    android:drawablePadding="4dp"
+                                    android:gravity="center"
+                                    android:paddingLeft="8dp"
+                                    android:paddingRight="8dp"
+                                    android:text="visit website"
+                                    android:textColor="@color/body_text_1"
+                                    android:textSize="@dimen/text_size_medium" />
+
+                                <TextView
+                                    android:id="@+id/telephone_text_view"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="30dp"
+                                    android:layout_gravity="center"
+                                    android:layout_marginLeft="6dp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/list_button_chip"
+                                    android:drawablePadding="4dp"
+                                    android:gravity="center"
+                                    android:paddingLeft="8dp"
+                                    android:paddingRight="8dp"
+                                    android:text="call"
+                                    android:textColor="@color/body_text_1"
+                                    android:textSize="@dimen/text_size_medium" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/costs_calculator_block"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/element_spacing_normal"
+                            android:orientation="vertical" >
+
+                            <TextView
+                                android:id="@+id/costs_calculator_text_view"
+                                style="@style/PortDetailSectionHeader"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:text="Costs calculator" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/additional_info_block"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/element_spacing_normal"
+                            android:orientation="vertical" >
+
+                            <TextView
+                                android:id="@+id/additional_section_text_view"
+                                style="@style/PortDetailSectionHeader"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:text="Additional features" />
+
+                            <TextView
+                                android:id="@+id/additional_info_text_view"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="12dp"
+                                android:layout_marginTop="4dp"
+                                android:textColor="@color/body_text_1"
+                                android:textSize="@dimen/text_size_large" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="horizontal" >
+
+                                    <CheckBox
+                                        android:id="@+id/has_power_connection_check_box"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:clickable="false"
+                                        android:text="Power connection" />
+
+                                    <TextView
+                                        android:id="@+id/has_power_connection_text_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="@color/body_text_1"
+                                        android:textSize="@dimen/text_size_medium" />
+                                </LinearLayout>
+
+                                <TextView
+                                    android:id="@+id/price_power_connection_text_view"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_weight="3"
+                                    android:gravity="right"
+                                    android:textColor="@color/body_text_2"
+                                    android:textSize="@dimen/text_size_medium" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="horizontal" >
+
+                                    <CheckBox
+                                        android:id="@+id/has_wc_check_box"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:clickable="false"
+                                        android:text="WC" />
+
+                                    <TextView
+                                        android:id="@+id/has_wc_text_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="@color/body_text_1"
+                                        android:textSize="@dimen/text_size_medium" />
+                                </LinearLayout>
+
+                                <TextView
+                                    android:id="@+id/price_wc_text_view"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_weight="3"
+                                    android:gravity="right"
+                                    android:textColor="@color/body_text_2"
+                                    android:textSize="@dimen/text_size_medium" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="horizontal" >
+
+                                    <CheckBox
+                                        android:id="@+id/has_shower_check_box"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:clickable="false"
+                                        android:text="Shower" />
+
+                                    <TextView
+                                        android:id="@+id/has_shower_text_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="@color/body_text_1"
+                                        android:textSize="@dimen/text_size_medium" />
+                                </LinearLayout>
+
+                                <TextView
+                                    android:id="@+id/price_shower_text_view"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_weight="3"
+                                    android:gravity="right"
+                                    android:textColor="@color/body_text_2"
+                                    android:textSize="@dimen/text_size_medium" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="horizontal" >
+
+                                    <CheckBox
+                                        android:id="@+id/has_washbasin_check_box"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:clickable="false"
+                                        android:text="Washbasin" />
+
+                                    <TextView
+                                        android:id="@+id/has_washbasin_text_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="@color/body_text_1"
+                                        android:textSize="@dimen/text_size_medium" />
+                                </LinearLayout>
+
+                                <TextView
+                                    android:id="@+id/price_washbasin_text_view"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_weight="3"
+                                    android:gravity="right"
+                                    android:textColor="@color/body_text_2"
+                                    android:textSize="@dimen/text_size_medium" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="horizontal" >
+
+                                    <CheckBox
+                                        android:id="@+id/has_dishes_check_box"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:clickable="false"
+                                        android:text="Dishes" />
+
+                                    <TextView
+                                        android:id="@+id/has_dishes_text_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="@color/body_text_1"
+                                        android:textSize="@dimen/text_size_medium" />
+                                </LinearLayout>
+
+                                <TextView
+                                    android:id="@+id/price_dishes_text_view"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_weight="3"
+                                    android:gravity="right"
+                                    android:textColor="@color/body_text_2"
+                                    android:textSize="@dimen/text_size_medium" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="horizontal" >
+
+                                    <CheckBox
+                                        android:id="@+id/has_wifi_check_box"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:clickable="false"
+                                        android:text="Wifi" />
+
+                                    <TextView
+                                        android:id="@+id/has_wifi_text_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="@color/body_text_1"
+                                        android:textSize="@dimen/text_size_medium" />
+                                </LinearLayout>
+
+                                <TextView
+                                    android:id="@+id/price_wifi_text_view"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_weight="3"
+                                    android:gravity="right"
+                                    android:textColor="@color/body_text_2"
+                                    android:textSize="@dimen/text_size_medium" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="horizontal" >
+
+                                    <CheckBox
+                                        android:id="@+id/has_parking_check_box"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:clickable="false"
+                                        android:text="Parking" />
+
+                                    <TextView
+                                        android:id="@+id/has_parking_text_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="@color/body_text_1"
+                                        android:textSize="@dimen/text_size_medium" />
+                                </LinearLayout>
+
+                                <TextView
+                                    android:id="@+id/price_parking_text_view"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_weight="3"
+                                    android:gravity="right"
+                                    android:textColor="@color/body_text_2"
+                                    android:textSize="@dimen/text_size_medium" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <CheckBox
+                                    android:id="@+id/has_slip_check_box"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:clickable="false"
+                                    android:text="Slip" />
+
+                                <TextView
+                                    android:id="@+id/has_slip_text_view"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/body_text_1"
+                                    android:textSize="@dimen/text_size_medium" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="horizontal" >
+
+                                    <CheckBox
+                                        android:id="@+id/has_washing_machine_check_box"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:clickable="false"
+                                        android:text="Washing Machine" />
+
+                                    <TextView
+                                        android:id="@+id/has_washing_machine_text_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="@color/body_text_1"
+                                        android:textSize="@dimen/text_size_medium" />
+                                </LinearLayout>
+
+                                <TextView
+                                    android:id="@+id/price_washing_machine_text_view"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_weight="3"
+                                    android:gravity="right"
+                                    android:textColor="@color/body_text_2"
+                                    android:textSize="@dimen/text_size_medium" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <CheckBox
+                                    android:id="@+id/has_fuel_station_check_box"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:clickable="false"
+                                    android:text="Fuel station" />
+
+                                <TextView
+                                    android:id="@+id/has_fuel_station_text_view"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/body_text_1"
+                                    android:textSize="@dimen/text_size_medium" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="horizontal" >
+
+                                    <CheckBox
+                                        android:id="@+id/has_emptying_chemical_toilet_check_box"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:clickable="false"
+                                        android:text="Emptying chemical toilet" />
+
+                                    <TextView
+                                        android:id="@+id/has_emptying_chemical_toilet_text_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="@color/body_text_1"
+                                        android:textSize="@dimen/text_size_medium" />
+                                </LinearLayout>
+
+                                <TextView
+                                    android:id="@+id/price_emptying_chemical_toilet_text_view"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_weight="3"
+                                    android:gravity="right"
+                                    android:textColor="@color/body_text_2"
+                                    android:textSize="@dimen/text_size_medium" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/header_session"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/tab_background"
+                        android:clipChildren="false"
+                        android:clipToPadding="false"
+                        android:orientation="vertical"
+                        android:paddingBottom="16dp"
+                        android:paddingTop="16dp" >
+
+                        <!-- Session title -->
+
+                        <TextView
+                            android:id="@+id/port_title"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="0dp"
+                            android:layout_marginLeft="@dimen/keyline_2_port_detail"
+                            android:layout_marginRight="@dimen/keyline_1"
+                            android:ellipsize="end"
+                            android:fontFamily="sans-serif"
+                            android:lineSpacingMultiplier="1.1"
+                            android:maxLines="4"
+                            android:text="Title"
+                            android:textColor="@color/body_text_1_inverse"
+                            android:textSize="@dimen/text_size_large"
+                            android:textStyle="bold" />
+
+                        <!-- Session subtitle -->
+
+                        <TextView
+                            android:id="@+id/port_subtitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/keyline_2_port_detail"
+                            android:layout_marginRight="@dimen/keyline_1"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:text="subtitle"
+                            android:textColor="@color/body_text_2_inverse"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+                </FrameLayout>
+            </put.sailhero.ui.widget.ObservableScrollView>
         </LinearLayout>
 
         <include layout="@layout/navdrawer" />

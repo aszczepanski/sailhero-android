@@ -110,5 +110,12 @@
     <style name="Widget.SailHero.SearchView" parent="Widget.AppCompat.SearchView" />
 
     <style name="TabIndicator" />
+    
+    <style name="PortDetailSectionHeader">
+        <item name="android:textSize">@dimen/text_size_xlarge</item>
+        <item name="android:textColor">@color/theme_primary</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:background">@drawable/port_detail_section_separator</item>
+    </style>
 
 </resources>

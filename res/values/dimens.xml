@@ -9,7 +9,6 @@
     <dimen name="keyline_1_minus_8dp">8dp</dimen>
     <dimen name="keyline_2">72dp</dimen>
     <dimen name="keyline_2_minus_16dp">56dp</dimen>
-    <dimen name="keyline_2_session_detail">@dimen/keyline_2</dimen>
 
     <!-- navdrawer -->
     <dimen name="navdrawer_width">260dp</dimen>
@@ -37,7 +36,11 @@
     <dimen name="user_item_right_box_width">60dp</dimen>
     <dimen name="user_item_title_strip_padding">8dp</dimen>
     <dimen name="user_item_profile_picture_size">55dp</dimen>
-    <dimen name="port_item_main_box_height">65dp</dimen>
-    <dimen name="port_item_right_box_width">70dp</dimen>
+    <dimen name="poi_item_main_box_height">65dp</dimen>
+    <dimen name="poi_item_right_box_width">70dp</dimen>
+
+    <!-- port details -->
+    <dimen name="port_details_extra_space_bottom">48dp</dimen>
+    <dimen name="keyline_2_port_detail">30dp</dimen>
 
 </resources>

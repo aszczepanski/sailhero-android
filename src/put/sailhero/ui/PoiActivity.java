@@ -6,6 +6,7 @@ import java.util.Set;
 
 import put.sailhero.Config;
 import put.sailhero.R;
+import put.sailhero.model.PoiModel;
 import put.sailhero.model.Port;
 import put.sailhero.provider.SailHeroContract;
 import put.sailhero.ui.widget.SlidingTabLayout;
@@ -15,6 +16,7 @@ import android.app.FragmentManager;
 import android.app.ListFragment;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
@@ -33,7 +35,7 @@ public class PoiActivity extends BaseActivity implements LoaderManager.LoaderCal
 	private SlidingTabLayout mSlidingTabLayout;
 	private ViewPager mViewPager;
 
-	private PortsAdapter mPortsAdapter;
+	private PoiAdapter mPortsAdapter;
 	private Set<SailHeroListFragment> mPoiFragments = new HashSet<SailHeroListFragment>();
 
 	private static final int PORTS_FRAGMENT = 0;
@@ -56,7 +58,7 @@ public class PoiActivity extends BaseActivity implements LoaderManager.LoaderCal
 
 		mSlidingTabLayout.setViewPager(mViewPager);
 
-		mPortsAdapter = new PortsAdapter(this);
+		mPortsAdapter = new PoiAdapter(this);
 
 		getLoaderManager().initLoader(PortQuery._TOKEN, null, this);
 	}
@@ -87,17 +89,17 @@ public class PoiActivity extends BaseActivity implements LoaderManager.LoaderCal
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 
-		// getMenuInflater().inflate(R.menu.poi, menu);
+		getMenuInflater().inflate(R.menu.poi, menu);
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		//		switch (item.getItemId()) {
-		//		case R.id.action_search_user:
-		//			startActivity(new Intent(this, SearchUserActivity.class));
-		//			return true;
-		//		}
+		switch (item.getItemId()) {
+		case R.id.action_search_poi:
+			startActivity(new Intent(this, SearchPoiActivity.class));
+			return true;
+		}
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -158,7 +160,7 @@ public class PoiActivity extends BaseActivity implements LoaderManager.LoaderCal
 	}
 
 	private void onPortLoaderComplete(Cursor cursor) {
-		LinkedList<Port> ports = new LinkedList<Port>();
+		LinkedList<PoiModel> poiList = new LinkedList<PoiModel>();
 
 		Log.e(TAG, "size: " + cursor.getCount());
 
@@ -168,12 +170,12 @@ public class PoiActivity extends BaseActivity implements LoaderManager.LoaderCal
 			port.setName(cursor.getString(PortQuery.PORT_NAME));
 			port.setCity(cursor.getString(PortQuery.PORT_CITY));
 
-			ports.add(port);
+			poiList.add(port);
 
 			Log.e(TAG, "port: " + port.getName());
 		}
 
-		mPortsAdapter.updateItems(ports);
+		mPortsAdapter.updateItems(poiList);
 	}
 
 	@Override

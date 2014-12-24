@@ -1,0 +1,3 @@
+<searchable xmlns:android="http://schemas.android.com/apk/res/android"
+    android:hint="@string/search_poi_hint"
+    android:label="@string/search_poi_label" />
