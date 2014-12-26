@@ -16,7 +16,6 @@ public class AboutActivity extends BaseActivity {
 
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setTitle("About");
 
 		Toolbar toolbar = getActionBarToolbar();
 		toolbar.setNavigationOnClickListener(new OnClickListener() {

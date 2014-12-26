@@ -7,14 +7,12 @@ import put.sailhero.sync.RequestHelper;
 import put.sailhero.sync.RequestHelperAsyncTask;
 import put.sailhero.util.AccountUtils;
 import put.sailhero.util.SyncUtils;
+import put.sailhero.util.UnitUtils;
 import android.accounts.Account;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,28 +36,27 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 
 	private LocationClient mLocationClient;
 
-	private SensorManager mSensorManager;
-	private float[] mGData = new float[3];
-	private float[] mMData = new float[3];
-	private float[] mR = new float[16];
-	private float[] mI = new float[16];
-	private float[] mOrientation = new float[3];
-	private int mCount;
-
 	// TODO:
 	private Alert mClosestAlert;
 
-	private TextView mLocationTextView;
-	private TextView mBearingTextView;
 	private TextView mSpeedTextView;
-	private TextView mDirTextView;
+	private TextView mSpeedUnitTextView;
+	private TextView mLatitudeTextView;
+	private TextView mLongitudeTextView;
+
+	// TODO:
 	private TextView mAlertTextView;
 	private TextView mAlertDistanceTextView;
+	private TextView mAlertDistanceUnitTextView;
 	private TextView mAlertBearingTextView;
+
+	private ImageView mArrowImageView;
 
 	private Button mBadWeatherConditionsButton;
 	private Button mClosedAreaButton;
 	private Button mYachtFailureButton;
+
+	private String[] alertTypesArray;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -71,15 +69,22 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 
 		mLocationClient = new LocationClient(mContext, this, this);
 
-		mLocationTextView = (TextView) findViewById(R.id.location_text_view);
-		mBearingTextView = (TextView) findViewById(R.id.bearing_text_view);
 		mSpeedTextView = (TextView) findViewById(R.id.speed_text_view);
-		mDirTextView = (TextView) findViewById(R.id.dir_text_view);
+		mSpeedUnitTextView = (TextView) findViewById(R.id.speed_unit_text_view);
+		mLatitudeTextView = (TextView) findViewById(R.id.latitude_text_view);
+		mLongitudeTextView = (TextView) findViewById(R.id.longitude_text_view);
+
 		mAlertTextView = (TextView) findViewById(R.id.alert_text_view);
 		mAlertDistanceTextView = (TextView) findViewById(R.id.alert_distance_text_view);
-		mAlertBearingTextView = (TextView) findViewById(R.id.alert_bearing_text_view);
+		mAlertDistanceUnitTextView = (TextView) findViewById(R.id.alert_distance_unit_text_view);
+		// mAlertBearingTextView = (TextView) findViewById(R.id.alert_bearing_text_view);
+
+		mArrowImageView = (ImageView) findViewById(R.id.arrow_image);
+
+		Typeface font = Typeface.createFromAsset(getAssets(), "fontawesome-webfont.ttf");
 
 		mBadWeatherConditionsButton = (Button) findViewById(R.id.bad_weather_conditions_button);
+		mBadWeatherConditionsButton.setTypeface(font);
 		mBadWeatherConditionsButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -88,6 +93,7 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 		});
 
 		mClosedAreaButton = (Button) findViewById(R.id.closed_area_button);
+		mClosedAreaButton.setTypeface(font);
 		mClosedAreaButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -96,6 +102,7 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 		});
 
 		mYachtFailureButton = (Button) findViewById(R.id.yacht_failure_button);
+		mYachtFailureButton.setTypeface(font);
 		mYachtFailureButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -103,14 +110,14 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 			}
 		});
 
-		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-
 		overridePendingTransition(0, 0);
 
 		Account account = AccountUtils.getActiveAccount(getApplicationContext());
 		if (account != null) {
 			Toast.makeText(getApplicationContext(), "Using: " + account.name, Toast.LENGTH_SHORT).show();
 		}
+
+		alertTypesArray = getResources().getStringArray(R.array.alert_names);
 	}
 
 	private void submitAlert(String alertType) {
@@ -133,68 +140,69 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 		createAlertTask.execute();
 	}
 
-	private final SensorEventListener mListener = new SensorEventListener() {
-		public void onSensorChanged(SensorEvent event) {
-			int type = event.sensor.getType();
-			if (type == Sensor.TYPE_ACCELEROMETER) {
-				mGData = event.values.clone();
-			} else if (type == Sensor.TYPE_MAGNETIC_FIELD) {
-				mMData = event.values.clone();
-			} else {
-				// we should not be here.
-				return;
-			}
-
-			SensorManager.getRotationMatrix(mR, mI, mGData, mMData);
-
-			// SensorManager.remapCoordinateSystem(mR, SensorManager.AXIS_X, SensorManager.AXIS_Z, mR);
-			SensorManager.getOrientation(mR, mOrientation);
-			float incl = SensorManager.getInclination(mI);
-
-			if (mCount++ > 50) {
-				final float rad2deg = (float) (180.0f / Math.PI);
-				mCount = 0;
-				mDirTextView.setText(("direction: " + (int) (mOrientation[0] * rad2deg)));
-				// Log.d(Config.TAG, "yaw: " + (int) (mOrientation[0] * rad2deg) + "  pitch: "
-				// + (int) (mOrientation[1] * rad2deg) + "  roll: " + (int) (mOrientation[2] * rad2deg)
-				// + "  incl: " + (int) (incl * rad2deg));
-			}
+	private String getStringForAlertType(String alertType) {
+		if (alertType.equals("CLOSED_AREA")) {
+			return "Closed area";
+		} else if (alertType.equals("BAD_WEATHER_CONDITIONS")) {
+			return "Bad weather conditions";
+		} else if (alertType.equals("YACHT_FAILURE")) {
+			return "Yacht failure";
+		} else {
+			return "N/A";
 		}
-
-		public void onAccuracyChanged(Sensor sensor, int accuracy) {
-		}
-	};
+	}
 
 	@Override
 	protected void onClosestAlertUpdate(Location currentLocation, Alert alert) {
 		if (currentLocation != null) {
-			mLocationTextView.setText("location: " + currentLocation.getLatitude() + " "
-					+ currentLocation.getLongitude());
+			UnitUtils.DegMinSec latitudeDegMinSec = UnitUtils.decimalToDegMinSec(currentLocation.getLatitude());
+			mLatitudeTextView.setText(String.format("%02d\u00B0%02d\u2032%02d\u2033", latitudeDegMinSec.getDegrees(),
+					latitudeDegMinSec.getMinutes(), latitudeDegMinSec.getSeconds()));
+
+			UnitUtils.DegMinSec longitudeDegMinSec = UnitUtils.decimalToDegMinSec(currentLocation.getLongitude());
+			mLongitudeTextView.setText(String.format("%02d\u00B0%02d\u2032%02d\u2033", longitudeDegMinSec.getDegrees(),
+					longitudeDegMinSec.getMinutes(), longitudeDegMinSec.getSeconds()));
+
+			currentLocation.setSpeed(13.5f);
 			if (currentLocation.hasSpeed()) {
-				mSpeedTextView.setText("speed: " + currentLocation.getSpeed());
+				mSpeedTextView.setText(UnitUtils.roundSpeedToHalf(currentLocation.getSpeed()).toString());
+				mSpeedUnitTextView.setVisibility(View.VISIBLE);
+
 			} else {
-				mSpeedTextView.setText("speed: " + "N/A");
-			}
-			if (currentLocation.hasBearing()) {
-				mBearingTextView.setText("bearing: " + currentLocation.getBearing());
-			} else {
-				mBearingTextView.setText("bearing: " + "N/A");
+				mSpeedTextView.setText("N/A");
+				mSpeedUnitTextView.setVisibility(View.GONE);
 			}
 		} else {
-			mLocationTextView.setText("location: " + "N/A");
-			mSpeedTextView.setText("speed: " + "N/A");
-			mBearingTextView.setText("bearing: " + "N/A");
+			mSpeedTextView.setText("N/A");
+			mSpeedUnitTextView.setVisibility(View.GONE);
+			mLatitudeTextView.setText("N/A");
+			mLongitudeTextView.setText("N/A");
 		}
 
 		if (alert != null) {
-			mAlertTextView.setText(alert.getId() + " " + alert.getAlertType());
-			mAlertDistanceTextView.setText("distance: " + currentLocation.distanceTo(alert.getLocation()));
+			Integer distanceToAlert = UnitUtils.roundDistanceTo25(currentLocation.distanceTo(alert.getLocation()));
 
-			mAlertBearingTextView.setText("bearing: " + currentLocation.bearingTo(alert.getLocation()));
+			mAlertTextView.setText(getStringForAlertType(alert.getAlertType()));
+			mAlertDistanceTextView.setText(distanceToAlert.toString());
+			mAlertDistanceUnitTextView.setVisibility(View.VISIBLE);
+
+			if (currentLocation.hasBearing() && distanceToAlert > 0) {
+				float currentBearing = currentLocation.getBearing();
+				float bearingToAlert = currentLocation.bearingTo(alert.getLocation());
+
+				mArrowImageView.setRotation(bearingToAlert - currentBearing);
+				mArrowImageView.setVisibility(View.VISIBLE);
+			} else {
+				mArrowImageView.setVisibility(View.GONE);
+			}
+
+			// mAlertBearingTextView.setText("bearing: " + currentLocation.bearingTo(alert.getLocation()));
 		} else {
 			mAlertTextView.setText("N/A");
-			mAlertDistanceTextView.setText("distance: " + "N/A");
-			mAlertBearingTextView.setText("bearing: " + "N/A");
+			mAlertDistanceTextView.setText("N/A");
+			mAlertDistanceUnitTextView.setVisibility(View.GONE);
+			mArrowImageView.setVisibility(View.GONE);
+			// mAlertBearingTextView.setText("bearing: " + "N/A");
 		}
 	}
 
@@ -239,7 +247,6 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 		super.onStop();
 
 		mLocationClient.disconnect();
-		mSensorManager.unregisterListener(mListener);
 	}
 
 	@Override
@@ -257,11 +264,6 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 		}
 
 		SyncUtils.syncAll(mContext);
-
-		Sensor gsensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-		Sensor msensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-		mSensorManager.registerListener(mListener, gsensor, SensorManager.SENSOR_DELAY_UI);
-		mSensorManager.registerListener(mListener, msensor, SensorManager.SENSOR_DELAY_UI);
 	}
 
 	@Override

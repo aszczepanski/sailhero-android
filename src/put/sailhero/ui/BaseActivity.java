@@ -411,7 +411,7 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 
 	private SyncStatusObserver mSyncStatusObserver = new SyncStatusObserver() {
 		@Override
-		public void onStatusChanged(int which) {
+		public void onStatusChanged(final int which) {
 			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
@@ -424,12 +424,12 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 
 					boolean syncActive = ContentResolver.isSyncActive(account, SailHeroContract.CONTENT_AUTHORITY);
 					boolean syncPending = ContentResolver.isSyncPending(account, SailHeroContract.CONTENT_AUTHORITY);
-					// Log.d(TAG, "syncActive: " + syncActive + ", syncPending: " + syncPending);
+					Log.d(TAG, "which: " + Integer.toString(which) + ", " + "syncActive: " + syncActive
+							+ ", syncPending: " + syncPending);
 					if (!syncActive && !syncPending) {
 						mManualSyncRequest = false;
 					}
-					// onRefreshingStateChanged(syncActive || (mManualSyncRequest && syncPending));
-					onRefreshingStateChanged(syncActive);
+					onRefreshingStateChanged(syncActive || (mManualSyncRequest && syncPending));
 				}
 			});
 		}
