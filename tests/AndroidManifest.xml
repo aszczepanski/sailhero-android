@@ -4,11 +4,11 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-sdk android:minSdkVersion="15" />
+    <uses-sdk android:minSdkVersion="14" />
 
     <instrumentation
         android:name="android.test.InstrumentationTestRunner"
-        android:targetPackage="put.sailhero.android" />
+        android:targetPackage="put.sailhero" />
 
     <application
         android:icon="@drawable/ic_launcher"

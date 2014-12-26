@@ -1,18 +1,17 @@
-package put.sailhero.test.util.model;
+package put.sailhero.test.model;
 
 import org.json.simple.JSONObject;
 import org.junit.Test;
 
 import put.sailhero.model.Alert;
-import android.location.Location;
 import android.test.AndroidTestCase;
 
 public class AlertTest extends AndroidTestCase {
 
 	private final static double eps = 0.0001;
-	
+
 	private Alert alert;
-	
+
 	@Override
 	protected void setUp() throws Exception {
 		alert = null;
@@ -30,6 +29,7 @@ public class AlertTest extends AndroidTestCase {
 		alertObject.put("credibility", 1);
 		alertObject.put("latitude", 52.13);
 		alertObject.put("longitude", 47.75);
+		alertObject.put("user_id", 1);
 
 		alert = new Alert(alertObject);
 
@@ -40,8 +40,9 @@ public class AlertTest extends AndroidTestCase {
 		assertEquals((int) alert.getCredibility(), 1);
 		assertEquals((double) alert.getLocation().getLatitude(), 52.13, eps);
 		assertEquals((double) alert.getLocation().getLongitude(), 47.75, eps);
+		assertEquals((int) alert.getUserId(), 1);
 	}
-	
+
 	@Test
 	public void testToJSONObject() {
 		alert = new Alert();
@@ -49,12 +50,9 @@ public class AlertTest extends AndroidTestCase {
 		alert.setAlertType("YACHT_FAILURE");
 		alert.setCredibility(-13);
 		alert.setAdditionalInfo("info");
-		
-		Location location = new Location("sailhero-test");
-		location.setLatitude(52.13);
-		location.setLongitude(47.75);
-		alert.setLocation(location);
-		
+		alert.setLatitude(52.13);
+		alert.setLongitude(47.75);
+
 		JSONObject alertObject = alert.toJSONObject();
 
 		assertNotNull(alertObject);

@@ -1,4 +1,4 @@
-package put.sailhero.test.util.model;
+package put.sailhero.test.model;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

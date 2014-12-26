@@ -1,4 +1,4 @@
-package put.sailhero.test.util.model;
+package put.sailhero.test.model;
 
 import org.json.simple.JSONObject;
 import org.junit.Test;
