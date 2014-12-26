@@ -112,15 +112,14 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
 		}
 
 		Log.e(TAG, "Authenticator: removing account");
+		accountManager.removeAccount(account, null, null);
 
 		// TODO: cannot authenticate user - remove account or login intent
 		//		final Intent intent = new Intent(mContext, LoginActivity.class);
 		//		intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
 		//		final Bundle result = new Bundle();
 		//		result.putParcelable(AccountManager.KEY_INTENT, intent);
-		//		return result;
-
-		accountManager.removeAccount(account, null, null);
+		//		return result;		
 
 		return null;
 	}

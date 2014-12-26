@@ -1,8 +1,5 @@
 package put.sailhero.util;
 
-import put.sailhero.Config;
-import android.util.Log;
-
 public class UnitUtils {
 
 	public static Integer roundDistanceTo25(Float distance) {
@@ -40,7 +37,6 @@ public class UnitUtils {
 		Integer seconds = (int) (frac % 60);
 
 		Integer rest = (int) Math.round((frac - (60 * minutes + seconds)) * 1000);
-		Log.e(Config.TAG, degrees + ", " + frac + ", " + minutes + ", " + seconds + ", " + rest);
 
 		return new DegMinSec(degrees, minutes, seconds, rest);
 	}

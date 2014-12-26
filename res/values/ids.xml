@@ -3,5 +3,6 @@
 
     <item name="user_viewtype_tagkey" type="id"/>
     <item name="port_viewtype_tagkey" type="id"/>
+    <item name="message_viewtype_tagkey" type="id"/>
 
 </resources>

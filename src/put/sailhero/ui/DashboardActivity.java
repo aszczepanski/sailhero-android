@@ -163,7 +163,6 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 			mLongitudeTextView.setText(String.format("%02d\u00B0%02d\u2032%02d\u2033", longitudeDegMinSec.getDegrees(),
 					longitudeDegMinSec.getMinutes(), longitudeDegMinSec.getSeconds()));
 
-			currentLocation.setSpeed(13.5f);
 			if (currentLocation.hasSpeed()) {
 				mSpeedTextView.setText(UnitUtils.roundSpeedToHalf(currentLocation.getSpeed()).toString());
 				mSpeedUnitTextView.setVisibility(View.VISIBLE);
