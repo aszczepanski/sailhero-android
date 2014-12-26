@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -113,11 +114,11 @@ public class UsersAdapter implements ListAdapter {
 		TextView userTitleTextView = (TextView) convertView.findViewById(R.id.slot_user_title);
 		TextView userSubtitleTextView = (TextView) convertView.findViewById(R.id.slot_user_subtitle);
 
-		TextView inviteButton = (TextView) convertView.findViewById(R.id.invite_text_view);
-		TextView acceptButton = (TextView) convertView.findViewById(R.id.accept_text_view);
-		TextView denyButton = (TextView) convertView.findViewById(R.id.deny_text_view);
-		TextView cancelButton = (TextView) convertView.findViewById(R.id.cancel_text_view);
-		TextView removeButton = (TextView) convertView.findViewById(R.id.remove_text_view);
+		Button inviteButton = (Button) convertView.findViewById(R.id.invite_button);
+		Button acceptButton = (Button) convertView.findViewById(R.id.accept_button);
+		Button denyButton = (Button) convertView.findViewById(R.id.deny_button);
+		Button cancelButton = (Button) convertView.findViewById(R.id.cancel_button);
+		Button removeButton = (Button) convertView.findViewById(R.id.remove_button);
 
 		// boxView.setBackgroundResource(R.drawable.user_item_background_normal);
 		// boxView.setForeground(null);

@@ -40,12 +40,12 @@
         android:layout_width="@dimen/poi_item_right_box_width"
         android:layout_height="match_parent" >
 
-        <TextView
-            android:id="@+id/details_text_view"
+        <Button
+            android:id="@+id/details_button"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:layout_gravity="center"
-            android:background="@drawable/list_button_chip"
+            android:background="@drawable/button_blue"
             android:drawablePadding="4dp"
             android:gravity="center"
             android:paddingLeft="8dp"

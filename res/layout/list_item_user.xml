@@ -66,14 +66,14 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal" >
 
-                    <TextView
-                        android:id="@+id/accept_text_view"
+                    <Button
+                        android:id="@+id/accept_button"
                         android:layout_width="match_parent"
                         android:layout_height="30dp"
                         android:layout_gravity="center"
                         android:layout_marginRight="3dp"
                         android:layout_weight="1"
-                        android:background="@drawable/list_button_chip"
+                        android:background="@drawable/button_blue"
                         android:drawablePadding="4dp"
                         android:gravity="center"
                         android:paddingLeft="8dp"
@@ -82,14 +82,14 @@
                         android:textColor="@color/body_text_1"
                         android:textSize="@dimen/text_size_medium" />
 
-                    <TextView
-                        android:id="@+id/deny_text_view"
+                    <Button
+                        android:id="@+id/deny_button"
                         android:layout_width="match_parent"
                         android:layout_height="30dp"
                         android:layout_gravity="center"
                         android:layout_marginLeft="3dp"
                         android:layout_weight="1"
-                        android:background="@drawable/list_button_chip"
+                        android:background="@drawable/button_blue"
                         android:drawablePadding="4dp"
                         android:gravity="center"
                         android:paddingLeft="8dp"
@@ -107,12 +107,12 @@
         android:layout_width="@dimen/user_item_right_box_width"
         android:layout_height="match_parent" >
 
-        <TextView
-            android:id="@+id/invite_text_view"
+        <Button
+            android:id="@+id/invite_button"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:layout_gravity="center"
-            android:background="@drawable/list_button_chip"
+            android:background="@drawable/button_blue"
             android:drawablePadding="4dp"
             android:gravity="center"
             android:paddingLeft="8dp"
@@ -122,12 +122,12 @@
             android:textSize="@dimen/text_size_medium"
             android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/cancel_text_view"
+        <Button
+            android:id="@+id/cancel_button"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:layout_gravity="center"
-            android:background="@drawable/list_button_chip"
+            android:background="@drawable/button_blue"
             android:drawablePadding="4dp"
             android:gravity="center"
             android:paddingLeft="8dp"
@@ -137,12 +137,12 @@
             android:textSize="@dimen/text_size_medium"
             android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/remove_text_view"
+        <Button
+            android:id="@+id/remove_button"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:layout_gravity="center"
-            android:background="@drawable/list_button_chip"
+            android:background="@drawable/button_blue"
             android:drawablePadding="4dp"
             android:gravity="center"
             android:paddingLeft="8dp"

@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
@@ -100,7 +101,7 @@ public class PoiAdapter implements ListAdapter {
 		TextView poiNameTextView = (TextView) convertView.findViewById(R.id.slot_poi_name);
 		TextView poiCityTextView = (TextView) convertView.findViewById(R.id.slot_poi_city);
 
-		TextView detailsButton = (TextView) convertView.findViewById(R.id.details_text_view);
+		Button detailsButton = (Button) convertView.findViewById(R.id.details_button);
 
 		poiNameTextView.setText(poi.getName());
 		poiNameTextView.setTextColor(mContext.getResources().getColor(R.color.body_text_1));
