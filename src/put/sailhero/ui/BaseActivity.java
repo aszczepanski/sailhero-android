@@ -174,7 +174,7 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 		mConfirmAlertButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Alert alertToRespond = PrefUtils.getAlertToRespond(BaseActivity.this);
+				Alert alertToRespond = PrefUtils.getClosestAlertToRespond(BaseActivity.this);
 
 				if (alertToRespond == null) {
 					return;
@@ -196,7 +196,7 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 		mCancelAlertButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Alert alertToRespond = PrefUtils.getAlertToRespond(BaseActivity.this);
+				Alert alertToRespond = PrefUtils.getClosestAlertToRespond(BaseActivity.this);
 
 				if (alertToRespond == null) {
 					return;
@@ -226,8 +226,6 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 			LocalBinder binder = (LocalBinder) service;
 			mAlertService = binder.getService();
 			mAlertServiceBound = true;
-
-			mAlertService.registerListener(mAlertServiceListener);
 		}
 
 		@Override
@@ -236,35 +234,19 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 		}
 	};
 
-	private AlertService.AlertServiceListener mAlertServiceListener = new AlertService.AlertServiceListener() {
-
-		@Override
-		public void onClosestAlertToRespondUpdate(Location lastKnownLocation, Alert alertToRespond) {
-			// TODO: alert == null
-			if (mAlertBarToolbar != null) {
-				if (alertToRespond != null
-						&& lastKnownLocation.distanceTo(alertToRespond.getLocation()) < PrefUtils.getAlertRadius(BaseActivity.this)) {
-					mAlertBarTypeTextView.setText(alertToRespond.getAlertType());
-					mAlertBarDistanceTextView.setText(Math.round(lastKnownLocation.distanceTo(alertToRespond.getLocation()))
-							+ " metres");
-					mAlertBarToolbar.setVisibility(View.VISIBLE);
-
-					PrefUtils.setAlertToRespond(BaseActivity.this, alertToRespond);
-				} else {
-					mAlertBarToolbar.setVisibility(View.GONE);
-
-					PrefUtils.setAlertToRespond(BaseActivity.this, null);
-				}
+	protected void onClosestAlertToRespondUpdate(Location currentLocation, Alert alertToRespond) {
+		if (mAlertBarToolbar != null) {
+			if (alertToRespond != null
+					&& currentLocation.distanceTo(alertToRespond.getLocation()) < PrefUtils.getAlertRadius(BaseActivity.this)) {
+				mAlertBarTypeTextView.setText(alertToRespond.getAlertType());
+				mAlertBarDistanceTextView.setText(Math.round(currentLocation.distanceTo(alertToRespond.getLocation()))
+						+ " metres");
+				mAlertBarToolbar.setVisibility(View.VISIBLE);
+			} else {
+				mAlertBarToolbar.setVisibility(View.GONE);
 			}
-
-			PrefUtils.setLastKnownLocation(BaseActivity.this, lastKnownLocation);
 		}
-
-		@Override
-		public void onClosestAlertUpdate(Location currentLocation, Alert alert) {
-			BaseActivity.this.onClosestAlertUpdate(currentLocation, alert);
-		}
-	};
+	}
 
 	protected void onClosestAlertUpdate(Location currentLocation, Alert alert) {
 	}
@@ -325,13 +307,9 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 			gcmRegistrationTask.execute();
 		}
 
-		if (mAlertServiceBound) {
-			mAlertService.registerListener(mAlertServiceListener);
-		}
-
 		if (mAlertBarToolbar != null) {
 			Location lastKnownLocation = PrefUtils.getLastKnownLocation(BaseActivity.this);
-			Alert alertToRespond = PrefUtils.getAlertToRespond(BaseActivity.this);
+			Alert alertToRespond = PrefUtils.getClosestAlertToRespond(BaseActivity.this);
 
 			if (lastKnownLocation != null && alertToRespond != null) {
 				if (lastKnownLocation.distanceTo(alertToRespond.getLocation()) < PrefUtils.getAlertRadius(BaseActivity.this)) {
@@ -344,17 +322,14 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 				}
 			}
 
-			onClosestAlertUpdate(null, null);
+			onClosestAlertUpdate(PrefUtils.getLastKnownLocation(BaseActivity.this),
+					PrefUtils.getClosestAlert(BaseActivity.this));
 		}
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-
-		if (mAlertServiceBound) {
-			mAlertService.unregisterListener(mAlertServiceListener);
-		}
 
 		if (mSyncObserverHandle != null) {
 			ContentResolver.removeStatusChangeListener(mSyncObserverHandle);
@@ -783,9 +758,15 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		if (key.equals(PrefUtils.PREF_USER)) {
+		if (key.equals(PrefUtils.PREF_CLOSEST_ALERT)) {
+			onClosestAlertUpdate(PrefUtils.getLastKnownLocation(BaseActivity.this),
+					PrefUtils.getClosestAlert(BaseActivity.this));
+		} else if (key.equals(PrefUtils.PREF_CLOSEST_ALERT_TO_RESPOND)) {
+			onClosestAlertToRespondUpdate(PrefUtils.getLastKnownLocation(BaseActivity.this),
+					PrefUtils.getClosestAlertToRespond(BaseActivity.this));
+		} else if (key.equals(PrefUtils.PREF_USER)) {
+
 			setupAccountBox();
 		}
 	}
-
 }

@@ -21,10 +21,11 @@ public class PrefUtils {
 	public static final String PREF_YACHT = "pref_yacht";
 
 	public static final String PREF_ALERT_RADIUS = "pref_alert_radius";
-	public static final String PREF_ALERT_TO_RESPOND = "pref_alert_to_respond";
+	public static final String PREF_CLOSEST_ALERT = "pref_closest_alert";
+	public static final String PREF_CLOSEST_ALERT_TO_RESPOND = "pref_closest_alert_to_respond";
 
 	public static final String PREF_WANTS_TO_SHARE_LOCATION = "pref_wants_to_share_location";
-	
+
 	public static final String PREF_LAST_KNOWN_LOCATION = "pref_last_known_location";
 
 	public static final String PREF_WELCOME_DONE = "pref_welcome_done";
@@ -38,7 +39,8 @@ public class PrefUtils {
 		setYacht(context, null);
 		setRegion(context, null);
 		setAlertRadius(context, DEFAULT_ALERT_RADIUS);
-		setAlertToRespond(context, null);
+		setClosestAlert(context, null);
+		setClosestAlertToRespond(context, null);
 		setLastKnownLocation(context, null);
 		// TODO: welcome done
 		setGcmRegistrationId(context, null);
@@ -132,37 +134,63 @@ public class PrefUtils {
 		sp.edit().putInt(PREF_ALERT_RADIUS, radius).commit();
 	}
 
-	public static void setAlertToRespond(Context context, final Alert alert) {
+	public static void setClosestAlertToRespond(Context context, final Alert alert) {
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 
 		if (alert == null) {
-			sp.edit().putString(PREF_ALERT_TO_RESPOND, null).commit();
+			sp.edit().putString(PREF_CLOSEST_ALERT_TO_RESPOND, null).commit();
 		} else {
 			GsonBuilder builder = new GsonBuilder();
 			Gson gson = builder.create();
 			String alertJson = gson.toJson(alert);
 
-			sp.edit().putString(PREF_ALERT_TO_RESPOND, alertJson).commit();
+			sp.edit().putString(PREF_CLOSEST_ALERT_TO_RESPOND, alertJson).commit();
 		}
 	}
 
-	public static Alert getAlertToRespond(Context context) {
+	public static Alert getClosestAlertToRespond(Context context) {
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 
 		String alertJson = null;
-		alertJson = sp.getString(PREF_ALERT_TO_RESPOND, null);
+		alertJson = sp.getString(PREF_CLOSEST_ALERT_TO_RESPOND, null);
 
 		GsonBuilder builder = new GsonBuilder();
 		Gson gson = builder.create();
 		Alert alert = gson.fromJson(alertJson, Alert.class);
 		return alert;
 	}
-	
+
+	public static void setClosestAlert(Context context, final Alert alert) {
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+
+		if (alert == null) {
+			sp.edit().putString(PREF_CLOSEST_ALERT, null).commit();
+		} else {
+			GsonBuilder builder = new GsonBuilder();
+			Gson gson = builder.create();
+			String alertJson = gson.toJson(alert);
+
+			sp.edit().putString(PREF_CLOSEST_ALERT, alertJson).commit();
+		}
+	}
+
+	public static Alert getClosestAlert(Context context) {
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+
+		String alertJson = null;
+		alertJson = sp.getString(PREF_CLOSEST_ALERT, null);
+
+		GsonBuilder builder = new GsonBuilder();
+		Gson gson = builder.create();
+		Alert alert = gson.fromJson(alertJson, Alert.class);
+		return alert;
+	}
+
 	public static void setWantsToShareLocation(final Context context, boolean wantsToShareLocation) {
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 		sp.edit().putBoolean(PREF_WANTS_TO_SHARE_LOCATION, wantsToShareLocation).commit();
 	}
-	
+
 	public static boolean getWantsToShareLocation(final Context context) {
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 		return sp.getBoolean(PREF_WANTS_TO_SHARE_LOCATION, false);

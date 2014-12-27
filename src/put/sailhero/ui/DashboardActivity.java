@@ -192,7 +192,7 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 				mArrowImageView.setRotation(bearingToAlert - currentBearing);
 				mArrowImageView.setVisibility(View.VISIBLE);
 			} else {
-				mArrowImageView.setVisibility(View.GONE);
+				mArrowImageView.setVisibility(View.INVISIBLE);
 			}
 
 			// mAlertBearingTextView.setText("bearing: " + currentLocation.bearingTo(alert.getLocation()));
@@ -200,7 +200,7 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 			mAlertTextView.setText("N/A");
 			mAlertDistanceTextView.setText("N/A");
 			mAlertDistanceUnitTextView.setVisibility(View.GONE);
-			mArrowImageView.setVisibility(View.GONE);
+			mArrowImageView.setVisibility(View.INVISIBLE);
 			// mAlertBearingTextView.setText("bearing: " + "N/A");
 		}
 	}

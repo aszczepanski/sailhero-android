@@ -210,9 +210,14 @@
             android:label="@string/title_activity_poi" >
         </activity>
         <activity
-            android:name="put.sailhero.ui.MessageActivity"
+            android:name=".ui.MessageActivity"
             android:label="@string/title_activity_message" >
         </activity>
+
+        <service
+            android:name="put.sailhero.service.AlertIntentService"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>
