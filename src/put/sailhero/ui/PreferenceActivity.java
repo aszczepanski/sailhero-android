@@ -158,6 +158,8 @@ public class PreferenceActivity extends BaseActivity {
 
 			getActivity().getContentResolver().delete(SailHeroContract.Friendship.CONTENT_URI, null, null);
 			getActivity().getContentResolver().delete(SailHeroContract.Alert.CONTENT_URI, null, null);
+			getActivity().getContentResolver().delete(SailHeroContract.Port.CONTENT_URI, null,  null);
+			getActivity().getContentResolver().delete(SailHeroContract.Route.CONTENT_URI, null, null);
 
 			getActivity().finish();
 		}
@@ -166,7 +168,7 @@ public class PreferenceActivity extends BaseActivity {
 		public void onResume() {
 			super.onResume();
 
-			SyncUtils.syncAll(mContext);
+			SyncUtils.syncRegions(mContext);
 
 			onRegionsChanged();
 		}

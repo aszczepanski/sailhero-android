@@ -95,9 +95,6 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 
 	private static final int NAVDRAWER_LAUNCH_DELAY = 250;
 
-	private static final int MAIN_CONTENT_FADEOUT_DURATION = 150;
-	private static final int MAIN_CONTENT_FADEIN_DURATION = 250;
-
 	private Handler mHandler;
 	private Runnable mDeferredOnDrawerClosedRunnable;
 
@@ -139,15 +136,7 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 	OnAccountsUpdateListener mOnAccountsUpdateListener = new OnAccountsUpdateListener() {
 		@Override
 		public void onAccountsUpdated(Account[] accounts) {
-			// TODO: present nice notification instead of starting new activity
-			Account account = AccountUtils.getActiveAccount(BaseActivity.this);
-			if (account == null) {
-				Intent loginIntent = new Intent(BaseActivity.this, LoginActivity.class);
-				loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(loginIntent);
-				finish();
-				return;
-			}
+			AccountUtils.finishActivityAndStartLoginActivityIfNeeded(BaseActivity.this, BaseActivity.this);
 		}
 	};
 
@@ -274,12 +263,7 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 	protected void onResume() {
 		super.onResume();
 
-		Account account = AccountUtils.getActiveAccount(BaseActivity.this);
-		if (account == null) {
-			Intent loginIntent = new Intent(BaseActivity.this, LoginActivity.class);
-			loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-			startActivity(loginIntent);
-			finish();
+		if (AccountUtils.finishActivityAndStartLoginActivityIfNeeded(BaseActivity.this, BaseActivity.this)) {
 			return;
 		}
 
@@ -344,14 +328,6 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 		int itemId = getSelfNavDrawerItem();
 		if (itemId != NAVDRAWER_ITEM_INVALID) {
 			setSelectedNavDrawerItem(itemId);
-		}
-
-		View mainContent = findViewById(R.id.main_content);
-		if (mainContent != null) {
-			mainContent.setAlpha(0);
-			mainContent.animate().alpha(1).setDuration(MAIN_CONTENT_FADEIN_DURATION);
-		} else {
-			Log.w(TAG, "No view with ID main_content to fade in.");
 		}
 	}
 
@@ -475,15 +451,6 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.START);
 
 		populateNavDrawer();
-
-		// TODO:
-		// When the user runs the app for the first time, we want to land them with the
-		// navigation drawer open. But just the first time.
-		if (!PrefUtils.isWelcomeDone(this)) {
-			// first run of the app starts with the nav drawer open
-			PrefUtils.markWelcomeDone(this);
-			mDrawerLayout.openDrawer(Gravity.START);
-		}
 	}
 
 	public void setupAccountBox() {
@@ -495,8 +462,6 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 		TextView emailTextView = (TextView) findViewById(R.id.profile_email_text);
 
 		ImageView profileImageView = (ImageView) findViewById(R.id.profile_image);
-		// String profileImageUrl = "https://s3.amazonaws.com/sailhero-stg/1418158640-gijffsdhzshxsbkpccsy-data-uri.jpg";
-		// Glide.with(BaseActivity.this).load(profileImageUrl).asBitmap().into(profileImageView);
 
 		User currentUser = PrefUtils.getUser(BaseActivity.this);
 		if (currentUser == null) {
@@ -612,7 +577,7 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 		switch (item) {
 		case NAVDRAWER_ITEM_DASHBOARD:
 			intent = new Intent(this, DashboardActivity.class);
-			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 			break;
 		case NAVDRAWER_ITEM_ALERT:
 			intent = new Intent(this, AlertActivity.class);
@@ -643,7 +608,7 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 			return;
 		}
 
-		//		intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 
 		if (getSelfNavDrawerItem() != NAVDRAWER_ITEM_DASHBOARD && !isSpecialItem(item)) {
 			finish();
@@ -664,13 +629,6 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 				goToNavDrawerItem(itemId);
 			}
 		}, NAVDRAWER_LAUNCH_DELAY);
-
-		// fade out the main content
-		// TODO: move it (maybe) to onStop() method
-		View mainContent = findViewById(R.id.main_content);
-		if (mainContent != null) {
-			mainContent.animate().alpha(0).setDuration(MAIN_CONTENT_FADEOUT_DURATION);
-		}
 
 		mDrawerLayout.closeDrawer(Gravity.START);
 	}

@@ -35,6 +35,8 @@ public class LoginActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 
+		Log.e(TAG, "LoginActivity::onCreate");
+
 		mContext = LoginActivity.this;
 
 		Account account = AccountUtils.getActiveAccount(getApplicationContext());
@@ -90,6 +92,12 @@ public class LoginActivity extends Activity {
 	}
 
 	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		Log.e(TAG, "LoginActivity::onDestroy");
+	}
+
+	@Override
 	public void onResume() {
 		Account account = AccountUtils.getActiveAccount(getApplicationContext());
 		if (account != null) {
@@ -102,9 +110,10 @@ public class LoginActivity extends Activity {
 	}
 
 	private void onUserAuthenticated() {
-		// TODO: add it to user registration and logout
-		mContext.getContentResolver().delete(SailHeroContract.Alert.CONTENT_URI, null, null);
 		mContext.getContentResolver().delete(SailHeroContract.Friendship.CONTENT_URI, null, null);
+		mContext.getContentResolver().delete(SailHeroContract.Alert.CONTENT_URI, null, null);
+		mContext.getContentResolver().delete(SailHeroContract.Port.CONTENT_URI, null, null);
+		mContext.getContentResolver().delete(SailHeroContract.Route.CONTENT_URI, null, null);
 
 		Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
 		startActivity(intent);

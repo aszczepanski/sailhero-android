@@ -36,19 +36,14 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 
 	private LocationClient mLocationClient;
 
-	// TODO:
-	private Alert mClosestAlert;
-
 	private TextView mSpeedTextView;
 	private TextView mSpeedUnitTextView;
 	private TextView mLatitudeTextView;
 	private TextView mLongitudeTextView;
 
-	// TODO:
 	private TextView mAlertTextView;
 	private TextView mAlertDistanceTextView;
 	private TextView mAlertDistanceUnitTextView;
-	private TextView mAlertBearingTextView;
 
 	private ImageView mArrowImageView;
 
@@ -77,7 +72,6 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 		mAlertTextView = (TextView) findViewById(R.id.alert_text_view);
 		mAlertDistanceTextView = (TextView) findViewById(R.id.alert_distance_text_view);
 		mAlertDistanceUnitTextView = (TextView) findViewById(R.id.alert_distance_unit_text_view);
-		// mAlertBearingTextView = (TextView) findViewById(R.id.alert_bearing_text_view);
 
 		mArrowImageView = (ImageView) findViewById(R.id.arrow_image);
 
@@ -194,14 +188,11 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 			} else {
 				mArrowImageView.setVisibility(View.INVISIBLE);
 			}
-
-			// mAlertBearingTextView.setText("bearing: " + currentLocation.bearingTo(alert.getLocation()));
 		} else {
 			mAlertTextView.setText("N/A");
 			mAlertDistanceTextView.setText("N/A");
 			mAlertDistanceUnitTextView.setVisibility(View.GONE);
 			mArrowImageView.setVisibility(View.INVISIBLE);
-			// mAlertBearingTextView.setText("bearing: " + "N/A");
 		}
 	}
 
