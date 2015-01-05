@@ -35,7 +35,7 @@
     <!-- list view -->
     <dimen name="user_item_main_box_height">65dp</dimen>
     <dimen name="user_item_bottom_box_height">60dp</dimen>
-    <dimen name="user_item_right_box_width">60dp</dimen>
+    <dimen name="user_item_right_box_width">65dp</dimen>
     <dimen name="user_item_title_strip_padding">8dp</dimen>
     <dimen name="user_item_profile_picture_size">55dp</dimen>
     <dimen name="poi_item_main_box_height">65dp</dimen>
