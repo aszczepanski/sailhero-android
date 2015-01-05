@@ -5,11 +5,14 @@ import java.util.LinkedList;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import put.sailhero.exception.InvalidRegionException;
+import put.sailhero.exception.NoSpotException;
+import put.sailhero.exception.NoYachtException;
+import put.sailhero.exception.NotFoundException;
 import put.sailhero.exception.SystemException;
 import put.sailhero.exception.UnauthorizedException;
 import android.content.Context;
@@ -25,7 +28,9 @@ public class RetrievePortCostsRequestHelper extends RequestHelper {
 	private final static String PATH_CALCULATE = "calculate";
 
 	private Integer mSentPortId;
-	private String mRetrievedCost;
+	private Integer mRetrievedCost;
+	private String mRetrievedCurrency;
+
 	private LinkedList<String> mRetrievedMessages;
 
 	public RetrievePortCostsRequestHelper(Context context, Integer portId) {
@@ -38,8 +43,12 @@ public class RetrievePortCostsRequestHelper extends RequestHelper {
 		return mSentPortId;
 	}
 
-	public String getRetrievedCost() {
+	public Integer getRetrievedCost() {
 		return mRetrievedCost;
+	}
+
+	public String getRetrievedCurrency() {
+		return mRetrievedCurrency;
 	}
 
 	public LinkedList<String> getRetrievedMessages() {
@@ -65,7 +74,8 @@ public class RetrievePortCostsRequestHelper extends RequestHelper {
 	}
 
 	@Override
-	protected void parseResponse() throws UnauthorizedException, SystemException {
+	protected void parseResponse() throws UnauthorizedException, SystemException, NotFoundException,
+			InvalidRegionException, NoSpotException, NoYachtException {
 		int statusCode = mHttpResponse.getStatusLine().getStatusCode();
 		String responseBody = "";
 		try {
@@ -81,15 +91,10 @@ public class RetrievePortCostsRequestHelper extends RequestHelper {
 				JSONParser parser = new JSONParser();
 				JSONObject obj = (JSONObject) parser.parse(responseBody);
 
-				mRetrievedCost = (String) obj.get("cost");
+				JSONObject portCostObject = (JSONObject) obj.get("port");
 
-				mRetrievedMessages = new LinkedList<String>();
-
-				JSONArray messagesArray = (JSONArray) obj.get("messages");
-				for (int i = 0; i < messagesArray.size(); i++) {
-					JSONObject messageObject = (JSONObject) messagesArray.get(i);
-					mRetrievedMessages.add((String) messageObject.get("message"));
-				}
+				mRetrievedCost = Integer.valueOf((String) portCostObject.get("cost"));
+				mRetrievedCurrency = (String) portCostObject.get("currency");
 
 			} catch (NullPointerException e) {
 				throw new SystemException(e.getMessage());
@@ -102,6 +107,14 @@ public class RetrievePortCostsRequestHelper extends RequestHelper {
 			}
 		} else if (statusCode == 401) {
 			throw new UnauthorizedException();
+		} else if (statusCode == 404) {
+			throw new NotFoundException();
+		} else if (statusCode == 460) {
+			throw new InvalidRegionException();
+		} else if (statusCode == 464) {
+			throw new NoSpotException();
+		} else if (statusCode == 465) {
+			throw new NoYachtException();
 		} else {
 			throw new SystemException("Invalid status code (" + statusCode + ")");
 		}
