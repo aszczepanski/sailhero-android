@@ -15,8 +15,11 @@ import put.sailhero.exception.InvalidRegionException;
 import put.sailhero.exception.SystemException;
 import put.sailhero.exception.UnauthorizedException;
 import put.sailhero.model.Alert;
+import put.sailhero.provider.SailHeroContract;
+import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 
 public class CreateAlertRequestHelper extends RequestHelper {
 
@@ -112,6 +115,8 @@ public class CreateAlertRequestHelper extends RequestHelper {
 
 	@Override
 	public void storeData() {
-		// TODO: save using content resolver
+		Log.i(TAG, "Scheduling insert: alert_id=" + mRetrievedAlert.getId());
+		ContentValues values = mRetrievedAlert.toContentValues();
+		mContext.getContentResolver().insert(SailHeroContract.Alert.CONTENT_URI, values);
 	}
 }

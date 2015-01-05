@@ -15,6 +15,7 @@ public class Alert extends BaseModel {
 	private String mAdditionalInfo;
 	private Integer mUserId;
 	private Integer mCredibility;
+	private Boolean mUserResponded;
 
 	public Alert() {
 	}
@@ -30,6 +31,13 @@ public class Alert extends BaseModel {
 
 		setLatitude(Double.valueOf(alertObject.get("latitude").toString()));
 		setLongitude(Double.valueOf(alertObject.get("longitude").toString()));
+
+		Integer userVote = Integer.valueOf(alertObject.get("user_vote").toString());
+		if (userVote == 0) {
+			setHasUserResponded(false);
+		} else {
+			setHasUserResponded(true);
+		}
 	}
 
 	public Alert(Cursor c) {
@@ -39,6 +47,7 @@ public class Alert extends BaseModel {
 		setLongitude(c.getDouble(Query.ALERT_LONGITUDE));
 		setAdditionalInfo(c.getString(Query.ALERT_ADDITIONAL_INFO));
 		setUserId(c.getInt(Query.ALERT_USER_ID));
+		setHasUserResponded(c.getInt(Query.ALERT_USER_RESPONDED) == SailHeroContract.Alert.RESPONSE_STATUS_RESPONDED);
 	}
 
 	public interface Query {
@@ -48,7 +57,8 @@ public class Alert extends BaseModel {
 				SailHeroContract.Alert.COLUMN_NAME_LATITUDE,
 				SailHeroContract.Alert.COLUMN_NAME_LONGITUDE,
 				SailHeroContract.Alert.COLUMN_NAME_ADDITIONAL_INFO,
-				SailHeroContract.Alert.COLUMN_NAME_USER_ID
+				SailHeroContract.Alert.COLUMN_NAME_USER_ID,
+				SailHeroContract.Alert.COLUMN_NAME_USER_RESPONDED
 		};
 
 		int ALERT_ID = 0;
@@ -57,6 +67,7 @@ public class Alert extends BaseModel {
 		int ALERT_LONGITUDE = 3;
 		int ALERT_ADDITIONAL_INFO = 4;
 		int ALERT_USER_ID = 5;
+		int ALERT_USER_RESPONDED = 6;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -67,6 +78,7 @@ public class Alert extends BaseModel {
 		alertObject.put("latitude", mLatitude);
 		alertObject.put("longitude", mLongitude);
 		alertObject.put("additional_info", mAdditionalInfo);
+		alertObject.put("user_responded", mUserResponded);
 
 		return alertObject;
 	}
@@ -127,6 +139,14 @@ public class Alert extends BaseModel {
 		mCredibility = credibility;
 	}
 
+	public Boolean hasUserResponded() {
+		return mUserResponded;
+	}
+
+	public void setHasUserResponded(Boolean userResponded) {
+		mUserResponded = userResponded;
+	}
+
 	public ContentValues toContentValues() {
 		ContentValues values = new ContentValues();
 		values.put(SailHeroContract.Alert.COLUMN_NAME_ID, getId());
@@ -135,6 +155,9 @@ public class Alert extends BaseModel {
 		values.put(SailHeroContract.Alert.COLUMN_NAME_LONGITUDE, getLongitude());
 		values.put(SailHeroContract.Alert.COLUMN_NAME_USER_ID, getUserId());
 		values.put(SailHeroContract.Alert.COLUMN_NAME_ADDITIONAL_INFO, getAdditionalInfo());
+		values.put(SailHeroContract.Alert.COLUMN_NAME_USER_RESPONDED,
+				hasUserResponded() ? SailHeroContract.Alert.RESPONSE_STATUS_RESPONDED
+						: SailHeroContract.Alert.RESPONSE_STATUS_NOT_RESPONDED);
 
 		return values;
 	}
@@ -150,6 +173,7 @@ public class Alert extends BaseModel {
 		return getId().equals(alertToCompare.getId()) && getLatitude().equals(alertToCompare.getLatitude())
 				&& getLongitude().equals(alertToCompare.getLongitude())
 				&& getAdditionalInfo().equals(alertToCompare.getAdditionalInfo())
-				&& getUserId().equals(alertToCompare.getUserId());
+				&& getUserId().equals(alertToCompare.getUserId())
+				&& hasUserResponded().equals(alertToCompare.hasUserResponded());
 	}
 }

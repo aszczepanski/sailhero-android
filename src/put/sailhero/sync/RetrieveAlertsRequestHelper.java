@@ -62,6 +62,8 @@ public class RetrieveAlertsRequestHelper extends RequestHelper {
 			e.printStackTrace();
 		}
 
+		Log.e(TAG, responseBody);
+		
 		if (statusCode == 200) {
 			try {
 				JSONParser parser = new JSONParser();
