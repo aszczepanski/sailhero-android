@@ -477,7 +477,11 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 
 			profileImageView.setVisibility(View.VISIBLE);
 			if (currentUser.getAvatarUrl() != null) {
-				Glide.with(BaseActivity.this).load(currentUser.getAvatarUrl()).asBitmap().into(profileImageView);
+				Glide.with(BaseActivity.this)
+						.load(currentUser.getAvatarUrl())
+						.asBitmap()
+						.error(R.drawable.person_image_empty)
+						.into(profileImageView);
 			} else {
 				Glide.with(BaseActivity.this).load(R.drawable.person_image_empty).asBitmap().into(profileImageView);
 			}

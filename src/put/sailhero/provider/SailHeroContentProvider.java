@@ -434,7 +434,7 @@ public class SailHeroContentProvider extends ContentProvider {
 	}
 
 	static class SailHeroDatabaseHelper extends SQLiteOpenHelper {
-		public static final int DATABASE_VERSION = 27;
+		public static final int DATABASE_VERSION = 28;
 		public static final String DATABASE_NAME = "sailhero.db";
 
 		private static final String SQL_CREATE_ALERTS = "CREATE TABLE " + SailHeroContract.Alert.TABLE_NAME + " ("
@@ -485,7 +485,8 @@ public class SailHeroContentProvider extends ContentProvider {
 				+ SailHeroContract.Port.COLUMN_NAME_PRICE_WASHING_MACHINE + " REAL" + ","
 				+ SailHeroContract.Port.COLUMN_NAME_PRICE_EMPTYING_CHEMICAL_TOILET + " REAL" + ","
 				+ SailHeroContract.Port.COLUMN_NAME_PRICE_PARKING + " REAL" + ","
-				+ SailHeroContract.Port.COLUMN_NAME_CURRENCY + " TEXT" + ")";
+				+ SailHeroContract.Port.COLUMN_NAME_CURRENCY + " TEXT" + ","
+				+ SailHeroContract.Port.COLUMN_NAME_PHOTO_URL + " TEXT" + ")";
 
 		private static final String SQL_DELETE_PORTS = "DROP TABLE IF EXISTS " + SailHeroContract.Port.TABLE_NAME;
 

@@ -74,6 +74,7 @@ final public class SailHeroContract {
 		public static final String COLUMN_NAME_ADDITIONAL_INFO = "additional_info";
 		public static final String COLUMN_NAME_SPOTS = "spots";
 		public static final String COLUMN_NAME_DEPTH = "depth";
+		public static final String COLUMN_NAME_PHOTO_URL = "photo_url";
 		public static final String COLUMN_NAME_HAS_POWER_CONNECTION = "has_power_connection";
 		public static final String COLUMN_NAME_HAS_WC = "has_wc";
 		public static final String COLUMN_NAME_HAS_SHOWER = "has_shower";

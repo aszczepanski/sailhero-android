@@ -43,6 +43,7 @@ public class Port extends PoiModel {
 	private Float mPriceEmptyingChemicalToilet;
 	private Float mPriceParking;
 	private String mCurrency;
+	private String mPhotoUrl;
 
 	public Port() {
 	}
@@ -83,6 +84,7 @@ public class Port extends PoiModel {
 		setPriceEmptyingChemicalToilet(Float.valueOf(portObject.get("price_emptying_chemical_toilet").toString()));
 		setPriceParking(Float.valueOf(portObject.get("price_parking").toString()));
 		setCurrency((String) portObject.get("currency"));
+		setPhotoUrl((String) portObject.get("photo_url"));
 	}
 
 	public Port(Cursor c) {
@@ -119,6 +121,7 @@ public class Port extends PoiModel {
 		setPriceEmptyingChemicalToilet(c.getFloat(Query.PORT_PRICE_EMPTYING_CHEMICAL_TOILET));
 		setPriceParking(c.getFloat(Query.PORT_PRICE_PARKING));
 		setCurrency(c.getString(Query.PORT_CURRENCY));
+		setPhotoUrl(c.getString(Query.PORT_PHOTO_URL));
 	}
 
 	public interface Query {
@@ -155,7 +158,8 @@ public class Port extends PoiModel {
 				SailHeroContract.Port.COLUMN_NAME_PRICE_PARKING,
 				SailHeroContract.Port.COLUMN_NAME_PRICE_WASHING_MACHINE,
 				SailHeroContract.Port.COLUMN_NAME_PRICE_EMPTYING_CHEMICAL_TOILET,
-				SailHeroContract.Port.COLUMN_NAME_CURRENCY
+				SailHeroContract.Port.COLUMN_NAME_CURRENCY,
+				SailHeroContract.Port.COLUMN_NAME_PHOTO_URL
 		};
 
 		int PORT_ID = 0;
@@ -191,6 +195,7 @@ public class Port extends PoiModel {
 		int PORT_PRICE_WASHING_MACHINE = 30;
 		int PORT_PRICE_EMPTYING_CHEMICAL_TOILET = 31;
 		int PORT_CURRENCY = 32;
+		int PORT_PHOTO_URL = 33;
 	}
 
 	public Location getLocation() {
@@ -440,6 +445,14 @@ public class Port extends PoiModel {
 		mCurrency = currency;
 	}
 
+	public String getPhotoUrl() {
+		return mPhotoUrl;
+	}
+
+	public void setPhotoUrl(String photoUrl) {
+		mPhotoUrl = photoUrl;
+	}
+
 	@Override
 	public ContentValues toContentValues() {
 		ContentValues values = new ContentValues();
@@ -477,6 +490,7 @@ public class Port extends PoiModel {
 		values.put(SailHeroContract.Port.COLUMN_NAME_PRICE_WASHING_MACHINE, getPriceWashingMachine());
 		values.put(SailHeroContract.Port.COLUMN_NAME_PRICE_EMPTYING_CHEMICAL_TOILET, getPriceEmptyingChemicalToilet());
 		values.put(SailHeroContract.Port.COLUMN_NAME_CURRENCY, getCurrency());
+		values.put(SailHeroContract.Port.COLUMN_NAME_PHOTO_URL, getPhotoUrl());
 
 		return values;
 	}
@@ -497,7 +511,8 @@ public class Port extends PoiModel {
 				&& TextUtils.equals(getStreet(), portToCompare.getStreet())
 				&& TextUtils.equals(getTelephone(), portToCompare.getTelephone())
 				&& TextUtils.equals(getAdditionalInfo(), portToCompare.getAdditionalInfo())
-				&& getSpots().equals(portToCompare.getSpots()) && getDepth().equals(portToCompare.getDepth());
+				&& getSpots().equals(portToCompare.getSpots()) && getDepth().equals(portToCompare.getDepth())
+				&& TextUtils.equals(getPhotoUrl(), portToCompare.getPhotoUrl());
 	}
 
 	@Override

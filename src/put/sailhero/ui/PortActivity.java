@@ -29,6 +29,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+
 public class PortActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor>,
 		ObservableScrollView.Callbacks {
 
@@ -157,7 +159,7 @@ public class PortActivity extends BaseActivity implements LoaderManager.LoaderCa
 		mDetailsContainer = findViewById(R.id.details_container);
 		mHeaderBox = findViewById(R.id.header_session);
 		mPhotoViewContainer = findViewById(R.id.session_photo_container);
-		mPhotoView = (ImageView) findViewById(R.id.session_photo);
+		mPhotoView = (ImageView) findViewById(R.id.port_photo);
 	}
 
 	@Override
@@ -191,6 +193,17 @@ public class PortActivity extends BaseActivity implements LoaderManager.LoaderCa
 
 		mPortTitleTextView.setText(mPort.getName());
 		mPortSubtitleTextView.setText(mPort.getCity());
+
+		if (mPort.getPhotoUrl() != null) {
+			Glide.with(PortActivity.this)
+					.load(mPort.getPhotoUrl())
+					.asBitmap()
+					.error(R.drawable.default_port)
+					.thumbnail(0.1f)
+					.into(mPhotoView);
+		} else {
+			Glide.with(PortActivity.this).load(R.drawable.default_port).asBitmap().into(mPhotoView);
+		}
 
 		mNameTextView.setText(mPort.getName());
 		mCityTextView.setText(mPort.getCity());

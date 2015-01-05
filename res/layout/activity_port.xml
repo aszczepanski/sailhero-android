@@ -43,12 +43,12 @@
                         android:layout_height="wrap_content" >
 
                         <ImageView
-                            android:id="@+id/session_photo"
+                            android:id="@+id/port_photo"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
+                            android:background="@color/tab_background"
                             android:contentDescription="Port image"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/mazury" />
+                            android:scaleType="centerCrop" />
                     </FrameLayout>
 
                     <LinearLayout
