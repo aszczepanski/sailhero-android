@@ -1,7 +1,6 @@
 package put.sailhero.sync;
 
 import java.io.IOException;
-import java.util.LinkedList;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
@@ -31,8 +30,6 @@ public class RetrievePortCostsRequestHelper extends RequestHelper {
 	private Integer mRetrievedCost;
 	private String mRetrievedCurrency;
 
-	private LinkedList<String> mRetrievedMessages;
-
 	public RetrievePortCostsRequestHelper(Context context, Integer portId) {
 		super(context);
 
@@ -49,10 +46,6 @@ public class RetrievePortCostsRequestHelper extends RequestHelper {
 
 	public String getRetrievedCurrency() {
 		return mRetrievedCurrency;
-	}
-
-	public LinkedList<String> getRetrievedMessages() {
-		return mRetrievedMessages;
 	}
 
 	@Override

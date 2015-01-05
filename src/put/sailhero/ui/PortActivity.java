@@ -1,10 +1,10 @@
 package put.sailhero.ui;
 
 import put.sailhero.R;
+import put.sailhero.exception.NoSpotException;
+import put.sailhero.exception.NoYachtException;
 import put.sailhero.model.Port;
 import put.sailhero.provider.SailHeroContract;
-import put.sailhero.sync.RequestHelper;
-import put.sailhero.sync.RequestHelperAsyncTask;
 import put.sailhero.sync.RetrievePortCostsRequestHelper;
 import put.sailhero.ui.widget.ObservableScrollView;
 import put.sailhero.util.SyncUtils;
@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,6 +62,10 @@ public class PortActivity extends BaseActivity implements LoaderManager.LoaderCa
 	private TextView mAdditionalInfoTextView;
 	private TextView mSpotsTextView;
 	private TextView mDepthTextView;
+
+	private TextView mCostsCalculatorDescriptionTextView;
+	private TextView mCostsCalculatorValueTextView;
+	private ProgressBar mCostsCalculatorProgressBar;
 
 	private CheckBox mHasPowerConnectionCheckBox;
 	private CheckBox mHasWcCheckBox;
@@ -112,6 +117,10 @@ public class PortActivity extends BaseActivity implements LoaderManager.LoaderCa
 		mAdditionalInfoTextView = (TextView) findViewById(R.id.additional_info_text_view);
 		mSpotsTextView = (TextView) findViewById(R.id.spots_text_view);
 		mDepthTextView = (TextView) findViewById(R.id.depth_text_view);
+
+		mCostsCalculatorDescriptionTextView = (TextView) findViewById(R.id.costs_calculator_description_text_view);
+		mCostsCalculatorValueTextView = (TextView) findViewById(R.id.costs_calculator_value_text_view);
+		mCostsCalculatorProgressBar = (ProgressBar) findViewById(R.id.costs_calculator_progress_bar);
 
 		mHasPowerConnectionCheckBox = (CheckBox) findViewById(R.id.has_power_connection_check_box);
 		mHasWcCheckBox = (CheckBox) findViewById(R.id.has_wc_check_box);
@@ -245,14 +254,8 @@ public class PortActivity extends BaseActivity implements LoaderManager.LoaderCa
 					+ mPort.getCurrency());
 		}
 
-		RequestHelperAsyncTask calculatorTask = new RequestHelperAsyncTask(PortActivity.this,
-				new RetrievePortCostsRequestHelper(PortActivity.this, mPort.getId()),
-				new RequestHelperAsyncTask.AsyncRequestListener() {
-					@Override
-					public void onSuccess(RequestHelper requestHelper) {
-						Log.i(TAG, "cost received");
-					}
-				});
+		RetrieveCostsAsyncTask calculatorTask = new RetrieveCostsAsyncTask(PortActivity.this,
+				new RetrievePortCostsRequestHelper(PortActivity.this, mPort.getId()));
 		calculatorTask.execute();
 	}
 
@@ -314,8 +317,6 @@ public class PortActivity extends BaseActivity implements LoaderManager.LoaderCa
 
 		float newTop = Math.max(mPhotoHeightPixels, scrollY);
 		mHeaderBox.setTranslationY(newTop);
-		//        mAddScheduleButton.setTranslationY(newTop + mHeaderHeightPixels
-		//                - mAddScheduleButtonHeightPixels / 2);
 
 		float gapFillProgress = 1;
 		if (mPhotoHeightPixels != 0) {
@@ -326,20 +327,16 @@ public class PortActivity extends BaseActivity implements LoaderManager.LoaderCa
 		mPhotoViewContainer.setTranslationY(scrollY * 0.5f);
 	}
 
-	private static class RetrieveCostsAsyncTask extends AsyncTask<Void, Void, Void> {
+	private class RetrieveCostsAsyncTask extends AsyncTask<Void, Void, Void> {
 
 		final private Context mContext;
 		final private RetrievePortCostsRequestHelper mRequestHelper;
-		final private TextView mCostsTextView;
 
 		private Exception mException;
 
-		public RetrieveCostsAsyncTask(final Context context, RetrievePortCostsRequestHelper requestHelper,
-				TextView costsTextView) {
+		public RetrieveCostsAsyncTask(final Context context, RetrievePortCostsRequestHelper requestHelper) {
 			mContext = context;
 			mRequestHelper = requestHelper;
-
-			mCostsTextView = costsTextView;
 		}
 
 		@Override
@@ -357,7 +354,24 @@ public class PortActivity extends BaseActivity implements LoaderManager.LoaderCa
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
 
-			// TODO: set text
+			mCostsCalculatorProgressBar.setVisibility(View.GONE);
+			mCostsCalculatorDescriptionTextView.setVisibility(View.VISIBLE);
+
+			if (mException == null) {
+				mCostsCalculatorDescriptionTextView.setText("Yacht costs (withouth additional features):");
+				mCostsCalculatorValueTextView.setText(mRequestHelper.getRetrievedCost() + " "
+						+ mRequestHelper.getRetrievedCurrency());
+				mCostsCalculatorValueTextView.setVisibility(View.VISIBLE);
+			} else if (mException instanceof NoSpotException) {
+				mCostsCalculatorDescriptionTextView.setText("There are no spots for your yacht (is too big or too small).");
+				mCostsCalculatorValueTextView.setVisibility(View.GONE);
+			} else if (mException instanceof NoYachtException) {
+				mCostsCalculatorDescriptionTextView.setText("You have to insert yach parameters first.");
+				mCostsCalculatorValueTextView.setVisibility(View.GONE);
+			} else {
+				mCostsCalculatorDescriptionTextView.setText("An error has occured while calculating costs.");
+				mCostsCalculatorValueTextView.setVisibility(View.GONE);
+			}
 		}
 	}
 }

@@ -246,6 +246,40 @@
                                 android:clickable="true"
                                 android:focusable="true"
                                 android:text="Costs calculator" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="10dp"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:id="@+id/costs_calculator_description_text_view"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:textColor="@color/body_text_1"
+                                    android:textSize="@dimen/text_size_medium"
+                                    android:visibility="gone" />
+
+                                <TextView
+                                    android:id="@+id/costs_calculator_value_text_view"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_marginLeft="6dp"
+                                    android:layout_weight="3"
+                                    android:gravity="right"
+                                    android:textColor="@color/body_text_2"
+                                    android:textSize="@dimen/text_size_medium"
+                                    android:visibility="gone" />
+
+                                <ProgressBar
+                                    android:id="@+id/costs_calculator_progress_bar"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:indeterminate="true" />
+                            </LinearLayout>
                         </LinearLayout>
 
                         <LinearLayout
