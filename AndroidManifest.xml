@@ -81,10 +81,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.AlertActivity"
-            android:label="@string/title_activity_alert" >
-        </activity>
-        <activity
             android:name=".ui.MapActivity"
             android:label="@string/title_activity_map" >
         </activity>
@@ -215,7 +211,7 @@
         </activity>
 
         <service
-            android:name="put.sailhero.service.AlertIntentService"
+            android:name=".service.AlertIntentService"
             android:exported="false" >
         </service>
     </application>
