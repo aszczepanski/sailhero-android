@@ -10,7 +10,10 @@ import put.sailhero.sync.RetrieveMessagesRequestHelper;
 import put.sailhero.sync.SendMessageRequestHelper;
 import put.sailhero.util.SyncUtils;
 import android.app.ListFragment;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,8 +26,12 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+
 public class MessageActivity extends BaseActivity implements SailHeroListFragment.Listener,
 		SailHeroListFragment.ScrollListener {
+
+	public final static String MESSAGE_SYNC_MESSAGES = "message";
 
 	private MessagesAdapter mMessagesAdapter;
 
@@ -37,6 +44,11 @@ public class MessageActivity extends BaseActivity implements SailHeroListFragmen
 	private Button mSendButton;
 
 	private ProgressBar mLoadMoreProgressBar;
+
+	private BroadcastReceiver mGcmReceiver;
+
+	boolean isFetchingOldActive = false;
+	boolean isFetchingNewestActive = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -94,14 +106,79 @@ public class MessageActivity extends BaseActivity implements SailHeroListFragmen
 				task.execute();
 			}
 		});
+
+		IntentFilter filter = new IntentFilter();
+		filter.addAction("com.google.android.c2dm.intent.RECEIVE");
+
+		mGcmReceiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				Log.d(TAG, "gcm programatically received");
+				Toast.makeText(MessageActivity.this, "gcm received", Toast.LENGTH_SHORT).show();
+
+				Bundle extras = intent.getExtras();
+				GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(MessageActivity.this);
+
+				String messageType = gcm.getMessageType(intent);
+
+				Log.e(TAG, messageType);
+
+				if (!extras.isEmpty()) {
+					if (GoogleCloudMessaging.MESSAGE_TYPE_SEND_ERROR.equals(messageType)) {
+						Log.e(TAG, "Send error: " + extras.toString());
+					} else if (GoogleCloudMessaging.MESSAGE_TYPE_DELETED.equals(messageType)) {
+						Log.e(TAG, "Deleted messages on server: " + extras.toString());
+					} else if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
+						String message = extras.getString("message");
+						Log.i(TAG, "message: " + message);
+
+						if (message != null && message.equals(MESSAGE_SYNC_MESSAGES)) {
+							fetchNewestMessages();
+						}
+					}
+				}
+			}
+		};
+
+		registerReceiver(mGcmReceiver, filter);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		unregisterReceiver(mGcmReceiver);
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
 	}
 
 	private void fetchOld() {
+		synchronized (this) {
+			if (isFetchingOldActive) {
+				return;
+			} else {
+				isFetchingOldActive = true;
+			}
+		}
 		Integer limit = 2;
 		Integer since = mPreviousMessageId;
 		if (since == null) {
 			if (!mMessagesList.isEmpty()) {
 				since = mMessagesList.getLast().getId();
+			}
+		}
+		synchronized (this) {
+			if (since == null && isFetchingNewestActive) {
+				isFetchingOldActive = false;
+				return;
 			}
 		}
 		String order = RetrieveMessagesRequestHelper.ORDER_DESC;
@@ -115,11 +192,24 @@ public class MessageActivity extends BaseActivity implements SailHeroListFragmen
 	}
 
 	private void fetchNewestMessages() {
+		synchronized (this) {
+			if (isFetchingNewestActive) {
+				return;
+			} else {
+				isFetchingNewestActive = true;
+			}
+		}
 		Integer limit = 2;
 		Integer since = mNextMessageId;
 		if (since == null) {
 			if (!mMessagesList.isEmpty()) {
 				since = mMessagesList.getFirst().getId();
+			}
+		}
+		synchronized (this) {
+			if (since == null && isFetchingOldActive) {
+				isFetchingNewestActive = false;
+				return;
 			}
 		}
 		String order = RetrieveMessagesRequestHelper.ORDER_ASC;
@@ -228,6 +318,10 @@ public class MessageActivity extends BaseActivity implements SailHeroListFragmen
 					mMessagesAdapter.updateItems(mMessagesList);
 
 					mPreviousMessageId = mRequestHelper.getRetrievedNextMessageId();
+
+					synchronized (MessageActivity.this) {
+						isFetchingOldActive = false;
+					}
 				} else {
 					for (Message msg : mRequestHelper.getRetrievedMessages()) {
 						if (mMessagesList.isEmpty() || !msg.getId().equals(mMessagesList.getFirst().getId())) {
@@ -238,6 +332,10 @@ public class MessageActivity extends BaseActivity implements SailHeroListFragmen
 					mMessagesAdapter.updateItems(mMessagesList);
 
 					mNextMessageId = mRequestHelper.getRetrievedNextMessageId();
+
+					synchronized (MessageActivity.this) {
+						isFetchingNewestActive = false;
+					}
 
 					if (mNextMessageId != null) {
 						fetchNewestMessages();
