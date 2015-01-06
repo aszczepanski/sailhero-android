@@ -217,6 +217,9 @@ public class MessageActivity extends BaseActivity implements SailHeroListFragmen
 		Log.e(TAG, limit + ", " + since + ", " + order);
 
 		if (since == null) {
+			synchronized (MessageActivity.this) {
+				isFetchingNewestActive = false;
+			}
 			fetchOld();
 		} else {
 			RetrieveMessagesRequestHelper requestHelper = new RetrieveMessagesRequestHelper(MessageActivity.this,
@@ -251,7 +254,6 @@ public class MessageActivity extends BaseActivity implements SailHeroListFragmen
 
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
-		Log.d(TAG, "scrollState=" + scrollState);
 		mScrollState = scrollState;
 
 		if (mScrollState == OnScrollListener.SCROLL_STATE_IDLE
@@ -265,8 +267,6 @@ public class MessageActivity extends BaseActivity implements SailHeroListFragmen
 
 	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-		Log.d(TAG, "firstVisibleItem=" + firstVisibleItem + ", visibleItemCount=" + visibleItemCount
-				+ ", totalItemCount=" + totalItemCount);
 		mFirstVisibleItem = firstVisibleItem;
 		mVisibleItemCount = visibleItemCount;
 		mTotalItemCount = totalItemCount;
