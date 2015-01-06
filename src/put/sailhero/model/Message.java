@@ -1,12 +1,19 @@
 package put.sailhero.model;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+
 import org.json.simple.JSONObject;
 
 public class Message {
 
 	private Integer mId;
 	private String mBody;
-	// TODO: created at
+
+	private Date mCreatedAt;
 	// TODO: user data
 	private Double mLatitude;
 	private Double mLongitude;
@@ -16,6 +23,16 @@ public class Message {
 
 	public Message(JSONObject messageObject) {
 		this();
+
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.UK);
+		formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+		String date = (String) messageObject.get("created_at"); // "2011-03-10T11:54:30.207Z";
+		try {
+			setCreatedAt(formatter.parse(date.substring(0, 24)));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		setId(Integer.valueOf(messageObject.get("id").toString()));
 		setBody((String) messageObject.get("body"));
@@ -37,6 +54,14 @@ public class Message {
 
 	public void setBody(String body) {
 		mBody = body;
+	}
+
+	public Date getCreatedAt() {
+		return mCreatedAt;
+	}
+
+	public void setCreatedAt(Date createdAt) {
+		mCreatedAt = createdAt;
 	}
 
 	public Double getLatitude() {

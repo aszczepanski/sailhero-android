@@ -7,10 +7,14 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
+import android.widget.ListView;
 
 public class SailHeroListFragment extends ListFragment {
 	private String mContentDescription;
 	private View mRootView;
+	private ListView mListView;
 
 	public interface Listener {
 		public void onFragmentViewCreated(ListFragment fragment);
@@ -18,6 +22,12 @@ public class SailHeroListFragment extends ListFragment {
 		public void onFragmentAttached(SailHeroListFragment fragment);
 
 		public void onFragmentDetached(SailHeroListFragment fragment);
+	}
+
+	public interface ScrollListener {
+		public void onScrollStateChanged(AbsListView view, int scrollState);
+
+		public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount);
 	}
 
 	public SailHeroListFragment() {
@@ -29,6 +39,24 @@ public class SailHeroListFragment extends ListFragment {
 		if (mContentDescription != null) {
 			mRootView.setContentDescription(mContentDescription);
 		}
+
+		mListView = (ListView) mRootView.findViewById(android.R.id.list);
+		mListView.setOnScrollListener(new OnScrollListener() {
+			@Override
+			public void onScrollStateChanged(AbsListView view, int scrollState) {
+				if (getActivity() instanceof ScrollListener) {
+					((ScrollListener) getActivity()).onScrollStateChanged(view, scrollState);
+				}
+			}
+
+			@Override
+			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+				if (getActivity() instanceof ScrollListener) {
+					((ScrollListener) getActivity()).onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
+				}
+			}
+		});
+
 		return mRootView;
 	}
 

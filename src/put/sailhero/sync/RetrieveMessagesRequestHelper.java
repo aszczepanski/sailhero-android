@@ -42,6 +42,10 @@ public class RetrieveMessagesRequestHelper extends RequestHelper {
 		mSentOrder = order;
 	}
 
+	public String getSentOrder() {
+		return mSentOrder;
+	}
+	
 	public LinkedList<Message> getRetrievedMessages() {
 		return mRetrievedMessages;
 	}

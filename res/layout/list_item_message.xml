@@ -18,20 +18,22 @@
         android:paddingRight="8dp" >
 
         <TextView
-            android:id="@+id/slot_message_author"
+            android:id="@+id/slot_message_body"
             android:layout_width="wrap_content"
             android:layout_height="34dp"
             android:ellipsize="end"
             android:gravity="bottom"
             android:maxLines="1"
-            android:text="Placeholder message author"
+            android:text="Placeholder message body"
+            android:textColor="@color/body_text_1"
             android:textSize="@dimen/text_size_large" />
 
         <TextView
-            android:id="@+id/slot_message_body"
+            android:id="@+id/slot_message_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Placeholder message body"
+            android:text="Placeholder message date"
+            android:textColor="@color/body_text_2"
             android:textSize="@dimen/text_size_small" />
     </LinearLayout>
 

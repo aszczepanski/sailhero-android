@@ -1,14 +1,16 @@
 package put.sailhero.ui;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import put.sailhero.Config;
 import put.sailhero.R;
 import put.sailhero.model.Message;
 import android.content.Context;
 import android.database.DataSetObserver;
-import android.graphics.Typeface;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -93,15 +95,13 @@ public class MessagesAdapter implements ListAdapter {
 		final Message message = mMessageList.get(position);
 
 		LinearLayout mainBoxView = (LinearLayout) convertView.findViewById(R.id.main_box);
-		TextView messageAuthorTextView = (TextView) convertView.findViewById(R.id.slot_message_author);
 		TextView messageBodyTextView = (TextView) convertView.findViewById(R.id.slot_message_body);
-
-		messageAuthorTextView.setText("author");
-		messageAuthorTextView.setTextColor(mContext.getResources().getColor(R.color.body_text_1));
-		messageAuthorTextView.setTypeface(Typeface.SANS_SERIF, Typeface.NORMAL);
+		TextView messageDateTextView = (TextView) convertView.findViewById(R.id.slot_message_date);
 
 		messageBodyTextView.setText(message.getBody());
-		messageBodyTextView.setTextColor(mContext.getResources().getColor(R.color.body_text_2));
+
+		SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss", Locale.UK);
+		messageDateTextView.setText(formatter.format(message.getCreatedAt()));
 
 		return convertView;
 	}

@@ -25,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Refresh old" />
-            
+
             <Button
                 android:id="@+id/refresh_till_now_button"
                 android:layout_width="0dp"
@@ -35,11 +35,25 @@
         </LinearLayout>
 
         <FrameLayout
-            android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            tools:context="put.sailhero.ui.MessageActivity" />
+            android:layout_weight="1" >
+
+            <ProgressBar
+                android:id="@+id/load_more_progress_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:gravity="center"
+                android:indeterminate="true"
+                android:visibility="gone" />
+
+            <FrameLayout
+                android:id="@+id/container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context="put.sailhero.ui.MessageActivity" />
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
