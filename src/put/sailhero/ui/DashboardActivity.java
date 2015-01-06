@@ -6,6 +6,7 @@ import put.sailhero.sync.CreateAlertRequestHelper;
 import put.sailhero.sync.RequestHelper;
 import put.sailhero.sync.RequestHelperAsyncTask;
 import put.sailhero.util.AccountUtils;
+import put.sailhero.util.StringUtils;
 import put.sailhero.util.SyncUtils;
 import put.sailhero.util.UnitUtils;
 import android.accounts.Account;
@@ -51,8 +52,6 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 	private Button mClosedAreaButton;
 	private Button mYachtFailureButton;
 
-	private String[] alertTypesArray;
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -82,7 +81,7 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 		mBadWeatherConditionsButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				submitAlert("BAD_WEATHER_CONDITIONS");
+				submitAlert(StringUtils.ALERT_TYPE_BAD_WEATHER_CONDITIONS);
 			}
 		});
 
@@ -91,7 +90,7 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 		mClosedAreaButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				submitAlert("CLOSED_AREA");
+				submitAlert(StringUtils.ALERT_TYPE_CLOSED_AREA);
 			}
 		});
 
@@ -100,7 +99,7 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 		mYachtFailureButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				submitAlert("YACHT_FAILURE");
+				submitAlert(StringUtils.ALERT_TYPE_YACHT_FAILURE);
 			}
 		});
 
@@ -110,8 +109,6 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 		if (account != null) {
 			Toast.makeText(getApplicationContext(), "Using: " + account.name, Toast.LENGTH_SHORT).show();
 		}
-
-		alertTypesArray = getResources().getStringArray(R.array.alert_names);
 	}
 
 	private void submitAlert(String alertType) {
@@ -132,18 +129,6 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 					}
 				});
 		createAlertTask.execute();
-	}
-
-	private String getStringForAlertType(String alertType) {
-		if (alertType.equals("CLOSED_AREA")) {
-			return "Closed area";
-		} else if (alertType.equals("BAD_WEATHER_CONDITIONS")) {
-			return "Bad weather conditions";
-		} else if (alertType.equals("YACHT_FAILURE")) {
-			return "Yacht failure";
-		} else {
-			return "N/A";
-		}
 	}
 
 	@Override
@@ -175,7 +160,7 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 		if (alert != null) {
 			Integer distanceToAlert = UnitUtils.roundDistanceTo25(currentLocation.distanceTo(alert.getLocation()));
 
-			mAlertTextView.setText(getStringForAlertType(alert.getAlertType()));
+			mAlertTextView.setText(StringUtils.getStringForAlertType(DashboardActivity.this, alert.getAlertType()));
 			mAlertDistanceTextView.setText(distanceToAlert.toString());
 			mAlertDistanceUnitTextView.setVisibility(View.VISIBLE);
 

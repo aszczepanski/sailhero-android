@@ -16,7 +16,6 @@
     <string name="title_activity_register_user">Register user</string>
     <string name="title_activity_preference">PreferenceActivity</string>
     <string name="title_activity_yacht">YachtActivity</string>
-    <string name="title_activity_alert">AlertActivity</string>
     <string name="title_activity_map">Map</string>
     <string name="title_activity_port">PortActivity</string>
     <string name="title_activity_people">People</string>
@@ -27,11 +26,10 @@
     <string name="title_activity_search_poi">Search POI</string>
     <string name="title_activity_message">Messages</string>
 
-    <string-array name="alert_names">
-        <item>Bad weather conditions</item>
-        <item>Closed area</item>
-        <item>Yacht failure</item>
-    </string-array>
+    <!-- alert names -->
+    <string name="alert_name_bad_weather_conditions">Bad weather conditions</string>
+    <string name="alert_name_closed_area">Closed area</string>
+    <string name="alert_name_yacht_failure">Yacht failure</string>
 
     <!-- navdrawer items -->
     <string name="navdrawer_item_dashboard">Dashboard</string>
