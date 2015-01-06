@@ -12,6 +12,7 @@ import put.sailhero.model.Route;
 import put.sailhero.model.User;
 import put.sailhero.provider.SailHeroContract;
 import put.sailhero.util.PrefUtils;
+import put.sailhero.util.StringUtils;
 import android.app.Activity;
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
@@ -39,9 +40,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.ui.IconGenerator;
 
-public class MapFragment extends com.google.android.gms.maps.MapFragment implements
-		GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapLoadedCallback,
+public class MapFragment extends com.google.android.gms.maps.MapFragment implements GoogleMap.OnMarkerClickListener,
 		LoaderCallbacks<Cursor> {
 
 	private GoogleMap mMap;
@@ -50,6 +51,8 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 	private HashMap<Marker, Integer> markerAlertIdMap;
 	private HashMap<Marker, Integer> markerFriendshipIdMap;
 	private HashMap<Polyline, Integer> polylineRouteIdMap;
+
+	private Marker mLastClickedMarker;
 
 	public static MapFragment newInstance() {
 		return new MapFragment();
@@ -106,8 +109,6 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 		mMap = getMap();
 
 		mMap.setOnMarkerClickListener(this);
-		mMap.setOnInfoWindowClickListener(this);
-		mMap.setOnMapLoadedCallback(this);
 		mMap.setMyLocationEnabled(true);
 
 		Location lastKnownLocation = PrefUtils.getLastKnownLocation(getActivity());
@@ -129,23 +130,22 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 	}
 
 	@Override
-	public void onMapLoaded() {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
 	public boolean onMarkerClick(Marker marker) {
-		return false;
-	}
+		if (mLastClickedMarker != null && mLastClickedMarker.equals(marker)) {
+			mLastClickedMarker = null;
 
-	@Override
-	public void onInfoWindowClick(Marker marker) {
-		Integer portId = markerPortIdMap.get(marker);
+			Integer portId = markerPortIdMap.get(marker);
 
-		if (portId != null) {
-			Intent intent = new Intent(getActivity(), PortActivity.class);
-			intent.putExtra("port_id", portId);
-			startActivity(intent);
+			if (portId != null) {
+				Intent intent = new Intent(getActivity(), PortActivity.class);
+				intent.putExtra("port_id", portId);
+				startActivity(intent);
+			}
+
+			return true;
+		} else {
+			mLastClickedMarker = marker;
+			return false;
 		}
 	}
 
@@ -228,6 +228,9 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 			}
 		}
 
+		IconGenerator iconFactory = new IconGenerator(getActivity());
+		iconFactory.setStyle(IconGenerator.STYLE_RED);
+
 		if (cursor != null && cursor.getCount() > 0) {
 			cursor.moveToPosition(-1);
 
@@ -240,7 +243,13 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 				alert.setAdditionalInfo(cursor.getString(AlertQuery.ALERT_ADDITIONAL_INFO));
 
 				LatLng pos = new LatLng(alert.getLocation().getLatitude(), alert.getLocation().getLongitude());
-				Marker marker = mMap.addMarker(new MarkerOptions().position(pos).title(alert.getAlertType()));
+
+				MarkerOptions markerOptions = new MarkerOptions().icon(
+						BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(StringUtils.getStringForAlertType(
+								getActivity(), alert.getAlertType()))))
+						.position(pos)
+						.anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
+				Marker marker = mMap.addMarker(markerOptions);
 
 				markerAlertIdMap.put(marker, alert.getId());
 			}
@@ -256,6 +265,9 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 			}
 		}
 
+		IconGenerator iconFactory = new IconGenerator(getActivity());
+		iconFactory.setStyle(IconGenerator.STYLE_PURPLE);
+
 		if (cursor != null && cursor.getCount() > 0) {
 			cursor.moveToPosition(-1);
 
@@ -267,10 +279,12 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 				port.setLongitude(cursor.getDouble(PortQuery.PORT_LONGITUDE));
 
 				LatLng pos = new LatLng(port.getLocation().getLatitude(), port.getLocation().getLongitude());
-				Marker marker = mMap.addMarker(new MarkerOptions().position(pos)
-						.title(port.getName())
-						.snippet("click to see the details")
-						.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+
+				MarkerOptions markerOptions = new MarkerOptions().icon(
+						BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(port.getName())))
+						.position(pos)
+						.anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
+				Marker marker = mMap.addMarker(markerOptions);
 
 				markerPortIdMap.put(marker, port.getId());
 			}
@@ -289,6 +303,9 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 
 		if (cursor != null && cursor.getCount() > 0) {
 			cursor.moveToPosition(-1);
+
+			IconGenerator iconFactory = new IconGenerator(getActivity());
+			iconFactory.setStyle(IconGenerator.STYLE_GREEN);
 
 			while (cursor.moveToNext()) {
 				Log.d(Config.TAG, "friendship element");
@@ -310,10 +327,12 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 
 					LatLng pos = new LatLng(friendLatitude, friendLongitude);
 
-					Marker marker = mMap.addMarker(new MarkerOptions().position(pos)
-							.title(friendship.getFriend().getName() + " " + friendship.getFriend().getSurname())
-							.snippet("last known position")
-							.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+					MarkerOptions markerOptions = new MarkerOptions().icon(
+							BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(friend.getName() + " "
+									+ friend.getSurname())))
+							.position(pos)
+							.anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
+					Marker marker = mMap.addMarker(markerOptions);
 
 					markerFriendshipIdMap.put(marker, friendship.getId());
 				}
