@@ -6,6 +6,7 @@ import put.sailhero.sync.CreateAlertRequestHelper;
 import put.sailhero.sync.RequestHelper;
 import put.sailhero.sync.RequestHelperAsyncTask;
 import put.sailhero.util.AccountUtils;
+import put.sailhero.util.PrefUtils;
 import put.sailhero.util.StringUtils;
 import put.sailhero.util.SyncUtils;
 import put.sailhero.util.UnitUtils;
@@ -132,18 +133,18 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 	}
 
 	@Override
-	protected void onClosestAlertUpdate(Location currentLocation, Alert alert) {
-		if (currentLocation != null) {
-			UnitUtils.DegMinSec latitudeDegMinSec = UnitUtils.decimalToDegMinSec(currentLocation.getLatitude());
+	protected void onLastKnownLocationUpdate(Location location) {
+		if (location != null) {
+			UnitUtils.DegMinSec latitudeDegMinSec = UnitUtils.decimalToDegMinSec(location.getLatitude());
 			mLatitudeTextView.setText(String.format("%02d\u00B0%02d\u2032%02d\u2033", latitudeDegMinSec.getDegrees(),
 					latitudeDegMinSec.getMinutes(), latitudeDegMinSec.getSeconds()));
 
-			UnitUtils.DegMinSec longitudeDegMinSec = UnitUtils.decimalToDegMinSec(currentLocation.getLongitude());
+			UnitUtils.DegMinSec longitudeDegMinSec = UnitUtils.decimalToDegMinSec(location.getLongitude());
 			mLongitudeTextView.setText(String.format("%02d\u00B0%02d\u2032%02d\u2033", longitudeDegMinSec.getDegrees(),
 					longitudeDegMinSec.getMinutes(), longitudeDegMinSec.getSeconds()));
 
-			if (currentLocation.hasSpeed()) {
-				mSpeedTextView.setText(UnitUtils.roundSpeedToHalf(currentLocation.getSpeed()).toString());
+			if (location.hasSpeed()) {
+				mSpeedTextView.setText(UnitUtils.roundSpeedToHalf(location.getSpeed()).toString());
 				mSpeedUnitTextView.setVisibility(View.VISIBLE);
 
 			} else {
@@ -156,20 +157,30 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 			mLatitudeTextView.setText("N/A");
 			mLongitudeTextView.setText("N/A");
 		}
+	}
+
+	@Override
+	protected void onClosestAlertUpdate(Alert alert) {
+		Location currentLocation = PrefUtils.getLastKnownLocation(DashboardActivity.this);
 
 		if (alert != null) {
-			Integer distanceToAlert = UnitUtils.roundDistanceTo25(currentLocation.distanceTo(alert.getLocation()));
-
 			mAlertTextView.setText(StringUtils.getStringForAlertType(DashboardActivity.this, alert.getAlertType()));
-			mAlertDistanceTextView.setText(distanceToAlert.toString());
-			mAlertDistanceUnitTextView.setVisibility(View.VISIBLE);
 
-			if (currentLocation.hasBearing() && distanceToAlert > 0) {
-				float currentBearing = currentLocation.getBearing();
-				float bearingToAlert = currentLocation.bearingTo(alert.getLocation());
+			if (currentLocation != null) {
+				Integer distanceToAlert = UnitUtils.roundDistanceTo25(currentLocation.distanceTo(alert.getLocation()));
 
-				mArrowImageView.setRotation(bearingToAlert - currentBearing);
-				mArrowImageView.setVisibility(View.VISIBLE);
+				mAlertDistanceTextView.setText(distanceToAlert.toString());
+				mAlertDistanceUnitTextView.setVisibility(View.VISIBLE);
+
+				if (currentLocation.hasBearing() && distanceToAlert > 0) {
+					float currentBearing = currentLocation.getBearing();
+					float bearingToAlert = currentLocation.bearingTo(alert.getLocation());
+
+					mArrowImageView.setRotation(bearingToAlert - currentBearing);
+					mArrowImageView.setVisibility(View.VISIBLE);
+				} else {
+					mArrowImageView.setVisibility(View.INVISIBLE);
+				}
 			} else {
 				mArrowImageView.setVisibility(View.INVISIBLE);
 			}

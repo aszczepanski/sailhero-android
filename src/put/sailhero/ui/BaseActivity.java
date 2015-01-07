@@ -20,6 +20,7 @@ import put.sailhero.util.AccountUtils;
 import put.sailhero.util.PrefUtils;
 import put.sailhero.util.StringUtils;
 import put.sailhero.util.SyncUtils;
+import put.sailhero.util.UnitUtils;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.OnAccountsUpdateListener;
@@ -221,13 +222,14 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 		}
 	};
 
-	protected void onClosestAlertToRespondUpdate(Location currentLocation, Alert alertToRespond) {
-		if (mAlertBarToolbar != null) {
+	protected void onClosestAlertToRespondUpdate(Alert alertToRespond) {
+		Location lastKnownLocation = PrefUtils.getLastKnownLocation(BaseActivity.this);
+		if (lastKnownLocation != null && mAlertBarToolbar != null) {
 			if (alertToRespond != null
-					&& currentLocation.distanceTo(alertToRespond.getLocation()) < PrefUtils.getAlertRadius(BaseActivity.this)) {
+					&& lastKnownLocation.distanceTo(alertToRespond.getLocation()) < PrefUtils.getAlertRadius(BaseActivity.this)) {
 				mAlertBarTypeTextView.setText(StringUtils.getStringForAlertType(BaseActivity.this,
 						alertToRespond.getAlertType()));
-				mAlertBarDistanceTextView.setText(Math.round(currentLocation.distanceTo(alertToRespond.getLocation()))
+				mAlertBarDistanceTextView.setText(UnitUtils.roundDistanceTo25(lastKnownLocation.distanceTo(alertToRespond.getLocation()))
 						+ " metres");
 				mAlertBarToolbar.setVisibility(View.VISIBLE);
 			} else {
@@ -236,7 +238,10 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 		}
 	}
 
-	protected void onClosestAlertUpdate(Location currentLocation, Alert alert) {
+	protected void onClosestAlertUpdate(Alert alert) {
+	}
+
+	protected void onLastKnownLocationUpdate(Location location) {
 	}
 
 	protected void onUserProfileReceived() {
@@ -306,8 +311,8 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 				}
 			}
 
-			onClosestAlertUpdate(PrefUtils.getLastKnownLocation(BaseActivity.this),
-					PrefUtils.getClosestAlert(BaseActivity.this));
+			onLastKnownLocationUpdate(PrefUtils.getLastKnownLocation(BaseActivity.this));
+			onClosestAlertUpdate(PrefUtils.getClosestAlert(BaseActivity.this));
 		}
 	}
 
@@ -717,13 +722,12 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		if (key.equals(PrefUtils.PREF_CLOSEST_ALERT)) {
-			onClosestAlertUpdate(PrefUtils.getLastKnownLocation(BaseActivity.this),
-					PrefUtils.getClosestAlert(BaseActivity.this));
+			onClosestAlertUpdate(PrefUtils.getClosestAlert(BaseActivity.this));
 		} else if (key.equals(PrefUtils.PREF_CLOSEST_ALERT_TO_RESPOND)) {
-			onClosestAlertToRespondUpdate(PrefUtils.getLastKnownLocation(BaseActivity.this),
-					PrefUtils.getClosestAlertToRespond(BaseActivity.this));
+			onClosestAlertToRespondUpdate(PrefUtils.getClosestAlertToRespond(BaseActivity.this));
+		} else if (key.equals(PrefUtils.PREF_LAST_KNOWN_LOCATION)) {
+			onLastKnownLocationUpdate(PrefUtils.getLastKnownLocation(BaseActivity.this));
 		} else if (key.equals(PrefUtils.PREF_USER)) {
-
 			setupAccountBox();
 		}
 	}
