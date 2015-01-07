@@ -11,14 +11,9 @@
             android:max="1000"
             android:summary=""
             android:title="Alert radius"
-            app:interval="5"
+            app:interval="25"
             app:min="50"
             app:unitsRight="m" />
-
-        <CheckBoxPreference
-            android:key="pref_wants_to_share_location"
-            android:summary="Share location with friends"
-            android:title="Share location" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="user_settings_preference_category"
