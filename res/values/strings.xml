@@ -6,6 +6,7 @@
 
     <!-- menu items -->
     <string name="action_settings">Settings</string>
+    <string name="action_finish">Finish</string>
     <string name="action_alerts">Alerts</string>
     <string name="action_search_user">Search user</string>
     <string name="action_search_poi">Search POI</string>
