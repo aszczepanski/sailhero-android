@@ -6,14 +6,10 @@ import put.sailhero.Config;
 import put.sailhero.R;
 import put.sailhero.gcm.GcmRegistrationAsyncTask;
 import put.sailhero.model.Alert;
-import put.sailhero.model.Region;
 import put.sailhero.model.User;
 import put.sailhero.provider.SailHeroContract;
 import put.sailhero.service.AlertService;
 import put.sailhero.service.AlertService.LocalBinder;
-import put.sailhero.sync.RequestHelper;
-import put.sailhero.sync.RequestHelperAsyncTask;
-import put.sailhero.sync.RetrieveUserRequestHelper;
 import put.sailhero.util.AccountUtils;
 import put.sailhero.util.PrefUtils;
 import put.sailhero.util.StringUtils;
@@ -50,7 +46,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -217,25 +212,6 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 	protected void onLastKnownLocationUpdate(Location location) {
 	}
 
-	protected void onUserProfileReceived() {
-		setupAccountBox();
-
-		Region selectedRegion = PrefUtils.getRegion(BaseActivity.this);
-		if (selectedRegion == null) {
-			// TODO: ask user to select a region
-		} else {
-			Toast.makeText(BaseActivity.this, "Using region: " + selectedRegion.getFullName(), Toast.LENGTH_SHORT)
-					.show();
-		}
-
-		// possible duplication, but who cares if server just overwrites it
-		String gcmRegistrationId = PrefUtils.getGcmRegistrationId(BaseActivity.this);
-		if (gcmRegistrationId == null) {
-			GcmRegistrationAsyncTask gcmRegistrationTask = new GcmRegistrationAsyncTask(BaseActivity.this);
-			gcmRegistrationTask.execute();
-		}
-	}
-
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -247,20 +223,6 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 		mSyncStatusObserver.onStatusChanged(0);
 		final int mask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING | ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE;
 		mSyncObserverHandle = ContentResolver.addStatusChangeListener(mask, mSyncStatusObserver);
-
-		User user = PrefUtils.getUser(BaseActivity.this);
-		if (user == null) {
-			Toast.makeText(BaseActivity.this, "user is null", Toast.LENGTH_SHORT).show();
-			RequestHelperAsyncTask getUserProfileTask = new RequestHelperAsyncTask(BaseActivity.this,
-					new RetrieveUserRequestHelper(BaseActivity.this),
-					new RequestHelperAsyncTask.AsyncRequestListener() {
-						@Override
-						public void onSuccess(RequestHelper requestHelper) {
-							onUserProfileReceived();
-						}
-					});
-			getUserProfileTask.execute();
-		}
 
 		String gcmRegistrationId = PrefUtils.getGcmRegistrationId(BaseActivity.this);
 		if (gcmRegistrationId == null) {

@@ -30,7 +30,7 @@ import android.os.Handler;
 public class ThrottledContentObserver extends ContentObserver {
     Handler mMyHandler;
     Runnable mScheduledRun = null;
-    private static final int THROTTLE_DELAY = 1000;
+    private static final int THROTTLE_DELAY = 500;
     Callbacks mCallback = null;
 
     public interface Callbacks {

@@ -6,6 +6,7 @@ import put.sailhero.sync.LogInRequestHelper;
 import put.sailhero.sync.RequestHelper;
 import put.sailhero.sync.RequestHelperAsyncTask;
 import put.sailhero.util.AccountUtils;
+import put.sailhero.util.PrefUtils;
 import put.sailhero.util.SyncUtils;
 import android.accounts.Account;
 import android.app.Activity;
@@ -115,6 +116,8 @@ public class LoginActivity extends Activity {
 		mContext.getContentResolver().delete(SailHeroContract.Alert.CONTENT_URI, null, null);
 		mContext.getContentResolver().delete(SailHeroContract.Port.CONTENT_URI, null, null);
 		mContext.getContentResolver().delete(SailHeroContract.Route.CONTENT_URI, null, null);
+
+		PrefUtils.clear(mContext);
 
 		SyncUtils.syncAll(mContext);
 
