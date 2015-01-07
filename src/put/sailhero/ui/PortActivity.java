@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -58,12 +59,13 @@ public class PortActivity extends BaseActivity implements LoaderManager.LoaderCa
 
 	private TextView mNameTextView;
 	private TextView mCityTextView;
-	private TextView mStreetTextView;
-	private TextView mWebsiteTextView;
-	private TextView mTelephoneTextView;
+	private TextView mStreetTextView;	
 	private TextView mAdditionalInfoTextView;
 	private TextView mSpotsTextView;
 	private TextView mDepthTextView;
+	
+	private Button mWebsiteTextView;
+	private Button mTelephoneTextView;
 
 	private TextView mCostsCalculatorDescriptionTextView;
 	private TextView mCostsCalculatorValueTextView;
@@ -113,12 +115,13 @@ public class PortActivity extends BaseActivity implements LoaderManager.LoaderCa
 
 		mNameTextView = (TextView) findViewById(R.id.name_text_view);
 		mCityTextView = (TextView) findViewById(R.id.city_text_view);
-		mStreetTextView = (TextView) findViewById(R.id.street_text_view);
-		mWebsiteTextView = (TextView) findViewById(R.id.website_text_view);
-		mTelephoneTextView = (TextView) findViewById(R.id.telephone_text_view);
+		mStreetTextView = (TextView) findViewById(R.id.street_text_view);		
 		mAdditionalInfoTextView = (TextView) findViewById(R.id.additional_info_text_view);
 		mSpotsTextView = (TextView) findViewById(R.id.spots_text_view);
 		mDepthTextView = (TextView) findViewById(R.id.depth_text_view);
+		
+		mWebsiteTextView = (Button) findViewById(R.id.website_text_view);
+		mTelephoneTextView = (Button) findViewById(R.id.telephone_text_view);
 
 		mCostsCalculatorDescriptionTextView = (TextView) findViewById(R.id.costs_calculator_description_text_view);
 		mCostsCalculatorValueTextView = (TextView) findViewById(R.id.costs_calculator_value_text_view);

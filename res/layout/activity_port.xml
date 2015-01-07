@@ -197,7 +197,7 @@
                                 android:layout_marginTop="14dp"
                                 android:orientation="horizontal" >
 
-                                <TextView
+                                <Button
                                     android:id="@+id/website_text_view"
                                     android:layout_width="match_parent"
                                     android:layout_height="30dp"
@@ -213,7 +213,7 @@
                                     android:textColor="@color/body_text_1"
                                     android:textSize="@dimen/text_size_medium" />
 
-                                <TextView
+                                <Button
                                     android:id="@+id/telephone_text_view"
                                     android:layout_width="match_parent"
                                     android:layout_height="30dp"

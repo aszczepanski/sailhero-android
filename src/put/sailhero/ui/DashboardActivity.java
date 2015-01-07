@@ -110,7 +110,7 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 		if (account != null) {
 			Toast.makeText(getApplicationContext(), "Using: " + account.name, Toast.LENGTH_SHORT).show();
 		}
-		
+
 		SyncUtils.syncRegions(this);
 	}
 
