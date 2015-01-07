@@ -4,17 +4,23 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import put.sailhero.Config;
 import put.sailhero.R;
+import put.sailhero.model.Alert;
 import put.sailhero.provider.SailHeroContract;
 import put.sailhero.util.PrefUtils;
+import put.sailhero.util.StringUtils;
 import put.sailhero.util.ThrottledContentObserver;
+import put.sailhero.util.UnitUtils;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -25,7 +31,7 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 
 public class AlertService extends Service implements GooglePlayServicesClient.ConnectionCallbacks,
-		GooglePlayServicesClient.OnConnectionFailedListener, LocationListener {
+		GooglePlayServicesClient.OnConnectionFailedListener, LocationListener, OnSharedPreferenceChangeListener {
 
 	public static final int ALERT_NOTIFICATION_ID = 1;
 
@@ -42,7 +48,7 @@ public class AlertService extends Service implements GooglePlayServicesClient.Co
 
 	private final IBinder mBinder = new LocalBinder();
 
-	private AtomicBoolean mIsServiceRunning;
+	AtomicBoolean mIsServiceRunning;
 
 	public class LocalBinder extends Binder {
 		public AlertService getService() {
@@ -66,6 +72,9 @@ public class AlertService extends Service implements GooglePlayServicesClient.Co
 		mNotificationBuilder.setSmallIcon(R.drawable.ic_launcher);
 		mNotificationBuilder.setContentTitle("SailHero is running");
 		mNotificationManager.notify(0x01, mNotificationBuilder.build());
+
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+		sp.registerOnSharedPreferenceChangeListener(this);
 
 		mLocationClient = new LocationClient(this, this, this);
 		mLocationRequest = LocationRequest.create();
@@ -121,6 +130,10 @@ public class AlertService extends Service implements GooglePlayServicesClient.Co
 
 	@Override
 	public void onLocationChanged(Location location) {
+		if (mIsServiceRunning.get() == false) {
+			return;
+		}
+
 		Log.d(Config.TAG, location.getLatitude() + " " + location.getLongitude());
 
 		PrefUtils.setLastKnownLocation(this, location);
@@ -129,10 +142,6 @@ public class AlertService extends Service implements GooglePlayServicesClient.Co
 	}
 
 	public void refreshAlertData(Location location) {
-		if (mIsServiceRunning.get() == false) {
-			return;
-		}
-
 		if (location == null) {
 			Log.e(Config.TAG, "new location is null");
 			return;
@@ -140,20 +149,6 @@ public class AlertService extends Service implements GooglePlayServicesClient.Co
 
 		Intent intent = new Intent(AlertService.this, AlertIntentService.class);
 		startService(intent);
-
-		// TODO: implement SharedPreferences.OnSharedPreferenceChangeListener
-
-		//		if (closestAlert != null && closestAlertDistance <= PrefUtils.getAlertRadius(this)) {
-		//			Log.w(Config.TAG, "building notification");
-		//
-		//			mNotificationBuilder.setContentText("You are " + Math.round(closestAlertDistance) + "m from "
-		//					+ closestAlert.getAlertType());
-		//
-		//			mNotificationManager.notify(ALERT_NOTIFICATION_ID, mNotificationBuilder.build());
-		//		} else {
-		//			mNotificationBuilder.setContentText("");
-		//			mNotificationManager.notify(ALERT_NOTIFICATION_ID, mNotificationBuilder.build());
-		//		}
 	}
 
 	@Override
@@ -169,4 +164,31 @@ public class AlertService extends Service implements GooglePlayServicesClient.Co
 	public void onDisconnected() {
 	}
 
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+		if (mIsServiceRunning.get() == false) {
+			return;
+		}
+
+		if (key.equals(PrefUtils.PREF_CLOSEST_ALERT)) {
+			Alert closestAlert = PrefUtils.getClosestAlert(this);
+			Location lastKnownLocation = PrefUtils.getLastKnownLocation(this);
+
+			if (closestAlert != null && lastKnownLocation != null) {
+				float distance = lastKnownLocation.distanceTo(closestAlert.getLocation());
+				Integer displayedDistanceToAlert = UnitUtils.roundDistanceTo25(distance);
+
+				String displayedAlertName = StringUtils.getStringForAlertType(this, closestAlert.getAlertType());
+				mNotificationBuilder.setContentText(displayedAlertName
+						+ " - "
+						+ getResources().getQuantityString(R.plurals.alert_distance_in_metres,
+								displayedDistanceToAlert, displayedDistanceToAlert));
+
+				mNotificationManager.notify(ALERT_NOTIFICATION_ID, mNotificationBuilder.build());
+			} else {
+				mNotificationBuilder.setContentText("");
+				mNotificationManager.notify(ALERT_NOTIFICATION_ID, mNotificationBuilder.build());
+			}
+		}
+	}
 }
