@@ -14,6 +14,7 @@ import put.sailhero.provider.SailHeroContract;
 import put.sailhero.util.PrefUtils;
 import put.sailhero.util.StringUtils;
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
@@ -48,7 +49,7 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 	private GoogleMap mMap;
 
 	private HashMap<Marker, Integer> mMarkerPortIdMap;
-	private HashMap<Marker, Integer> mMarkerAlertIdMap;
+	private HashMap<Marker, Alert> mMarkerAlertMap;
 	private HashMap<Marker, Integer> mMarkerFriendshipIdMap;
 	private HashMap<Polyline, Integer> mPolylineRouteIdMap;
 
@@ -135,11 +136,17 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 			mLastClickedMarker = null;
 
 			Integer portId = mMarkerPortIdMap.get(marker);
-
 			if (portId != null) {
 				Intent intent = new Intent(getActivity(), PortActivity.class);
 				intent.putExtra("port_id", portId);
 				startActivity(intent);
+				return true;
+			}
+
+			Alert alert = mMarkerAlertMap.get(marker);
+			if (alert != null) {
+				DialogFragment alertResponseDialogFragment = new AlertResponseDialogFragment(getActivity(), alert);
+				alertResponseDialogFragment.show(getFragmentManager(), "response");
 			}
 
 			return true;
@@ -220,10 +227,10 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 	}
 
 	private void onAlertLoaderComplete(Cursor cursor) {
-		if (mMarkerAlertIdMap == null) {
-			mMarkerAlertIdMap = new HashMap<Marker, Integer>();
+		if (mMarkerAlertMap == null) {
+			mMarkerAlertMap = new HashMap<Marker, Alert>();
 		} else {
-			for (Marker marker : mMarkerAlertIdMap.keySet()) {
+			for (Marker marker : mMarkerAlertMap.keySet()) {
 				marker.remove();
 			}
 		}
@@ -251,7 +258,7 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 						.anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
 				Marker marker = mMap.addMarker(markerOptions);
 
-				mMarkerAlertIdMap.put(marker, alert.getId());
+				mMarkerAlertMap.put(marker, alert);
 			}
 		}
 	}
