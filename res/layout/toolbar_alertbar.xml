@@ -45,28 +45,15 @@
         android:orientation="horizontal" >
 
         <Button
-            android:id="@+id/button_decline"
+            android:id="@+id/button_respond"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="?android:selectableItemBackground"
             android:fontFamily="sans-serif"
-            android:text="@string/decline"
+            android:text="@string/alert_respond"
             android:textAllCaps="true"
             android:textColor="#8fff"
-            android:textSize="@dimen/text_size_medium"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/button_accept"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?android:selectableItemBackground"
-            android:fontFamily="sans-serif"
-            android:text="@string/accept"
-            android:textAllCaps="true"
-            android:textColor="#fff"
             android:textSize="@dimen/text_size_medium"
             android:textStyle="bold" />
     </LinearLayout>

@@ -24,9 +24,11 @@ import put.sailhero.util.UnitUtils;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.OnAccountsUpdateListener;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -112,8 +114,7 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 	private boolean mManualSyncRequest;
 
 	private View mAlertBarToolbar;
-	private Button mConfirmAlertButton;
-	private Button mCancelAlertButton;
+	private Button mRespondToAlertButton;
 	private TextView mAlertBarTypeTextView;
 	private TextView mAlertBarDistanceTextView;
 
@@ -158,8 +159,9 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 			Log.w(TAG, "alert bar not found");
 			return;
 		}
-		mConfirmAlertButton = (Button) findViewById(R.id.button_accept);
-		mConfirmAlertButton.setOnClickListener(new OnClickListener() {
+
+		mRespondToAlertButton = (Button) findViewById(R.id.button_respond);
+		mRespondToAlertButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				Alert alertToRespond = PrefUtils.getClosestAlertToRespond(BaseActivity.this);
@@ -168,38 +170,9 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 					return;
 				}
 
-				RequestHelperAsyncTask confirmAlertTask = new RequestHelperAsyncTask(BaseActivity.this,
-						new ConfirmAlertRequestHelper(BaseActivity.this, alertToRespond.getId()),
-						new RequestHelperAsyncTask.AsyncRequestListener() {
-							@Override
-							public void onSuccess(RequestHelper requestHelper) {
-								// TODO
-							}
-						});
-				confirmAlertTask.execute();
+				showAlertConfirmationDialog(alertToRespond);
 			}
-		});
 
-		mCancelAlertButton = (Button) findViewById(R.id.button_decline);
-		mCancelAlertButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Alert alertToRespond = PrefUtils.getClosestAlertToRespond(BaseActivity.this);
-
-				if (alertToRespond == null) {
-					return;
-				}
-
-				RequestHelperAsyncTask cancelAlertTask = new RequestHelperAsyncTask(BaseActivity.this,
-						new CancelAlertRequestHelper(BaseActivity.this, alertToRespond.getId()),
-						new RequestHelperAsyncTask.AsyncRequestListener() {
-							@Override
-							public void onSuccess(RequestHelper requestHelper) {
-								// TODO
-							}
-						});
-				cancelAlertTask.execute();
-			}
 		});
 
 		mAlertBarTypeTextView = (TextView) findViewById(R.id.alert_bar_type_text_view);
@@ -229,8 +202,9 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 					&& lastKnownLocation.distanceTo(alertToRespond.getLocation()) < PrefUtils.getAlertRadius(BaseActivity.this)) {
 				mAlertBarTypeTextView.setText(StringUtils.getStringForAlertType(BaseActivity.this,
 						alertToRespond.getAlertType()));
-				mAlertBarDistanceTextView.setText(UnitUtils.roundDistanceTo25(lastKnownLocation.distanceTo(alertToRespond.getLocation()))
-						+ " metres");
+				Integer displayedDistanceToAlert = UnitUtils.roundDistanceTo25(lastKnownLocation.distanceTo(alertToRespond.getLocation()));
+				mAlertBarDistanceTextView.setText(getResources().getQuantityString(R.plurals.alert_distance_in_metres,
+						displayedDistanceToAlert, displayedDistanceToAlert));
 				mAlertBarToolbar.setVisibility(View.VISIBLE);
 			} else {
 				mAlertBarToolbar.setVisibility(View.GONE);
@@ -295,24 +269,11 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 			gcmRegistrationTask.execute();
 		}
 
+		onLastKnownLocationUpdate(PrefUtils.getLastKnownLocation(BaseActivity.this));
+
 		if (mAlertBarToolbar != null) {
-			Location lastKnownLocation = PrefUtils.getLastKnownLocation(BaseActivity.this);
-			Alert alertToRespond = PrefUtils.getClosestAlertToRespond(BaseActivity.this);
-
-			if (lastKnownLocation != null && alertToRespond != null) {
-				if (lastKnownLocation.distanceTo(alertToRespond.getLocation()) < PrefUtils.getAlertRadius(BaseActivity.this)) {
-					mAlertBarTypeTextView.setText(StringUtils.getStringForAlertType(BaseActivity.this,
-							alertToRespond.getAlertType()));
-					mAlertBarDistanceTextView.setText(Math.round(lastKnownLocation.distanceTo(alertToRespond.getLocation()))
-							+ " metres");
-					mAlertBarToolbar.setVisibility(View.VISIBLE);
-				} else {
-					mAlertBarToolbar.setVisibility(View.GONE);
-				}
-			}
-
-			onLastKnownLocationUpdate(PrefUtils.getLastKnownLocation(BaseActivity.this));
 			onClosestAlertUpdate(PrefUtils.getClosestAlert(BaseActivity.this));
+			onClosestAlertToRespondUpdate(PrefUtils.getClosestAlertToRespond(BaseActivity.this));
 		}
 	}
 
@@ -717,6 +678,46 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 				: getResources().getColor(R.color.navdrawer_text_color));
 		iconView.setColorFilter(selected ? getResources().getColor(R.color.navdrawer_icon_tint_selected)
 				: getResources().getColor(R.color.navdrawer_icon_tint));
+	}
+
+	protected void showAlertConfirmationDialog(final Alert alert) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(BaseActivity.this);
+
+		builder.setTitle(StringUtils.getStringForAlertType(BaseActivity.this, alert.getAlertType()));
+		builder.setMessage("Do you confirm this alert?");
+
+		builder.setPositiveButton(getString(R.string.alert_accept), new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				RequestHelperAsyncTask confirmAlertTask = new RequestHelperAsyncTask(BaseActivity.this,
+						new ConfirmAlertRequestHelper(BaseActivity.this, alert.getId()),
+						new RequestHelperAsyncTask.AsyncRequestListener() {
+							@Override
+							public void onSuccess(RequestHelper requestHelper) {
+								// TODO
+							}
+						});
+				confirmAlertTask.execute();
+			}
+		});
+
+		builder.setNegativeButton(getString(R.string.alert_cancel), new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				RequestHelperAsyncTask cancelAlertTask = new RequestHelperAsyncTask(BaseActivity.this,
+						new CancelAlertRequestHelper(BaseActivity.this, alert.getId()),
+						new RequestHelperAsyncTask.AsyncRequestListener() {
+							@Override
+							public void onSuccess(RequestHelper requestHelper) {
+								// TODO
+							}
+						});
+				cancelAlertTask.execute();
+			}
+		});
+
+		AlertDialog dialog = builder.create();
+		dialog.show();
 	}
 
 	@Override

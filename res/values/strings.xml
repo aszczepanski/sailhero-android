@@ -32,6 +32,16 @@
     <string name="alert_name_closed_area">Closed area</string>
     <string name="alert_name_yacht_failure">Yacht failure</string>
 
+    <!-- alert responses -->
+    <plurals name="alert_distance_in_metres">
+        <item quantity="one">%d metre</item>
+        <item quantity="other">%d metres</item>
+    </plurals>
+
+    <string name="alert_accept">Confirm</string>
+    <string name="alert_cancel">Decline</string>
+    <string name="alert_respond">Click to respond</string>
+
     <!-- navdrawer items -->
     <string name="navdrawer_item_dashboard">Dashboard</string>
     <string name="navdrawer_item_alert">Alert</string>
