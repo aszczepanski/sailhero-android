@@ -110,6 +110,8 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 		if (account != null) {
 			Toast.makeText(getApplicationContext(), "Using: " + account.name, Toast.LENGTH_SHORT).show();
 		}
+		
+		SyncUtils.syncRegions(this);
 	}
 
 	private void submitAlert(String alertType) {
@@ -248,8 +250,6 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 		if (isFinishing()) {
 			return;
 		}
-
-		SyncUtils.syncAll(mContext);
 	}
 
 	@Override

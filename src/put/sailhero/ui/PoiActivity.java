@@ -10,7 +10,6 @@ import put.sailhero.model.PoiModel;
 import put.sailhero.model.Port;
 import put.sailhero.provider.SailHeroContract;
 import put.sailhero.ui.widget.SlidingTabLayout;
-import put.sailhero.util.SyncUtils;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ListFragment;
@@ -76,8 +75,6 @@ public class PoiActivity extends BaseActivity implements LoaderManager.LoaderCal
 	@Override
 	protected void onResume() {
 		super.onResume();
-
-		SyncUtils.syncPorts(PoiActivity.this);
 	}
 
 	@Override
