@@ -11,8 +11,6 @@ import put.sailhero.model.User;
 import put.sailhero.provider.SailHeroContract;
 import put.sailhero.service.AlertService;
 import put.sailhero.service.AlertService.LocalBinder;
-import put.sailhero.sync.CancelAlertRequestHelper;
-import put.sailhero.sync.ConfirmAlertRequestHelper;
 import put.sailhero.sync.RequestHelper;
 import put.sailhero.sync.RequestHelperAsyncTask;
 import put.sailhero.sync.RetrieveUserRequestHelper;
@@ -24,11 +22,10 @@ import put.sailhero.util.UnitUtils;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.OnAccountsUpdateListener;
-import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -170,7 +167,9 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 					return;
 				}
 
-				showAlertConfirmationDialog(alertToRespond);
+				DialogFragment alertResponseDialogFragment = new AlertResponseDialogFragment(BaseActivity.this,
+						alertToRespond);
+				alertResponseDialogFragment.show(getFragmentManager(), "response");
 			}
 
 		});
@@ -678,46 +677,6 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 				: getResources().getColor(R.color.navdrawer_text_color));
 		iconView.setColorFilter(selected ? getResources().getColor(R.color.navdrawer_icon_tint_selected)
 				: getResources().getColor(R.color.navdrawer_icon_tint));
-	}
-
-	protected void showAlertConfirmationDialog(final Alert alert) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(BaseActivity.this);
-
-		builder.setTitle(StringUtils.getStringForAlertType(BaseActivity.this, alert.getAlertType()));
-		builder.setMessage("Do you confirm this alert?");
-
-		builder.setPositiveButton(getString(R.string.alert_accept), new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				RequestHelperAsyncTask confirmAlertTask = new RequestHelperAsyncTask(BaseActivity.this,
-						new ConfirmAlertRequestHelper(BaseActivity.this, alert.getId()),
-						new RequestHelperAsyncTask.AsyncRequestListener() {
-							@Override
-							public void onSuccess(RequestHelper requestHelper) {
-								// TODO
-							}
-						});
-				confirmAlertTask.execute();
-			}
-		});
-
-		builder.setNegativeButton(getString(R.string.alert_cancel), new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				RequestHelperAsyncTask cancelAlertTask = new RequestHelperAsyncTask(BaseActivity.this,
-						new CancelAlertRequestHelper(BaseActivity.this, alert.getId()),
-						new RequestHelperAsyncTask.AsyncRequestListener() {
-							@Override
-							public void onSuccess(RequestHelper requestHelper) {
-								// TODO
-							}
-						});
-				cancelAlertTask.execute();
-			}
-		});
-
-		AlertDialog dialog = builder.create();
-		dialog.show();
 	}
 
 	@Override
