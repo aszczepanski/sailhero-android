@@ -33,6 +33,8 @@ public class MessageActivity extends BaseActivity implements SailHeroListFragmen
 
 	public final static String MESSAGE_SYNC_MESSAGES = "message";
 
+	private final static int FETCH_LIMIT = 15;
+	
 	private MessagesAdapter mMessagesAdapter;
 
 	private LinkedList<Message> mMessagesList = new LinkedList<Message>();
@@ -151,8 +153,9 @@ public class MessageActivity extends BaseActivity implements SailHeroListFragmen
 
 	@Override
 	protected void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
+		
+		fetchNewestMessages();
 	}
 
 	@Override
@@ -168,7 +171,7 @@ public class MessageActivity extends BaseActivity implements SailHeroListFragmen
 				isFetchingOldActive = true;
 			}
 		}
-		Integer limit = 2;
+		Integer limit = FETCH_LIMIT;
 		Integer since = mPreviousMessageId;
 		if (since == null) {
 			if (!mMessagesList.isEmpty()) {
@@ -199,7 +202,7 @@ public class MessageActivity extends BaseActivity implements SailHeroListFragmen
 				isFetchingNewestActive = true;
 			}
 		}
-		Integer limit = 2;
+		Integer limit = FETCH_LIMIT;
 		Integer since = mNextMessageId;
 		if (since == null) {
 			if (!mMessagesList.isEmpty()) {

@@ -47,10 +47,10 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 
 	private GoogleMap mMap;
 
-	private HashMap<Marker, Integer> markerPortIdMap;
-	private HashMap<Marker, Integer> markerAlertIdMap;
-	private HashMap<Marker, Integer> markerFriendshipIdMap;
-	private HashMap<Polyline, Integer> polylineRouteIdMap;
+	private HashMap<Marker, Integer> mMarkerPortIdMap;
+	private HashMap<Marker, Integer> mMarkerAlertIdMap;
+	private HashMap<Marker, Integer> mMarkerFriendshipIdMap;
+	private HashMap<Polyline, Integer> mPolylineRouteIdMap;
 
 	private Marker mLastClickedMarker;
 
@@ -134,7 +134,7 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 		if (mLastClickedMarker != null && mLastClickedMarker.equals(marker)) {
 			mLastClickedMarker = null;
 
-			Integer portId = markerPortIdMap.get(marker);
+			Integer portId = mMarkerPortIdMap.get(marker);
 
 			if (portId != null) {
 				Intent intent = new Intent(getActivity(), PortActivity.class);
@@ -220,10 +220,10 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 	}
 
 	private void onAlertLoaderComplete(Cursor cursor) {
-		if (markerAlertIdMap == null) {
-			markerAlertIdMap = new HashMap<Marker, Integer>();
+		if (mMarkerAlertIdMap == null) {
+			mMarkerAlertIdMap = new HashMap<Marker, Integer>();
 		} else {
-			for (Marker marker : markerAlertIdMap.keySet()) {
+			for (Marker marker : mMarkerAlertIdMap.keySet()) {
 				marker.remove();
 			}
 		}
@@ -251,16 +251,16 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 						.anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
 				Marker marker = mMap.addMarker(markerOptions);
 
-				markerAlertIdMap.put(marker, alert.getId());
+				mMarkerAlertIdMap.put(marker, alert.getId());
 			}
 		}
 	}
 
 	private void onPortLoaderComplete(Cursor cursor) {
-		if (markerPortIdMap == null) {
-			markerPortIdMap = new HashMap<Marker, Integer>();
+		if (mMarkerPortIdMap == null) {
+			mMarkerPortIdMap = new HashMap<Marker, Integer>();
 		} else {
-			for (Marker marker : markerPortIdMap.keySet()) {
+			for (Marker marker : mMarkerPortIdMap.keySet()) {
 				marker.remove();
 			}
 		}
@@ -286,17 +286,17 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 						.anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
 				Marker marker = mMap.addMarker(markerOptions);
 
-				markerPortIdMap.put(marker, port.getId());
+				mMarkerPortIdMap.put(marker, port.getId());
 			}
 		}
 	}
 
 	private void onFriendshipLoaderComplete(Cursor cursor) {
 		// TODO: DRY
-		if (markerFriendshipIdMap == null) {
-			markerFriendshipIdMap = new HashMap<Marker, Integer>();
+		if (mMarkerFriendshipIdMap == null) {
+			mMarkerFriendshipIdMap = new HashMap<Marker, Integer>();
 		} else {
-			for (Marker marker : markerFriendshipIdMap.keySet()) {
+			for (Marker marker : mMarkerFriendshipIdMap.keySet()) {
 				marker.remove();
 			}
 		}
@@ -334,7 +334,7 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 							.anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
 					Marker marker = mMap.addMarker(markerOptions);
 
-					markerFriendshipIdMap.put(marker, friendship.getId());
+					mMarkerFriendshipIdMap.put(marker, friendship.getId());
 				}
 
 			}
@@ -343,10 +343,10 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 
 	private void onRouteLoaderComplete(Cursor cursor) {
 		// TODO: DRY
-		if (polylineRouteIdMap == null) {
-			polylineRouteIdMap = new HashMap<Polyline, Integer>();
+		if (mPolylineRouteIdMap == null) {
+			mPolylineRouteIdMap = new HashMap<Polyline, Integer>();
 		} else {
-			for (Polyline polyline : polylineRouteIdMap.keySet()) {
+			for (Polyline polyline : mPolylineRouteIdMap.keySet()) {
 				polyline.remove();
 			}
 		}
@@ -390,7 +390,7 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 				routePolylineOptions.color(Color.GREEN);
 				Polyline polyline = mMap.addPolyline(routePolylineOptions);
 
-				polylineRouteIdMap.put(polyline, route.getId());
+				mPolylineRouteIdMap.put(polyline, route.getId());
 			}
 		}
 	}

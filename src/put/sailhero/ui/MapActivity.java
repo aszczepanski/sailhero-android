@@ -11,10 +11,6 @@ import android.app.FragmentManager;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.google.android.gms.maps.GoogleMapOptions;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-
 public class MapActivity extends BaseActivity {
 
 	public final String TAG = "sailhero";
@@ -29,11 +25,6 @@ public class MapActivity extends BaseActivity {
 		setContentView(R.layout.activity_map);
 
 		if (savedInstanceState == null) {
-			GoogleMapOptions googleMapOptions = new GoogleMapOptions();
-			googleMapOptions.compassEnabled(true);
-
-			googleMapOptions.camera(new CameraPosition(new LatLng(54.043302, 21.738819), 10, 0, 0));
-
 			FragmentManager fm = getFragmentManager();
 			mMapFragment = (MapFragment) fm.findFragmentByTag("map");
 		}
