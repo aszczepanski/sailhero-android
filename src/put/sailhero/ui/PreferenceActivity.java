@@ -109,6 +109,9 @@ public class PreferenceActivity extends BaseActivity {
 								public void onSuccess(RequestHelper requestHelper) {
 									mRegionListPreference.setValueIndex(newValueIndex);
 
+									PrefUtils.setClosestAlert(mContext, null);
+									PrefUtils.setClosestAlertToRespond(mContext, null);
+
 									SyncUtils.syncAlerts(mContext);
 									SyncUtils.syncPorts(mContext);
 									SyncUtils.syncRoutes(mContext);

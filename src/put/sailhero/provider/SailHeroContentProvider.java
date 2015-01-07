@@ -192,7 +192,8 @@ public class SailHeroContentProvider extends ContentProvider {
 		int match = sUriMatcher.match(uri);
 		switch (match) {
 		case ROUTE_ALERTS:
-			id = db.insertOrThrow(SailHeroContract.Alert.TABLE_NAME, null, values);
+			id = db.insertWithOnConflict(SailHeroContract.Alert.TABLE_NAME, null, values,
+					SQLiteDatabase.CONFLICT_REPLACE);
 
 			result = Uri.parse(SailHeroContract.Alert.CONTENT_URI + "/" + id);
 
@@ -203,7 +204,8 @@ public class SailHeroContentProvider extends ContentProvider {
 
 			return result;
 		case ROUTE_REGIONS:
-			id = db.insertOrThrow(SailHeroContract.Region.TABLE_NAME, null, values);
+			id = db.insertWithOnConflict(SailHeroContract.Region.TABLE_NAME, null, values,
+					SQLiteDatabase.CONFLICT_REPLACE);
 
 			result = Uri.parse(SailHeroContract.Region.CONTENT_URI + "/" + id);
 
@@ -213,7 +215,8 @@ public class SailHeroContentProvider extends ContentProvider {
 
 			return result;
 		case ROUTE_PORTS:
-			id = db.insertOrThrow(SailHeroContract.Port.TABLE_NAME, null, values);
+			id = db.insertWithOnConflict(SailHeroContract.Port.TABLE_NAME, null, values,
+					SQLiteDatabase.CONFLICT_REPLACE);
 
 			result = Uri.parse(SailHeroContract.Port.CONTENT_URI + "/" + id);
 
@@ -223,7 +226,8 @@ public class SailHeroContentProvider extends ContentProvider {
 
 			return result;
 		case ROUTE_FRIENDSHIPS:
-			id = db.insertOrThrow(SailHeroContract.Friendship.TABLE_NAME, null, values);
+			id = db.insertWithOnConflict(SailHeroContract.Friendship.TABLE_NAME, null, values,
+					SQLiteDatabase.CONFLICT_REPLACE);
 
 			result = Uri.parse(SailHeroContract.Friendship.CONTENT_URI + "/" + id);
 
@@ -233,7 +237,8 @@ public class SailHeroContentProvider extends ContentProvider {
 
 			return result;
 		case ROUTE_ROUTES:
-			id = db.insertOrThrow(SailHeroContract.Route.TABLE_NAME, null, values);
+			id = db.insertWithOnConflict(SailHeroContract.Route.TABLE_NAME, null, values,
+					SQLiteDatabase.CONFLICT_REPLACE);
 
 			result = Uri.parse(SailHeroContract.Route.CONTENT_URI + "/" + id);
 
@@ -243,7 +248,8 @@ public class SailHeroContentProvider extends ContentProvider {
 
 			return result;
 		case ROUTE_PINS:
-			id = db.insertOrThrow(SailHeroContract.Route.Pin.TABLE_NAME, null, values);
+			id = db.insertWithOnConflict(SailHeroContract.Route.Pin.TABLE_NAME, null, values,
+					SQLiteDatabase.CONFLICT_REPLACE);
 
 			result = Uri.parse(SailHeroContract.Route.Pin.CONTENT_URI + "/" + id);
 
@@ -434,7 +440,7 @@ public class SailHeroContentProvider extends ContentProvider {
 	}
 
 	static class SailHeroDatabaseHelper extends SQLiteOpenHelper {
-		public static final int DATABASE_VERSION = 30;
+		public static final int DATABASE_VERSION = 31;
 		public static final String DATABASE_NAME = "sailhero.db";
 
 		private static final String SQL_CREATE_ALERTS = "CREATE TABLE " + SailHeroContract.Alert.TABLE_NAME + " ("
