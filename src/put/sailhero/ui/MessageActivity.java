@@ -3,6 +3,7 @@ package put.sailhero.ui;
 import java.util.LinkedList;
 
 import put.sailhero.R;
+import put.sailhero.exception.InvalidRegionException;
 import put.sailhero.model.Message;
 import put.sailhero.sync.RequestHelper;
 import put.sailhero.sync.RequestHelperAsyncTask;
@@ -34,7 +35,7 @@ public class MessageActivity extends BaseActivity implements SailHeroListFragmen
 	public final static String MESSAGE_SYNC_MESSAGES = "message";
 
 	private final static int FETCH_LIMIT = 15;
-	
+
 	private MessagesAdapter mMessagesAdapter;
 
 	private LinkedList<Message> mMessagesList = new LinkedList<Message>();
@@ -104,6 +105,12 @@ public class MessageActivity extends BaseActivity implements SailHeroListFragmen
 
 								// TODO: fetch messages
 							}
+
+							@Override
+							public void onInvalidRegionException(RequestHelper requestHelper) {
+								Toast.makeText(MessageActivity.this, "Choose a region first.", Toast.LENGTH_SHORT)
+										.show();
+							}
 						});
 				task.execute();
 			}
@@ -154,7 +161,7 @@ public class MessageActivity extends BaseActivity implements SailHeroListFragmen
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
+
 		fetchNewestMessages();
 	}
 
@@ -344,6 +351,8 @@ public class MessageActivity extends BaseActivity implements SailHeroListFragmen
 						fetchNewestMessages();
 					}
 				}
+			} else if (mException instanceof InvalidRegionException) {
+				Toast.makeText(mContext, "Choose a region first.", Toast.LENGTH_SHORT).show();
 			} else {
 			}
 		}

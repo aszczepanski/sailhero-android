@@ -128,7 +128,13 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 				new RequestHelperAsyncTask.AsyncRequestListener() {
 					@Override
 					public void onSuccess(RequestHelper requestHelper) {
+						Toast.makeText(mContext, "Alert created.", Toast.LENGTH_SHORT).show();
 						Log.d(TAG, "created alert with id " + createAlertRequestHelper.getRetrievedAlert().getId());
+					}
+
+					@Override
+					public void onInvalidRegionException(RequestHelper requestHelper) {
+						Toast.makeText(mContext, "Choose a region first.", Toast.LENGTH_SHORT).show();
 					}
 				});
 		createAlertTask.execute();
