@@ -6,11 +6,13 @@ import put.sailhero.Config;
 import put.sailhero.R;
 import put.sailhero.model.Alert;
 import put.sailhero.provider.SailHeroContract;
+import put.sailhero.ui.DashboardActivity;
 import put.sailhero.util.PrefUtils;
 import put.sailhero.util.StringUtils;
 import put.sailhero.util.ThrottledContentObserver;
 import put.sailhero.util.UnitUtils;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -71,6 +73,15 @@ public class AlertService extends Service implements GooglePlayServicesClient.Co
 		mNotificationBuilder = new NotificationCompat.Builder(this);
 		mNotificationBuilder.setSmallIcon(R.drawable.ic_launcher);
 		mNotificationBuilder.setContentTitle("SailHero is running");
+
+		Intent notificationIntent = new Intent(this, DashboardActivity.class);
+		notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+		notificationIntent.setAction(Intent.ACTION_MAIN);
+
+		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent,
+				PendingIntent.FLAG_UPDATE_CURRENT);
+		mNotificationBuilder.setContentIntent(pendingIntent);
+
 		mNotificationManager.notify(0x01, mNotificationBuilder.build());
 
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
