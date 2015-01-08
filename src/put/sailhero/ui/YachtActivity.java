@@ -88,8 +88,8 @@ public class YachtActivity extends BaseActivity {
 						requestHelper = new CreateYachtRequestHelper(YachtActivity.this, name, length, width, crew);
 					}
 					// TODO:
-					RequestHelperAsyncTask task = new RequestHelperAsyncTask(YachtActivity.this, requestHelper,
-							new RequestHelperAsyncTask.AsyncRequestListener() {
+					RequestHelperAsyncTask task = new RequestHelperAsyncTask(YachtActivity.this, "Yacht",
+							"Updating yacht", requestHelper, new RequestHelperAsyncTask.AsyncRequestListener() {
 								@Override
 								public void onSuccess(RequestHelper requestHelper) {
 									Log.d(TAG, "created yacht with id "

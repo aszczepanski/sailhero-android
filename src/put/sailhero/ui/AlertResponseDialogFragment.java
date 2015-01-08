@@ -37,8 +37,9 @@ public class AlertResponseDialogFragment extends DialogFragment {
 		builder.setPositiveButton(getString(R.string.alert_accept), new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				RequestHelperAsyncTask confirmAlertTask = new RequestHelperAsyncTask(mContext,
-						new ConfirmAlertRequestHelper(mContext, mAlert.getId()), serverResponseListener);
+				RequestHelperAsyncTask confirmAlertTask = new RequestHelperAsyncTask(mContext, "Alert confirmation",
+						"Confirming alert...", new ConfirmAlertRequestHelper(mContext, mAlert.getId()),
+						serverResponseListener);
 				confirmAlertTask.execute();
 			}
 		});
@@ -46,8 +47,9 @@ public class AlertResponseDialogFragment extends DialogFragment {
 		builder.setNegativeButton(getString(R.string.alert_cancel), new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				RequestHelperAsyncTask cancelAlertTask = new RequestHelperAsyncTask(mContext,
-						new CancelAlertRequestHelper(mContext, mAlert.getId()), serverResponseListener);
+				RequestHelperAsyncTask cancelAlertTask = new RequestHelperAsyncTask(mContext, "Alert confirmation",
+						"Denying alert...", new CancelAlertRequestHelper(mContext, mAlert.getId()),
+						serverResponseListener);
 				cancelAlertTask.execute();
 			}
 		});

@@ -148,8 +148,8 @@ public class UsersAdapter implements ListAdapter {
 					public void onClick(View v) {
 						// TODO:
 						RequestHelperAsyncTask createFriendshipTask = new RequestHelperAsyncTask(mContext,
-								new CreateFriendshipRequestHelper(mContext, user.getId()),
-								new RequestHelperAsyncTask.AsyncRequestListener() {
+								"User invitation", user.getEmail(), new CreateFriendshipRequestHelper(mContext,
+										user.getId()), new RequestHelperAsyncTask.AsyncRequestListener() {
 									@Override
 									public void onSuccess(RequestHelper requestHelper) {
 										Toast.makeText(mContext, "User invited.", Toast.LENGTH_SHORT).show();
@@ -166,8 +166,8 @@ public class UsersAdapter implements ListAdapter {
 			removeButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					RequestHelperAsyncTask deleteFriendshipTask = new RequestHelperAsyncTask(mContext,
-							new CancelFriendshipRequestHelper(mContext, friendshipId),
+					RequestHelperAsyncTask deleteFriendshipTask = new RequestHelperAsyncTask(mContext, "User removal",
+							user.getEmail(), new CancelFriendshipRequestHelper(mContext, friendshipId),
 							new RequestHelperAsyncTask.AsyncRequestListener() {
 								@Override
 								public void onSuccess(RequestHelper requestHelper) {
@@ -185,6 +185,7 @@ public class UsersAdapter implements ListAdapter {
 				public void onClick(View v) {
 					// TODO:
 					RequestHelperAsyncTask acceptFriendshipTask = new RequestHelperAsyncTask(mContext,
+							"Accepting user", user.getEmail(),
 							new AcceptFriendshipRequestHelper(mContext, friendshipId),
 							new RequestHelperAsyncTask.AsyncRequestListener() {
 								@Override
@@ -201,8 +202,8 @@ public class UsersAdapter implements ListAdapter {
 			denyButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					RequestHelperAsyncTask denyFriendshipTask = new RequestHelperAsyncTask(mContext,
-							new DenyFriendshipRequestHelper(mContext, friendshipId),
+					RequestHelperAsyncTask denyFriendshipTask = new RequestHelperAsyncTask(mContext, "Denying user",
+							user.getEmail(), new DenyFriendshipRequestHelper(mContext, friendshipId),
 							new RequestHelperAsyncTask.AsyncRequestListener() {
 								@Override
 								public void onSuccess(RequestHelper requestHelper) {
@@ -219,8 +220,8 @@ public class UsersAdapter implements ListAdapter {
 			cancelButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					RequestHelperAsyncTask cancelFriendshipTask = new RequestHelperAsyncTask(mContext,
-							new CancelFriendshipRequestHelper(mContext, friendshipId),
+					RequestHelperAsyncTask cancelFriendshipTask = new RequestHelperAsyncTask(mContext, "Removing user",
+							user.getEmail(), new CancelFriendshipRequestHelper(mContext, friendshipId),
 							new RequestHelperAsyncTask.AsyncRequestListener() {
 								@Override
 								public void onSuccess(RequestHelper requestHelper) {

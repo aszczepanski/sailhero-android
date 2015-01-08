@@ -49,7 +49,7 @@ public class RegisterUserActivity extends Activity {
 						mEmailEditText.getText().toString().trim(), mPasswordEditText.getText().toString(),
 						mPasswordConfirmationEditText.getText().toString(), mNameEditText.getText().toString().trim(),
 						mSurnameEditText.getText().toString().trim());
-				RequestHelperAsyncTask createUserTask = new RequestHelperAsyncTask(mContext, createUserRequestHelper,
+				RequestHelperAsyncTask createUserTask = new RequestHelperAsyncTask(mContext, "User registration", "Creating a new user...", createUserRequestHelper,
 						new RequestHelperAsyncTask.AsyncRequestListener() {
 
 							@Override

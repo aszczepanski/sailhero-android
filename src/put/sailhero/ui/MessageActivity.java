@@ -96,8 +96,8 @@ public class MessageActivity extends BaseActivity implements SailHeroListFragmen
 					return;
 				}
 				SendMessageRequestHelper requestHelper = new SendMessageRequestHelper(MessageActivity.this, msgBody);
-				RequestHelperAsyncTask task = new RequestHelperAsyncTask(MessageActivity.this, requestHelper,
-						new RequestHelperAsyncTask.AsyncRequestListener() {
+				RequestHelperAsyncTask task = new RequestHelperAsyncTask(MessageActivity.this, "Sending message",
+						msgBody, requestHelper, new RequestHelperAsyncTask.AsyncRequestListener() {
 							@Override
 							public void onSuccess(RequestHelper requestHelper) {
 								Toast.makeText(MessageActivity.this, "Message sent.", Toast.LENGTH_SHORT).show();

@@ -101,8 +101,8 @@ public class UserActivity extends BaseActivity {
 						mPasswordEditText.getText().toString(), mPasswordConfirmationEditText.getText().toString(),
 						mNameEditText.getText().toString().trim(), mSurnameEditText.getText().toString().trim(),
 						mEncodedAvatar, mSharePositionCheckBox.isChecked());
-				RequestHelperAsyncTask updateTask = new RequestHelperAsyncTask(UserActivity.this, requestHelper,
-						new RequestHelperAsyncTask.AsyncRequestListener() {
+				RequestHelperAsyncTask updateTask = new RequestHelperAsyncTask(UserActivity.this, "User update",
+						"Updating user...", requestHelper, new RequestHelperAsyncTask.AsyncRequestListener() {
 							@Override
 							public void onSuccess(RequestHelper requestHelper) {
 								Log.d(TAG, "updated user with id " + PrefUtils.getUser(UserActivity.this).getId());

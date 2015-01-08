@@ -60,8 +60,8 @@ public class LoginActivity extends Activity {
 				final LogInRequestHelper logInRequestHelper = new LogInRequestHelper(mContext, mEmailEditText.getText()
 						.toString()
 						.trim(), mPasswordEditText.getText().toString());
-				RequestHelperAsyncTask logInTask = new RequestHelperAsyncTask(mContext, logInRequestHelper,
-						new RequestHelperAsyncTask.AsyncRequestListener() {
+				RequestHelperAsyncTask logInTask = new RequestHelperAsyncTask(mContext, "Authenticating",
+						"Logging in...", logInRequestHelper, new RequestHelperAsyncTask.AsyncRequestListener() {
 							@Override
 							public void onSuccess(RequestHelper requestHelper) {
 								AccountUtils.addAccount(getApplicationContext(), logInRequestHelper.getSentUsername(),

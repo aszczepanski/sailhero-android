@@ -124,7 +124,8 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 
 		final CreateAlertRequestHelper createAlertRequestHelper = new CreateAlertRequestHelper(mContext, alertType,
 				currentLocation.getLatitude(), currentLocation.getLongitude(), "");
-		RequestHelperAsyncTask createAlertTask = new RequestHelperAsyncTask(mContext, createAlertRequestHelper,
+		RequestHelperAsyncTask createAlertTask = new RequestHelperAsyncTask(mContext, "Creating alert",
+				StringUtils.getStringForAlertType(mContext, alertType), createAlertRequestHelper,
 				new RequestHelperAsyncTask.AsyncRequestListener() {
 					@Override
 					public void onSuccess(RequestHelper requestHelper) {

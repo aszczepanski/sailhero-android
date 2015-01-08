@@ -103,8 +103,9 @@ public class PreferenceActivity extends BaseActivity {
 
 					SelectRegionRequestHelper selectRegionRequestHelper = new SelectRegionRequestHelper(mContext,
 							Integer.valueOf(newEntryValue));
-					RequestHelperAsyncTask selectRegionTask = new RequestHelperAsyncTask(mContext,
-							selectRegionRequestHelper, new RequestHelperAsyncTask.AsyncRequestListener() {
+					RequestHelperAsyncTask selectRegionTask = new RequestHelperAsyncTask(mContext, "Region selection",
+							"Selecting a region...", selectRegionRequestHelper,
+							new RequestHelperAsyncTask.AsyncRequestListener() {
 								@Override
 								public void onSuccess(RequestHelper requestHelper) {
 									mRegionListPreference.setValueIndex(newValueIndex);
@@ -132,22 +133,22 @@ public class PreferenceActivity extends BaseActivity {
 			mLogoutPreference.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 				@Override
 				public boolean onPreferenceClick(Preference preference) {
-					RequestHelperAsyncTask logoutTask = new RequestHelperAsyncTask(mContext, new LogOutRequestHelper(
-							mContext), new RequestHelperAsyncTask.AsyncRequestListener() {
-						@Override
-						public void onSuccess(RequestHelper requestHelper) {
-							Log.i(Config.TAG, "token succesfully revoked");
+					RequestHelperAsyncTask logoutTask = new RequestHelperAsyncTask(mContext, "", "Logging out...",
+							new LogOutRequestHelper(mContext), new RequestHelperAsyncTask.AsyncRequestListener() {
+								@Override
+								public void onSuccess(RequestHelper requestHelper) {
+									Log.i(Config.TAG, "token succesfully revoked");
 
-							logoutUser();
-						}
+									logoutUser();
+								}
 
-						@Override
-						public void onSystemException(RequestHelper requestHelper) {
-							Log.w(Config.TAG, "token not revoked");
+								@Override
+								public void onSystemException(RequestHelper requestHelper) {
+									Log.w(Config.TAG, "token not revoked");
 
-							logoutUser();
-						}
-					});
+									logoutUser();
+								}
+							});
 					logoutTask.execute();
 					return true;
 				}

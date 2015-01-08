@@ -104,8 +104,8 @@ public class SearchUserActivity extends BaseActivity implements SailHeroListFrag
 	}
 
 	private void searchUser(String s) {
-		RequestHelperAsyncTask searchUserTask = new RequestHelperAsyncTask(SearchUserActivity.this,
-				new SearchUserRequestHelper(SearchUserActivity.this, s),
+		RequestHelperAsyncTask searchUserTask = new RequestHelperAsyncTask(SearchUserActivity.this, "Searching user",
+				s, new SearchUserRequestHelper(SearchUserActivity.this, s),
 				new RequestHelperAsyncTask.AsyncRequestListener() {
 					@Override
 					public void onSuccess(RequestHelper requestHelper) {

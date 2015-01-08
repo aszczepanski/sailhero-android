@@ -30,16 +30,22 @@ public class RequestHelperAsyncTask extends AsyncTask<Void, Void, Void> {
 
 	private AsyncRequestListener mAsyncRequestListener;
 
-	public RequestHelperAsyncTask(Context context, RequestHelper requestHelper,
-			AsyncRequestListener asyncRequestListener) {
+	private CharSequence mDialogTitle;
+	private CharSequence mDialogMessage;
+
+	public RequestHelperAsyncTask(Context context, CharSequence dialogTitle, CharSequence dialogMessage,
+			RequestHelper requestHelper, AsyncRequestListener asyncRequestListener) {
 		mContext = context;
 		mRequestHelper = requestHelper;
 		mAsyncRequestListener = asyncRequestListener;
+
+		mDialogTitle = dialogTitle;
+		mDialogMessage = dialogMessage;
 	}
 
 	@Override
 	protected void onPreExecute() {
-		mProgressDialog = ProgressDialog.show(mContext, "", "Executing request...");
+		mProgressDialog = ProgressDialog.show(mContext, mDialogTitle, mDialogMessage);
 	}
 
 	@Override
@@ -99,7 +105,6 @@ public class RequestHelperAsyncTask extends AsyncTask<Void, Void, Void> {
 			mAsyncRequestListener.onYachtAlreadyCreatedException(mRequestHelper);
 		} else {
 			Log.e(TAG, "unknown error");
-			assert false;
 		}
 	}
 
