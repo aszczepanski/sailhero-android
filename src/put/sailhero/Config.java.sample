@@ -1,0 +1,18 @@
+package put.sailhero;
+
+public class Config {
+
+	public static final String TAG = "sailhero";
+
+  // TODO: move it to xml files
+
+	public static final String APP_ID = "YOUR_APP_SECRET_ID";
+	public static final String APP_SECRET = "YOUR_APP_SECRET_KEY";
+	public static final String HOST_AUTHORITY = "YOUR_HOST_AUTHORITY";
+
+	public static final String HOST_SCHEME = "YOUR_HOST_SCHEME";
+
+	public static final String GCM_SENDER_ID = "YOUR_GCM_SENDER_ID";
+
+	public static final String WEATHER_URL = "YOUR_WEATHER_PROVIDER";
+}
