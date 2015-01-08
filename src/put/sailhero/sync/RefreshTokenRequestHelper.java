@@ -98,7 +98,7 @@ public class RefreshTokenRequestHelper extends RequestHelper {
 
 		HttpEntity entity = null;
 		try {
-			entity = new StringEntity(obj.toString());
+			entity = new StringEntity(obj.toString(), CHARSET);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
@@ -111,7 +111,7 @@ public class RefreshTokenRequestHelper extends RequestHelper {
 		int statusCode = mHttpResponse.getStatusLine().getStatusCode();
 		String responseBody = "";
 		try {
-			responseBody = EntityUtils.toString(mHttpResponse.getEntity());
+			responseBody = EntityUtils.toString(mHttpResponse.getEntity(), CHARSET);
 		} catch (ParseException | IOException e) {
 			e.printStackTrace();
 		}

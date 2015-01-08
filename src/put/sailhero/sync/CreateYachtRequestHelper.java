@@ -2,6 +2,7 @@ package put.sailhero.sync;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.ParseException;
@@ -70,7 +71,7 @@ public class CreateYachtRequestHelper extends RequestHelper {
 
 		HttpEntity entity = null;
 		try {
-			entity = new StringEntity(obj.toString());
+			entity = new StringEntity(obj.toString(), Charset.defaultCharset().name());
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

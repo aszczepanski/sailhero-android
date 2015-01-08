@@ -2,6 +2,7 @@ package put.sailhero.sync;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpPost;
@@ -62,7 +63,7 @@ public class LogOutRequestHelper extends RequestHelper {
 
 		HttpEntity entity = null;
 		try {
-			entity = new StringEntity(obj.toString());
+			entity = new StringEntity(obj.toString(), CHARSET);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}

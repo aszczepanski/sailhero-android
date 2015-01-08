@@ -57,7 +57,7 @@ public class RetrieveRoutesRequestHelper extends RequestHelper {
 		int statusCode = mHttpResponse.getStatusLine().getStatusCode();
 		String responseBody = "";
 		try {
-			responseBody = EntityUtils.toString(mHttpResponse.getEntity());
+			responseBody = EntityUtils.toString(mHttpResponse.getEntity(), CHARSET);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

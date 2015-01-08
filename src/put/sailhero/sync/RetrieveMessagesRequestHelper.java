@@ -45,7 +45,7 @@ public class RetrieveMessagesRequestHelper extends RequestHelper {
 	public String getSentOrder() {
 		return mSentOrder;
 	}
-	
+
 	public LinkedList<Message> getRetrievedMessages() {
 		return mRetrievedMessages;
 	}
@@ -82,7 +82,7 @@ public class RetrieveMessagesRequestHelper extends RequestHelper {
 		int statusCode = mHttpResponse.getStatusLine().getStatusCode();
 		String responseBody = "";
 		try {
-			responseBody = EntityUtils.toString(mHttpResponse.getEntity());
+			responseBody = EntityUtils.toString(mHttpResponse.getEntity(), CHARSET);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

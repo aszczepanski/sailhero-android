@@ -67,7 +67,7 @@ public class CreateFriendshipRequestHelper extends RequestHelper {
 
 		HttpEntity entity = null;
 		try {
-			entity = new StringEntity(obj.toString());
+			entity = new StringEntity(obj.toString(), CHARSET);
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

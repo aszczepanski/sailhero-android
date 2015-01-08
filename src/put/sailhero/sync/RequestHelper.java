@@ -41,6 +41,8 @@ public abstract class RequestHelper {
 
 	protected Context mContext;
 
+	protected static final String CHARSET = "UTF-8";
+	
 	protected static final String PATH_API = "api";
 	protected static final String PATH_VERSION = "v1";
 	protected static final String PATH_I18N = "en";
