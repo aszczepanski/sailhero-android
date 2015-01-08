@@ -24,14 +24,16 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Refresh old" />
+                android:text="Refresh old"
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/refresh_till_now_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Refresh till now" />
+                android:text="Refresh till now"
+                android:visibility="gone" />
         </LinearLayout>
 
         <FrameLayout
@@ -58,7 +60,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:padding="6dp" >
 
             <EditText
                 android:id="@+id/new_message_edit_text"
@@ -73,8 +76,16 @@
                 android:id="@+id/send_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
                 android:layout_weight="2"
-                android:text="send" />
+                android:background="@drawable/button_blue"
+                android:drawablePadding="4dp"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:text="Send"
+                android:textAllCaps="true"
+                android:textColor="@color/body_text_1"
+                android:textSize="@dimen/text_size_medium" />
         </LinearLayout>
     </LinearLayout>
 
