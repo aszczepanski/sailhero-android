@@ -13,6 +13,7 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.widget.Toast;
 
 public class AlertResponseDialogFragment extends DialogFragment {
 
@@ -37,13 +38,7 @@ public class AlertResponseDialogFragment extends DialogFragment {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				RequestHelperAsyncTask confirmAlertTask = new RequestHelperAsyncTask(mContext,
-						new ConfirmAlertRequestHelper(mContext, mAlert.getId()),
-						new RequestHelperAsyncTask.AsyncRequestListener() {
-							@Override
-							public void onSuccess(RequestHelper requestHelper) {
-								// TODO
-							}
-						});
+						new ConfirmAlertRequestHelper(mContext, mAlert.getId()), serverResponseListener);
 				confirmAlertTask.execute();
 			}
 		});
@@ -52,18 +47,34 @@ public class AlertResponseDialogFragment extends DialogFragment {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				RequestHelperAsyncTask cancelAlertTask = new RequestHelperAsyncTask(mContext,
-						new CancelAlertRequestHelper(mContext, mAlert.getId()),
-						new RequestHelperAsyncTask.AsyncRequestListener() {
-							@Override
-							public void onSuccess(RequestHelper requestHelper) {
-								// TODO
-							}
-						});
+						new CancelAlertRequestHelper(mContext, mAlert.getId()), serverResponseListener);
 				cancelAlertTask.execute();
 			}
 		});
 
 		return builder.create();
 	}
+
+	private final RequestHelperAsyncTask.AsyncRequestListener serverResponseListener = new RequestHelperAsyncTask.AsyncRequestListener() {
+		@Override
+		public void onSuccess(RequestHelper requestHelper) {
+			Toast.makeText(mContext, "Response saved.", Toast.LENGTH_SHORT).show();
+		}
+
+		@Override
+		public void onForbiddenException(RequestHelper requestHelper) {
+			Toast.makeText(mContext, "You cannot respond to your alert.", Toast.LENGTH_SHORT).show();
+		}
+
+		@Override
+		public void onInvalidRegionException(RequestHelper requestHelper) {
+			Toast.makeText(mContext, "Choose a region first.", Toast.LENGTH_SHORT).show();
+		}
+
+		@Override
+		public void onNotFoundException(RequestHelper requestHelper) {
+			Toast.makeText(mContext, "Alert not found.", Toast.LENGTH_SHORT).show();
+		}
+	};
 
 }
