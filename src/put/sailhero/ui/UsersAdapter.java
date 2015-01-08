@@ -10,10 +10,10 @@ import put.sailhero.provider.SailHeroContract;
 import put.sailhero.sync.AcceptFriendshipRequestHelper;
 import put.sailhero.sync.CancelFriendshipRequestHelper;
 import put.sailhero.sync.CreateFriendshipRequestHelper;
-import put.sailhero.sync.DeleteFriendshipRequestHelper;
 import put.sailhero.sync.DenyFriendshipRequestHelper;
 import put.sailhero.sync.RequestHelper;
 import put.sailhero.sync.RequestHelperAsyncTask;
+import put.sailhero.util.PrefUtils;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Typeface;
@@ -140,23 +140,26 @@ public class UsersAdapter implements ListAdapter {
 
 		if (status == SailHeroContract.Friendship.STATUS_STRANGER) {
 			bottomBoxView.setVisibility(View.GONE);
-			inviteButton.setVisibility(View.VISIBLE);
-			inviteButton.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					// TODO:
-					RequestHelperAsyncTask createFriendshipTask = new RequestHelperAsyncTask(mContext,
-							new CreateFriendshipRequestHelper(mContext, user.getId()),
-							new RequestHelperAsyncTask.AsyncRequestListener() {
-								@Override
-								public void onSuccess(RequestHelper requestHelper) {
-									Toast.makeText(mContext, "User invited.", Toast.LENGTH_SHORT).show();
-									notifyObservers();
-								}
-							});
-					createFriendshipTask.execute();
-				}
-			});
+			User currentUser = PrefUtils.getUser(mContext);
+			if (currentUser.getId() != user.getId()) {
+				inviteButton.setVisibility(View.VISIBLE);
+				inviteButton.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						// TODO:
+						RequestHelperAsyncTask createFriendshipTask = new RequestHelperAsyncTask(mContext,
+								new CreateFriendshipRequestHelper(mContext, user.getId()),
+								new RequestHelperAsyncTask.AsyncRequestListener() {
+									@Override
+									public void onSuccess(RequestHelper requestHelper) {
+										Toast.makeText(mContext, "User invited.", Toast.LENGTH_SHORT).show();
+										notifyObservers();
+									}
+								});
+						createFriendshipTask.execute();
+					}
+				});
+			}
 		} else if (status == SailHeroContract.Friendship.STATUS_ACCEPTED) {
 			bottomBoxView.setVisibility(View.GONE);
 			removeButton.setVisibility(View.VISIBLE);
@@ -164,7 +167,7 @@ public class UsersAdapter implements ListAdapter {
 				@Override
 				public void onClick(View v) {
 					RequestHelperAsyncTask deleteFriendshipTask = new RequestHelperAsyncTask(mContext,
-							new DeleteFriendshipRequestHelper(mContext, friendshipId),
+							new CancelFriendshipRequestHelper(mContext, friendshipId),
 							new RequestHelperAsyncTask.AsyncRequestListener() {
 								@Override
 								public void onSuccess(RequestHelper requestHelper) {
