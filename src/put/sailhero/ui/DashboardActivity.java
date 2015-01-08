@@ -270,6 +270,15 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 	}
 
 	@Override
+	protected void requestDataRefresh() {
+		super.requestDataRefresh();
+
+		SyncUtils.syncAlerts(this);
+		SyncUtils.syncUserData(this);
+		SyncUtils.syncRegions(this);
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.dashboard, menu);

@@ -13,7 +13,6 @@ import put.sailhero.service.AlertService.LocalBinder;
 import put.sailhero.util.AccountUtils;
 import put.sailhero.util.PrefUtils;
 import put.sailhero.util.StringUtils;
-import put.sailhero.util.SyncUtils;
 import put.sailhero.util.UnitUtils;
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -286,14 +285,8 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 	}
 
 	protected void requestDataRefresh() {
-		Account account = AccountUtils.getActiveAccount(getApplicationContext());
-		if (ContentResolver.isSyncActive(account, SailHeroContract.CONTENT_AUTHORITY)) {
-			Log.d(TAG, "Ignoring manual sync request because a sync is already in progress.");
-			return;
-		}
 		mManualSyncRequest = true;
 		Log.d(TAG, "Requesting manual data refresh.");
-		SyncUtils.syncAll(BaseActivity.this);
 	}
 
 	private SyncStatusObserver mSyncStatusObserver = new SyncStatusObserver() {

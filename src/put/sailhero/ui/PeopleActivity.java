@@ -9,6 +9,7 @@ import put.sailhero.R;
 import put.sailhero.model.User;
 import put.sailhero.provider.SailHeroContract;
 import put.sailhero.ui.widget.SlidingTabLayout;
+import put.sailhero.util.SyncUtils;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ListFragment;
@@ -84,6 +85,13 @@ public class PeopleActivity extends BaseActivity implements LoaderManager.Loader
 	@Override
 	protected void onPause() {
 		super.onPause();
+	}
+
+	@Override
+	protected void requestDataRefresh() {
+		super.requestDataRefresh();
+
+		SyncUtils.syncFriendships(this);
 	}
 
 	@Override
