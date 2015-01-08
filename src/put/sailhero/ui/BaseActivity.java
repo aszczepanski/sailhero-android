@@ -189,27 +189,36 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 		}
 	};
 
-	protected void onClosestAlertToRespondUpdate(Alert alertToRespond) {
-		Location lastKnownLocation = PrefUtils.getLastKnownLocation(BaseActivity.this);
-		if (lastKnownLocation != null && mAlertBarToolbar != null) {
-			if (alertToRespond != null
-					&& lastKnownLocation.distanceTo(alertToRespond.getLocation()) < PrefUtils.getAlertRadius(BaseActivity.this)) {
-				mAlertBarTypeTextView.setText(StringUtils.getStringForAlertType(BaseActivity.this,
-						alertToRespond.getAlertType()));
-				Integer displayedDistanceToAlert = UnitUtils.roundDistanceTo25(lastKnownLocation.distanceTo(alertToRespond.getLocation()));
-				mAlertBarDistanceTextView.setText(getResources().getQuantityString(R.plurals.alert_distance_in_metres,
-						displayedDistanceToAlert, displayedDistanceToAlert));
-				mAlertBarToolbar.setVisibility(View.VISIBLE);
-			} else {
-				mAlertBarToolbar.setVisibility(View.GONE);
-			}
+	protected void updateAlertBarToolbar(Location location, Alert alertToRespond) {
+		if (mAlertBarToolbar == null) {
+			return;
 		}
+
+		if (location != null && alertToRespond != null
+				&& location.distanceTo(alertToRespond.getLocation()) < PrefUtils.getAlertRadius(this)) {
+			mAlertBarTypeTextView.setText(StringUtils.getStringForAlertType(this, alertToRespond.getAlertType()));
+			Integer displayedDistanceToAlert = UnitUtils.roundDistanceTo25(location.distanceTo(alertToRespond.getLocation()));
+			mAlertBarDistanceTextView.setText(getResources().getQuantityString(R.plurals.alert_distance_in_metres,
+					displayedDistanceToAlert, displayedDistanceToAlert));
+			mAlertBarToolbar.setVisibility(View.VISIBLE);
+		} else {
+			mAlertBarToolbar.setVisibility(View.GONE);
+		}
+	}
+
+	protected void onClosestAlertToRespondUpdate(Alert alertToRespond) {
+		Location lastKnownLocation = PrefUtils.getLastKnownLocation(this);
+
+		updateAlertBarToolbar(lastKnownLocation, alertToRespond);
 	}
 
 	protected void onClosestAlertUpdate(Alert alert) {
 	}
 
 	protected void onLastKnownLocationUpdate(Location location) {
+		Alert alertToRespond = PrefUtils.getClosestAlertToRespond(this);
+
+		updateAlertBarToolbar(location, alertToRespond);
 	}
 
 	@Override
@@ -231,9 +240,9 @@ public class BaseActivity extends ActionBarActivity implements SharedPreferences
 		}
 
 		onLastKnownLocationUpdate(PrefUtils.getLastKnownLocation(BaseActivity.this));
+		onClosestAlertUpdate(PrefUtils.getClosestAlert(BaseActivity.this));
 
 		if (mAlertBarToolbar != null) {
-			onClosestAlertUpdate(PrefUtils.getClosestAlert(BaseActivity.this));
 			onClosestAlertToRespondUpdate(PrefUtils.getClosestAlertToRespond(BaseActivity.this));
 		}
 	}

@@ -136,6 +136,8 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 
 	@Override
 	protected void onLastKnownLocationUpdate(Location location) {
+		super.onLastKnownLocationUpdate(location);
+
 		if (location != null) {
 			UnitUtils.DegMinSec latitudeDegMinSec = UnitUtils.decimalToDegMinSec(location.getLatitude());
 			mLatitudeTextView.setText(String.format("%02d\u00B0%02d\u2032%02d\u2033", latitudeDegMinSec.getDegrees(),
@@ -159,24 +161,33 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 			mLatitudeTextView.setText("N/A");
 			mLongitudeTextView.setText("N/A");
 		}
+
+		Alert closestAlert = PrefUtils.getClosestAlert(this);
+		updateAlertBox(location, closestAlert);
 	}
 
 	@Override
 	protected void onClosestAlertUpdate(Alert alert) {
+		super.onClosestAlertUpdate(alert);
+
 		Location currentLocation = PrefUtils.getLastKnownLocation(DashboardActivity.this);
 
+		updateAlertBox(currentLocation, alert);
+	}
+
+	private void updateAlertBox(Location location, Alert alert) {
 		if (alert != null) {
 			mAlertTextView.setText(StringUtils.getStringForAlertType(DashboardActivity.this, alert.getAlertType()));
 
-			if (currentLocation != null) {
-				Integer distanceToAlert = UnitUtils.roundDistanceTo25(currentLocation.distanceTo(alert.getLocation()));
+			if (location != null) {
+				Integer distanceToAlert = UnitUtils.roundDistanceTo25(location.distanceTo(alert.getLocation()));
 
 				mAlertDistanceTextView.setText(distanceToAlert.toString());
 				mAlertDistanceUnitTextView.setVisibility(View.VISIBLE);
 
-				if (currentLocation.hasBearing() && distanceToAlert > 0) {
-					float currentBearing = currentLocation.getBearing();
-					float bearingToAlert = currentLocation.bearingTo(alert.getLocation());
+				if (location.hasBearing() && distanceToAlert > 0) {
+					float currentBearing = location.getBearing();
+					float bearingToAlert = location.bearingTo(alert.getLocation());
 
 					mArrowImageView.setRotation(bearingToAlert - currentBearing);
 					mArrowImageView.setVisibility(View.VISIBLE);
