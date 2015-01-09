@@ -11,7 +11,6 @@ import put.sailhero.sync.SelectRegionRequestHelper;
 import put.sailhero.util.AccountUtils;
 import put.sailhero.util.PrefUtils;
 import put.sailhero.util.SyncUtils;
-import put.sailhero.util.ThrottledContentObserver;
 import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.Context;
@@ -66,14 +65,6 @@ public class PreferenceActivity extends BaseActivity {
 	public static class PrefFragment extends PreferenceFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
 		private Context mContext;
-
-		private ThrottledContentObserver mRegionsObserver = new ThrottledContentObserver(
-				new ThrottledContentObserver.Callbacks() {
-					@Override
-					public void onThrottledContentObserverFired() {
-						onRegionsChanged();
-					}
-				});
 
 		private ListPreference mRegionListPreference;
 
@@ -153,6 +144,8 @@ public class PreferenceActivity extends BaseActivity {
 					return true;
 				}
 			});
+
+			getLoaderManager().initLoader(RegionQuery._TOKEN, null, this);
 		}
 
 		private void logoutUser() {
@@ -173,8 +166,6 @@ public class PreferenceActivity extends BaseActivity {
 		@Override
 		public void onResume() {
 			super.onResume();
-
-			onRegionsChanged();
 		}
 
 		@Override
@@ -185,16 +176,11 @@ public class PreferenceActivity extends BaseActivity {
 		@Override
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
-
-			getActivity().getContentResolver().registerContentObserver(SailHeroContract.Region.CONTENT_URI, true,
-					mRegionsObserver);
 		}
 
 		@Override
 		public void onDetach() {
 			super.onDetach();
-
-			getActivity().getContentResolver().unregisterContentObserver(mRegionsObserver);
 		}
 
 		private interface RegionQuery {
@@ -207,13 +193,6 @@ public class PreferenceActivity extends BaseActivity {
 
 			int REGION_ID = 0;
 			int REGION_FULL_NAME = 1;
-		}
-
-		private void onRegionsChanged() {
-			Toast.makeText(mContext, "onRegionsChanged()", Toast.LENGTH_SHORT).show();
-			Log.d(TAG, "onRegionsChanged()");
-
-			getLoaderManager().restartLoader(RegionQuery._TOKEN, null, PrefFragment.this);
 		}
 
 		@Override
@@ -229,8 +208,6 @@ public class PreferenceActivity extends BaseActivity {
 			if (getActivity() == null || !isAdded()) {
 				return;
 			}
-
-			Toast.makeText(mContext, "cursor load finished", Toast.LENGTH_SHORT).show();
 
 			if (mRegionListPreference != null) {
 				CharSequence[] regionsEntries = new CharSequence[data.getCount()];
