@@ -76,6 +76,8 @@ public class LoginActivity extends Activity {
 							@Override
 							public void onInvalidResourceOwnerException(RequestHelper requestHelper) {
 								Toast.makeText(mContext, logInRequestHelper.mErrorMessage, Toast.LENGTH_LONG).show();
+
+								mPasswordEditText.setText("");
 							}
 						});
 
