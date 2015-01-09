@@ -182,24 +182,30 @@ public class AlertService extends Service implements GooglePlayServicesClient.Co
 		}
 
 		if (key.equals(PrefUtils.PREF_CLOSEST_ALERT)) {
-			Alert closestAlert = PrefUtils.getClosestAlert(this);
-			Location lastKnownLocation = PrefUtils.getLastKnownLocation(this);
+			invalidateNotification();
+		} else if (key.equals(PrefUtils.PREF_LAST_KNOWN_LOCATION)) {
+			invalidateNotification();
+		}
+	}
 
-			if (closestAlert != null && lastKnownLocation != null) {
-				float distance = lastKnownLocation.distanceTo(closestAlert.getLocation());
-				Integer displayedDistanceToAlert = UnitUtils.roundDistanceTo25(distance);
+	private void invalidateNotification() {
+		Alert closestAlert = PrefUtils.getClosestAlert(this);
+		Location lastKnownLocation = PrefUtils.getLastKnownLocation(this);
 
-				String displayedAlertName = StringUtils.getStringForAlertType(this, closestAlert.getAlertType());
-				mNotificationBuilder.setContentText(displayedAlertName
-						+ " - "
-						+ getResources().getQuantityString(R.plurals.alert_distance_in_metres,
-								displayedDistanceToAlert, displayedDistanceToAlert));
+		if (closestAlert != null && lastKnownLocation != null) {
+			float distance = lastKnownLocation.distanceTo(closestAlert.getLocation());
+			Integer displayedDistanceToAlert = UnitUtils.roundDistanceTo25(distance);
 
-				mNotificationManager.notify(ALERT_NOTIFICATION_ID, mNotificationBuilder.build());
-			} else {
-				mNotificationBuilder.setContentText("");
-				mNotificationManager.notify(ALERT_NOTIFICATION_ID, mNotificationBuilder.build());
-			}
+			String displayedAlertName = StringUtils.getStringForAlertType(this, closestAlert.getAlertType());
+			mNotificationBuilder.setContentText(displayedAlertName
+					+ " - "
+					+ getResources().getQuantityString(R.plurals.alert_distance_in_metres, displayedDistanceToAlert,
+							displayedDistanceToAlert));
+
+			mNotificationManager.notify(ALERT_NOTIFICATION_ID, mNotificationBuilder.build());
+		} else {
+			mNotificationBuilder.setContentText("");
+			mNotificationManager.notify(ALERT_NOTIFICATION_ID, mNotificationBuilder.build());
 		}
 	}
 }
