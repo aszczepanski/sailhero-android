@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.Button;
@@ -103,7 +104,9 @@ public class MessageActivity extends BaseActivity implements SailHeroListFragmen
 								Toast.makeText(MessageActivity.this, "Message sent.", Toast.LENGTH_SHORT).show();
 								Log.d(TAG, "Message sent");
 
-								// TODO: fetch messages
+								mNewMessageEditText.setText("");
+
+								hideSoftKeyboardFrom(mNewMessageEditText);
 							}
 
 							@Override
@@ -280,6 +283,13 @@ public class MessageActivity extends BaseActivity implements SailHeroListFragmen
 		mFirstVisibleItem = firstVisibleItem;
 		mVisibleItemCount = visibleItemCount;
 		mTotalItemCount = totalItemCount;
+	}
+
+	private void hideSoftKeyboardFrom(final EditText et) {
+		if (getCurrentFocus() != null && getCurrentFocus() instanceof EditText) {
+			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
+		}
 	}
 
 	private class LoadMoreMessagesAsyncTask extends AsyncTask<Void, Void, Void> {
