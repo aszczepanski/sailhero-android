@@ -14,6 +14,7 @@ import android.accounts.Account;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.os.Bundle;
@@ -57,6 +58,17 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_dashboard);
+
+		if (!isTaskRoot()) {
+			final Intent intent = getIntent();
+			final String intentAction = intent.getAction();
+			if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && intentAction != null
+					&& intentAction.equals(Intent.ACTION_MAIN)) {
+				Log.w(TAG, "Dashboard Activity is not the root.  Finishing Dashboard Activity instead of launching.");
+				finish();
+				return;
+			}
+		}
 
 		Log.i(TAG, "MainActivity::onCreate");
 
