@@ -44,7 +44,7 @@ public class PoiActivity extends BaseActivity implements LoaderManager.LoaderCal
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_people);
+		setContentView(R.layout.activity_poi);
 
 		overridePendingTransition(0, 0);
 
