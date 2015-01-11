@@ -1,5 +1,6 @@
 package put.sailhero.sync;
 
+import put.sailhero.exception.InvalidRegionException;
 import put.sailhero.util.SyncUtils;
 import android.accounts.Account;
 import android.annotation.TargetApi;
@@ -9,19 +10,26 @@ import android.content.Context;
 import android.content.SyncResult;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
 	public static final String TAG = "sailhero";
 
+	private Handler mHandler;
+
 	public SyncAdapter(Context context, boolean autoInitialize) {
 		super(context, autoInitialize);
+
+		mHandler = new Handler();
 	}
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public SyncAdapter(Context context, boolean autoInitialize, boolean allowParallelSyncs) {
 		super(context, autoInitialize, allowParallelSyncs);
+
+		mHandler = new Handler();
 	}
 
 	@Override
@@ -42,55 +50,49 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			return;
 		}
 
-		// TODO: make separate functions
 		if ((syncItemsMask & SyncUtils.SYNC_ALERTS) > 0) {
 			RetrieveAlertsRequestHelper retrieveAlertsRequestHelper = new RetrieveAlertsRequestHelper(getContext());
-			try {
-				SyncUtils.doAuthenticatedRequest(getContext(), retrieveAlertsRequestHelper);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			performSyncAndHandleErrors(retrieveAlertsRequestHelper);
 		}
 		if ((syncItemsMask & SyncUtils.SYNC_FRIENDSHIPS) > 0) {
 			RetrieveFriendshipsRequestHelper retrieveFriendshipsRequestHelper = new RetrieveFriendshipsRequestHelper(
 					getContext());
-			try {
-				SyncUtils.doAuthenticatedRequest(getContext(), retrieveFriendshipsRequestHelper);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			performSyncAndHandleErrors(retrieveFriendshipsRequestHelper);
 		}
 		if ((syncItemsMask & SyncUtils.SYNC_PORTS) > 0) {
 			RetrievePortsRequestHelper retrievePortsRequestHelper = new RetrievePortsRequestHelper(getContext());
-			try {
-				SyncUtils.doAuthenticatedRequest(getContext(), retrievePortsRequestHelper);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			performSyncAndHandleErrors(retrievePortsRequestHelper);
 		}
 		if ((syncItemsMask & SyncUtils.SYNC_REGIONS) > 0) {
 			RetrieveRegionsRequestHelper retrieveRegionsRequestHelper = new RetrieveRegionsRequestHelper(getContext());
-			try {
-				SyncUtils.doAuthenticatedRequest(getContext(), retrieveRegionsRequestHelper);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			performSyncAndHandleErrors(retrieveRegionsRequestHelper);
 		}
 		if ((syncItemsMask & SyncUtils.SYNC_USER_DATA) > 0) {
 			RetrieveUserRequestHelper retrieveUserRequestHelper = new RetrieveUserRequestHelper(getContext());
-			try {
-				SyncUtils.doAuthenticatedRequest(getContext(), retrieveUserRequestHelper);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			performSyncAndHandleErrors(retrieveUserRequestHelper);
 		}
 		if ((syncItemsMask & SyncUtils.SYNC_ROUTES) > 0) {
 			RetrieveRoutesRequestHelper retrieveRoutesRequestHelper = new RetrieveRoutesRequestHelper(getContext());
-			try {
-				SyncUtils.doAuthenticatedRequest(getContext(), retrieveRoutesRequestHelper);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			performSyncAndHandleErrors(retrieveRoutesRequestHelper);
+		}
+	}
+
+	private void performSyncAndHandleErrors(final RequestHelper requestHelper) {
+		try {
+			SyncUtils.doAuthenticatedRequest(getContext(), requestHelper);
+		} catch (InvalidRegionException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			final long delayMillis = 10000l;
+
+			mHandler.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					performSyncAndHandleErrors(requestHelper);
+				}
+			}, delayMillis);
 		}
 	}
 }
