@@ -100,7 +100,8 @@ public class AlertService extends Service implements GooglePlayServicesClient.Co
 			@Override
 			public void onThrottledContentObserverFired() {
 				Log.i(Config.TAG, "AlertService: requesting alerts refresh");
-				refreshAlertData(null);
+				Location location = PrefUtils.getLastKnownLocation(getApplicationContext());
+				refreshAlertData(location);
 			}
 		});
 		getContentResolver().registerContentObserver(uri, true, mAlertsObserver);
