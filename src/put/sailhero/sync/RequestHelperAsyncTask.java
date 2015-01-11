@@ -16,6 +16,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 public class RequestHelperAsyncTask extends AsyncTask<Void, Void, Void> {
 
@@ -38,6 +39,7 @@ public class RequestHelperAsyncTask extends AsyncTask<Void, Void, Void> {
 		mContext = context;
 		mRequestHelper = requestHelper;
 		mAsyncRequestListener = asyncRequestListener;
+		mAsyncRequestListener.setContext(mContext);
 
 		mDialogTitle = dialogTitle;
 		mDialogMessage = dialogMessage;
@@ -109,50 +111,67 @@ public class RequestHelperAsyncTask extends AsyncTask<Void, Void, Void> {
 	}
 
 	public static abstract class AsyncRequestListener {
+		protected Context mContext;
+
+		void setContext(Context context) {
+			mContext = context;
+		}
+
 		public abstract void onSuccess(RequestHelper requestHelper);
 
 		public void onForbiddenException(RequestHelper requestHelper) {
-			Log.e(TAG, "unexpected error");
+			Log.e(TAG, "unexpected error - forbidden");
+			Toast.makeText(mContext, "Unexpected error.", Toast.LENGTH_SHORT).show();
 		}
 
 		public void onInvalidRegionException(RequestHelper requestHelper) {
-			Log.e(TAG, "unexpected error");
+			Log.e(TAG, "unexpected error - invalid region");
+			Toast.makeText(mContext, "Unexpected error.", Toast.LENGTH_SHORT).show();
 		}
 
 		public void onInvalidResourceOwnerException(RequestHelper requestHelper) {
-			Log.e(TAG, "unexpected error");
+			Log.e(TAG, "unexpected error - invalid resource owner");
+			Toast.makeText(mContext, "Unexpected error.", Toast.LENGTH_SHORT).show();
 		}
 
 		public void onNotFoundException(RequestHelper requestHelper) {
-			Log.e(TAG, "unexpected error");
+			Log.e(TAG, "unexpected error - not found");
+			Toast.makeText(mContext, "Unexpected error.", Toast.LENGTH_SHORT).show();
 		}
 
 		public void onNullUserException(RequestHelper requestHelper) {
-			Log.e(TAG, "unexpected error");
+			Log.e(TAG, "unexpected error - null user");
+			Toast.makeText(mContext, "Unexpected error.", Toast.LENGTH_SHORT).show();
 		}
 
 		public void onSameUserException(RequestHelper requestHelper) {
-			Log.e(TAG, "unexpected error");
+			Log.e(TAG, "unexpected error - same user");
+			Toast.makeText(mContext, "Unexpected error.", Toast.LENGTH_SHORT).show();
 		}
 
 		public void onSystemException(RequestHelper requestHelper) {
-			Log.e(TAG, "unexpected error");
+			Log.e(TAG, "unexpected error - system");
+			Toast.makeText(mContext, "Unexpected error.", Toast.LENGTH_SHORT).show();
 		}
 
 		public void onTransportException(RequestHelper requestHelper) {
-			Log.e(TAG, "unexpected error");
+			Log.e(TAG, "unexpected error - transport");
+			Toast.makeText(mContext, "Transport error.", Toast.LENGTH_SHORT).show();
 		}
 
 		public void onUnauthorizedException(RequestHelper requestHelper) {
-			Log.e(TAG, "unexpected error");
+			Log.e(TAG, "unexpected error - unauthorized");
+			Toast.makeText(mContext, "Unexpected error.", Toast.LENGTH_SHORT).show();
 		}
 
 		public void onUnprocessableEntityException(RequestHelper requestHelper, String entityErrorsJson) {
-			Log.e(TAG, "unexpected error");
+			Log.e(TAG, "unexpected error - unprocessable entity");
+			Toast.makeText(mContext, "Unexpected error.", Toast.LENGTH_SHORT).show();
 		}
 
 		public void onYachtAlreadyCreatedException(RequestHelper requestHelper) {
-			Log.e(TAG, "unexpected error");
+			Log.e(TAG, "unexpected error - yacht already created");
+			Toast.makeText(mContext, "Unexpected error.", Toast.LENGTH_SHORT).show();
 		}
 	}
 }
