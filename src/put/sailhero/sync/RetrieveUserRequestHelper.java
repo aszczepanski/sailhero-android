@@ -14,6 +14,7 @@ import put.sailhero.model.Region;
 import put.sailhero.model.User;
 import put.sailhero.model.Yacht;
 import put.sailhero.util.PrefUtils;
+import put.sailhero.util.SyncUtils;
 import android.content.Context;
 import android.net.Uri;
 
@@ -96,7 +97,16 @@ public class RetrieveUserRequestHelper extends RequestHelper {
 	@Override
 	public void storeData() throws SystemException {
 		PrefUtils.setUser(mContext, mRetrievedUser);
+
+		Region oldRegion = PrefUtils.getRegion(mContext);
 		PrefUtils.setRegion(mContext, mRetrievedRegion);
+
 		PrefUtils.setYacht(mContext, mRetrievedYacht);
+
+		if (!oldRegion.getId().equals(mRetrievedRegion.getId())) {
+			SyncUtils.syncAlerts(mContext);
+			SyncUtils.syncPorts(mContext);
+			SyncUtils.syncRoutes(mContext);
+		}
 	}
 }
