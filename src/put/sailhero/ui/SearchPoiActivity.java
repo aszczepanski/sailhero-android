@@ -175,13 +175,17 @@ public class SearchPoiActivity extends BaseActivity implements SailHeroListFragm
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		LinkedList<PoiModel> poiList = new LinkedList<PoiModel>();
 
-		while (data.moveToNext()) {
-			Port port = new Port();
-			port.setId(data.getInt(PortQuery.PORT_ID));
-			port.setName(data.getString(PortQuery.PORT_NAME));
-			port.setCity(data.getString(PortQuery.PORT_CITY));
+		if (data != null && data.getCount() > 0) {
+			data.moveToPosition(-1);
 
-			poiList.add(port);
+			while (data.moveToNext()) {
+				Port port = new Port();
+				port.setId(data.getInt(PortQuery.PORT_ID));
+				port.setName(data.getString(PortQuery.PORT_NAME));
+				port.setCity(data.getString(PortQuery.PORT_CITY));
+
+				poiList.add(port);
+			}
 		}
 
 		mPoiAdapter.updateItems(poiList);

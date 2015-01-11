@@ -105,8 +105,9 @@ public class MessageActivity extends BaseActivity implements SailHeroListFragmen
 								Log.d(TAG, "Message sent");
 
 								mNewMessageEditText.setText("");
-
 								hideSoftKeyboardFrom(mNewMessageEditText);
+
+								// TODO:  fetch messages
 							}
 
 							@Override

@@ -210,22 +210,39 @@ public class PreferenceActivity extends BaseActivity {
 			}
 
 			if (mRegionListPreference != null) {
+				Region currentRegion = PrefUtils.getRegion(mContext);
+				boolean isCurrentRegionOnList = false;
+
 				CharSequence[] regionsEntries = new CharSequence[data.getCount()];
 				CharSequence[] regionsEntryValues = new CharSequence[data.getCount()];
 
-				while (data.moveToNext()) {
-					regionsEntries[data.getPosition()] = data.getString(RegionQuery.REGION_FULL_NAME);
-					regionsEntryValues[data.getPosition()] = String.valueOf(data.getString(RegionQuery.REGION_ID));
+				if (data != null && data.getCount() > 0) {
+					data.moveToPosition(-1);
+
+					while (data.moveToNext()) {
+						regionsEntries[data.getPosition()] = data.getString(RegionQuery.REGION_FULL_NAME);
+						regionsEntryValues[data.getPosition()] = String.valueOf(data.getString(RegionQuery.REGION_ID));
+
+						if (regionsEntryValues[data.getPosition()].equals(currentRegion.getId().toString())) {
+							isCurrentRegionOnList = true;
+						}
+					}
+				}
+
+				if (currentRegion != null && !isCurrentRegionOnList) {
+					SyncUtils.syncRegions(mContext);
+					mRegionListPreference.setEnabled(false);
+					return;
 				}
 
 				mRegionListPreference.setEntries(regionsEntries);
 				mRegionListPreference.setEntryValues(regionsEntryValues);
 
-				Region currentRegion = PrefUtils.getRegion(mContext);
 				// TODO:
 				if (currentRegion == null) {
 					mRegionListPreference.setValue(null);
 				} else {
+					Log.d(TAG, "current region " + currentRegion.getId());
 					mRegionListPreference.setValue(currentRegion.getId().toString());
 				}
 
@@ -235,7 +252,6 @@ public class PreferenceActivity extends BaseActivity {
 					mRegionListPreference.setEnabled(false);
 				}
 			}
-
 		}
 
 		@Override

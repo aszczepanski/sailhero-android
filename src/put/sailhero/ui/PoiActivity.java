@@ -169,15 +169,19 @@ public class PoiActivity extends BaseActivity implements LoaderManager.LoaderCal
 
 		Log.e(TAG, "size: " + cursor.getCount());
 
-		while (cursor.moveToNext()) {
-			Port port = new Port();
-			port.setId(cursor.getInt(PortQuery.PORT_ID));
-			port.setName(cursor.getString(PortQuery.PORT_NAME));
-			port.setCity(cursor.getString(PortQuery.PORT_CITY));
+		if (cursor != null && cursor.getCount() > 0) {
+			cursor.moveToPosition(-1);
 
-			poiList.add(port);
+			while (cursor.moveToNext()) {
+				Port port = new Port();
+				port.setId(cursor.getInt(PortQuery.PORT_ID));
+				port.setName(cursor.getString(PortQuery.PORT_NAME));
+				port.setCity(cursor.getString(PortQuery.PORT_CITY));
 
-			Log.e(TAG, "port: " + port.getName());
+				poiList.add(port);
+
+				Log.e(TAG, "port: " + port.getName());
+			}
 		}
 
 		mPortsAdapter.updateItems(poiList);

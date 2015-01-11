@@ -28,16 +28,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
-import com.google.android.gms.location.LocationClient;
-
-public class DashboardActivity extends BaseActivity implements GooglePlayServicesClient.ConnectionCallbacks,
-		GooglePlayServicesClient.OnConnectionFailedListener {
+public class DashboardActivity extends BaseActivity {
 
 	private Context mContext;
-
-	private LocationClient mLocationClient;
 
 	private TextView mSpeedTextView;
 	private TextView mSpeedUnitTextView;
@@ -73,8 +66,6 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 		Log.i(TAG, "MainActivity::onCreate");
 
 		mContext = DashboardActivity.this;
-
-		mLocationClient = new LocationClient(mContext, this, this);
 
 		mSpeedTextView = (TextView) findViewById(R.id.speed_text_view);
 		mSpeedUnitTextView = (TextView) findViewById(R.id.speed_unit_text_view);
@@ -127,12 +118,11 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 	}
 
 	private void submitAlert(String alertType) {
-		if (!mLocationClient.isConnected()) {
-			Toast.makeText(mContext, "Location services are not connected.", Toast.LENGTH_SHORT).show();
+		final Location currentLocation = PrefUtils.getLastKnownLocation(mContext);
+		if (currentLocation == null) {
+			Toast.makeText(mContext, "Location data is not ready.", Toast.LENGTH_SHORT).show();
 			return;
 		}
-
-		final Location currentLocation = mLocationClient.getLastLocation();
 
 		final CreateAlertRequestHelper createAlertRequestHelper = new CreateAlertRequestHelper(mContext, alertType,
 				currentLocation.getLatitude(), currentLocation.getLongitude(), "");
@@ -249,8 +239,6 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 	protected void onStart() {
 		Log.d(TAG, "MainActivity::onStart");
 		super.onStart();
-
-		mLocationClient.connect();
 	}
 
 	@Override
@@ -263,8 +251,6 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 	protected void onStop() {
 		Log.d(TAG, "MainActivity::onStop");
 		super.onStop();
-
-		mLocationClient.disconnect();
 	}
 
 	@Override
@@ -284,8 +270,9 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
 		Log.d(TAG, "MainActivity::onSaveInstanceState");
+
+		super.onSaveInstanceState(outState);
 	}
 
 	@Override
@@ -315,21 +302,5 @@ public class DashboardActivity extends BaseActivity implements GooglePlayService
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-
-	@Override
-	public void onConnectionFailed(ConnectionResult connectionResult) {
-		Toast.makeText(mContext, "Cannot connect to location services.", Toast.LENGTH_SHORT).show();
-		Log.e(TAG, "Cannot connect to location services.");
-	}
-
-	@Override
-	public void onConnected(Bundle bundle) {
-	}
-
-	@Override
-	public void onDisconnected() {
-		Toast.makeText(mContext, "Location services disconnected.", Toast.LENGTH_SHORT).show();
-		Log.e(TAG, "Location services disconnected.");
 	}
 }

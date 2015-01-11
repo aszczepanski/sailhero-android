@@ -187,28 +187,31 @@ public class PeopleActivity extends BaseActivity implements LoaderManager.Loader
 		LinkedList<UsersAdapter.UserContext> friendshipsPending = new LinkedList<UsersAdapter.UserContext>();
 		LinkedList<UsersAdapter.UserContext> friendshipsSent = new LinkedList<UsersAdapter.UserContext>();
 
-		Log.e(TAG, "!!1!!!!!!!!!!!!!!!!!!!!!!!!!");
 		Log.e(TAG, "size: " + cursor.getCount());
 
-		while (cursor.moveToNext()) {
-			User friend = new User();
-			friend.setId(cursor.getInt(FriendshipQuery.FRIENDSHIP_FRIEND_ID));
-			friend.setEmail(cursor.getString(FriendshipQuery.FRIENDSHIP_FRIEND_EMAIL));
-			friend.setName(cursor.getString(FriendshipQuery.FRIENDSHIP_FRIEND_NAME));
-			friend.setSurname(cursor.getString(FriendshipQuery.FRIENDSHIP_FRIEND_SURNAME));
-			friend.setAvatarUrl(cursor.getString(FriendshipQuery.FRIENDSHIP_FRIEND_AVATAR_URL));
+		if (cursor != null && cursor.getCount() > 0) {
+			cursor.moveToPosition(-1);
 
-			int status = cursor.getInt(FriendshipQuery.FRIENDSHIP_STATUS);
-			int friendshipId = cursor.getInt(FriendshipQuery.FRIENDSHIP_ID);
-			if (status == SailHeroContract.Friendship.STATUS_ACCEPTED) {
-				friendshipsAccepted.add(new UsersAdapter.UserContext(friend, status, friendshipId));
-			} else if (status == SailHeroContract.Friendship.STATUS_PENDING) {
-				friendshipsPending.add(new UsersAdapter.UserContext(friend, status, friendshipId));
-			} else if (status == SailHeroContract.Friendship.STATUS_SENT) {
-				friendshipsSent.add(new UsersAdapter.UserContext(friend, status, friendshipId));
+			while (cursor.moveToNext()) {
+				User friend = new User();
+				friend.setId(cursor.getInt(FriendshipQuery.FRIENDSHIP_FRIEND_ID));
+				friend.setEmail(cursor.getString(FriendshipQuery.FRIENDSHIP_FRIEND_EMAIL));
+				friend.setName(cursor.getString(FriendshipQuery.FRIENDSHIP_FRIEND_NAME));
+				friend.setSurname(cursor.getString(FriendshipQuery.FRIENDSHIP_FRIEND_SURNAME));
+				friend.setAvatarUrl(cursor.getString(FriendshipQuery.FRIENDSHIP_FRIEND_AVATAR_URL));
+
+				int status = cursor.getInt(FriendshipQuery.FRIENDSHIP_STATUS);
+				int friendshipId = cursor.getInt(FriendshipQuery.FRIENDSHIP_ID);
+				if (status == SailHeroContract.Friendship.STATUS_ACCEPTED) {
+					friendshipsAccepted.add(new UsersAdapter.UserContext(friend, status, friendshipId));
+				} else if (status == SailHeroContract.Friendship.STATUS_PENDING) {
+					friendshipsPending.add(new UsersAdapter.UserContext(friend, status, friendshipId));
+				} else if (status == SailHeroContract.Friendship.STATUS_SENT) {
+					friendshipsSent.add(new UsersAdapter.UserContext(friend, status, friendshipId));
+				}
+
+				Log.e(TAG, "friendship: " + friend.getEmail() + " " + status);
 			}
-
-			Log.e(TAG, "friendship: " + friend.getEmail() + " " + status);
 		}
 
 		mUserAdapters[FRIENDSHIP_ACCEPTED_FRAGMENT].updateItems(friendshipsAccepted);
