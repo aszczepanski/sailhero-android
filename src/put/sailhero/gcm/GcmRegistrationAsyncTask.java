@@ -35,14 +35,9 @@ public class GcmRegistrationAsyncTask extends AsyncTask<Void, Void, Void> {
 				mGcm = GoogleCloudMessaging.getInstance(mContext);
 			}
 			mRegistrationId = mGcm.register(Config.GCM_SENDER_ID);
-			// msg = "Device registered, registration ID=" + regId;
 
 			RegisterGcmRequestHelper requestHelper = new RegisterGcmRequestHelper(mContext, mRegistrationId);
-			try {
-				SyncUtils.doAuthenticatedRequest(mContext, requestHelper);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			SyncUtils.doAuthenticatedRequest(mContext, requestHelper);
 
 			PrefUtils.setGcmRegistrationId(mContext, mRegistrationId);
 		} catch (Exception ex) {
