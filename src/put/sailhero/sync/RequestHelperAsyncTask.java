@@ -2,7 +2,6 @@ package put.sailhero.sync;
 
 import put.sailhero.exception.ForbiddenException;
 import put.sailhero.exception.InvalidRegionException;
-import put.sailhero.exception.InvalidResourceOwnerException;
 import put.sailhero.exception.NotFoundException;
 import put.sailhero.exception.NullUserException;
 import put.sailhero.exception.SameUserException;
@@ -78,9 +77,6 @@ public class RequestHelperAsyncTask extends AsyncTask<Void, Void, Void> {
 		} else if (mException instanceof InvalidRegionException) {
 			Log.e(TAG, "invalid region exception");
 			mAsyncRequestListener.onInvalidRegionException(mRequestHelper);
-		} else if (mException instanceof InvalidResourceOwnerException) {
-			Log.e(TAG, mException.getMessage());
-			mAsyncRequestListener.onInvalidResourceOwnerException(mRequestHelper);
 		} else if (mException instanceof NotFoundException) {
 			Log.e(TAG, "not found exception");
 			mAsyncRequestListener.onNotFoundException(mRequestHelper);
@@ -126,11 +122,6 @@ public class RequestHelperAsyncTask extends AsyncTask<Void, Void, Void> {
 
 		public void onInvalidRegionException(RequestHelper requestHelper) {
 			Log.e(TAG, "unexpected error - invalid region");
-			Toast.makeText(mContext, "Unexpected error.", Toast.LENGTH_SHORT).show();
-		}
-
-		public void onInvalidResourceOwnerException(RequestHelper requestHelper) {
-			Log.e(TAG, "unexpected error - invalid resource owner");
 			Toast.makeText(mContext, "Unexpected error.", Toast.LENGTH_SHORT).show();
 		}
 

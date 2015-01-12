@@ -10,7 +10,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import put.sailhero.Config;
 import put.sailhero.exception.ForbiddenException;
 import put.sailhero.exception.InvalidRegionException;
-import put.sailhero.exception.InvalidResourceOwnerException;
 import put.sailhero.exception.NoSpotException;
 import put.sailhero.exception.NoYachtException;
 import put.sailhero.exception.NotFoundException;
@@ -42,7 +41,7 @@ public abstract class RequestHelper {
 	protected Context mContext;
 
 	protected static final String CHARSET = "UTF-8";
-	
+
 	protected static final String PATH_API = "api";
 	protected static final String PATH_VERSION = "v1";
 	protected static final String PATH_I18N = "en";
@@ -121,9 +120,8 @@ public abstract class RequestHelper {
 	}
 
 	public void doRequest() throws TransportException, UnauthorizedException, SystemException,
-			UnprocessableEntityException, InvalidResourceOwnerException, ForbiddenException, NotFoundException,
-			InvalidRegionException, SameUserException, NullUserException, YachtAlreadyCreatedException,
-			NoSpotException, NoYachtException {
+			UnprocessableEntityException, ForbiddenException, NotFoundException, InvalidRegionException,
+			SameUserException, NullUserException, YachtAlreadyCreatedException, NoSpotException, NoYachtException {
 		prepareHttpUriRequest();
 
 		try {
@@ -135,9 +133,8 @@ public abstract class RequestHelper {
 	}
 
 	protected abstract void parseResponse() throws UnauthorizedException, SystemException,
-			UnprocessableEntityException, InvalidResourceOwnerException, ForbiddenException, NotFoundException,
-			InvalidRegionException, SameUserException, NullUserException, YachtAlreadyCreatedException,
-			NoSpotException, NoYachtException;
+			UnprocessableEntityException, ForbiddenException, NotFoundException, InvalidRegionException,
+			SameUserException, NullUserException, YachtAlreadyCreatedException, NoSpotException, NoYachtException;
 
 	public void storeData() throws SystemException {
 	}
