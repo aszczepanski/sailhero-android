@@ -1,5 +1,9 @@
 package put.sailhero.sync;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import put.sailhero.exception.InvalidRegionException;
 import put.sailhero.util.SyncUtils;
 import android.accounts.Account;
@@ -10,26 +14,21 @@ import android.content.Context;
 import android.content.SyncResult;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
 	public static final String TAG = "sailhero";
 
-	private Handler mHandler;
+	private final ScheduledExecutorService mScheduler = Executors.newScheduledThreadPool(1);
 
 	public SyncAdapter(Context context, boolean autoInitialize) {
 		super(context, autoInitialize);
-
-		mHandler = new Handler();
 	}
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public SyncAdapter(Context context, boolean autoInitialize, boolean allowParallelSyncs) {
 		super(context, autoInitialize, allowParallelSyncs);
-
-		mHandler = new Handler();
 	}
 
 	@Override
@@ -85,14 +84,15 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		} catch (Exception e) {
 			e.printStackTrace();
 
-			final long delayMillis = 10000l;
+			final long delayMinutes = 15l;
 
-			mHandler.postDelayed(new Runnable() {
+			final Runnable syncCommand = new Runnable() {
 				@Override
 				public void run() {
 					performSyncAndHandleErrors(requestHelper);
 				}
-			}, delayMillis);
+			};
+			mScheduler.schedule(syncCommand, delayMinutes, TimeUnit.MINUTES);
 		}
 	}
 }
