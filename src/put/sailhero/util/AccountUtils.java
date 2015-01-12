@@ -1,17 +1,22 @@
 package put.sailhero.util;
 
+import put.sailhero.provider.SailHeroContract;
 import put.sailhero.ui.LoginActivity;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 
 public class AccountUtils {
 
 	public static final String ACCOUNT_TYPE = "put.sailhero.account";
 	public static final String ACCESS_TOKEN_TYPE = "put.sailhero.token.access";
 	public static final String REFRESH_TOKEN_TYPE = "put.sailhero.token.refresh";
+
+	public static final long PERIODIC_SYNC_POLL_FREQUENCY = 86400l;
 
 	public static void addAccount(Context context, String userName, String accessToken, String refreshToken) {
 		AccountManager accountManager = AccountManager.get(context);
@@ -23,6 +28,11 @@ public class AccountUtils {
 
 		accountManager.setAuthToken(account, ACCESS_TOKEN_TYPE, accessToken);
 		accountManager.setAuthToken(account, REFRESH_TOKEN_TYPE, refreshToken);
+
+		Bundle bundle = new Bundle();
+		bundle.putInt(SyncUtils.SYNC_EXTRAS_ITEMS_MASK, SyncUtils.SYNC_PORTS | SyncUtils.SYNC_ROUTES);
+		ContentResolver.addPeriodicSync(account, SailHeroContract.CONTENT_AUTHORITY, bundle,
+				PERIODIC_SYNC_POLL_FREQUENCY);
 	}
 
 	public static Account getActiveAccount(Context context) {
