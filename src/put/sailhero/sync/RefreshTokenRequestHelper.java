@@ -11,7 +11,6 @@ import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import put.sailhero.exception.InvalidResourceOwnerException;
 import put.sailhero.exception.SystemException;
 import put.sailhero.exception.UnauthorizedException;
 import put.sailhero.model.User;
@@ -107,7 +106,7 @@ public class RefreshTokenRequestHelper extends RequestHelper {
 	}
 
 	@Override
-	protected void parseResponse() throws SystemException, UnauthorizedException, InvalidResourceOwnerException {
+	protected void parseResponse() throws SystemException, UnauthorizedException {
 		int statusCode = mHttpResponse.getStatusLine().getStatusCode();
 		String responseBody = "";
 		try {
@@ -146,9 +145,9 @@ public class RefreshTokenRequestHelper extends RequestHelper {
 				throw new SystemException(e.getMessage());
 			}
 			if (!TextUtils.isEmpty(error)) {
-				if (error.equalsIgnoreCase("invalid_resource_owner")) {
+				if (error.equalsIgnoreCase("invalid_grant")) {
 					mErrorMessage = errorMessage;
-					throw new InvalidResourceOwnerException(errorMessage);
+					throw new UnauthorizedException(errorMessage);
 				} else {
 					throw new SystemException(errorMessage);
 				}
