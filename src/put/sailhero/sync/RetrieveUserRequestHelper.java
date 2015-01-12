@@ -96,6 +96,7 @@ public class RetrieveUserRequestHelper extends RequestHelper {
 
 	@Override
 	public void storeData() throws SystemException {
+		User oldUser = PrefUtils.getUser(mContext);
 		PrefUtils.setUser(mContext, mRetrievedUser);
 
 		Region oldRegion = PrefUtils.getRegion(mContext);
@@ -103,7 +104,7 @@ public class RetrieveUserRequestHelper extends RequestHelper {
 
 		PrefUtils.setYacht(mContext, mRetrievedYacht);
 
-		if (!oldRegion.getId().equals(mRetrievedRegion.getId())) {
+		if (oldUser != null && !mRetrievedRegion.getId().equals(oldRegion.getId())) {
 			SyncUtils.syncAlerts(mContext);
 			SyncUtils.syncPorts(mContext);
 			SyncUtils.syncRoutes(mContext);

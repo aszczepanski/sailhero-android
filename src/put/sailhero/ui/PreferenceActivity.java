@@ -223,12 +223,14 @@ public class PreferenceActivity extends BaseActivity {
 						regionsEntries[data.getPosition()] = data.getString(RegionQuery.REGION_FULL_NAME);
 						regionsEntryValues[data.getPosition()] = String.valueOf(data.getString(RegionQuery.REGION_ID));
 
-						if (regionsEntryValues[data.getPosition()].equals(currentRegion.getId().toString())) {
+						if (currentRegion != null
+								&& regionsEntryValues[data.getPosition()].equals(currentRegion.getId().toString())) {
 							isCurrentRegionOnList = true;
 						}
 					}
 				}
 
+				// assumption - regions cannot be deleted
 				if (currentRegion != null && !isCurrentRegionOnList) {
 					SyncUtils.syncRegions(mContext);
 					mRegionListPreference.setEnabled(false);
