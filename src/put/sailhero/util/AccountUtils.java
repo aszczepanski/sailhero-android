@@ -30,7 +30,8 @@ public class AccountUtils {
 		accountManager.setAuthToken(account, REFRESH_TOKEN_TYPE, refreshToken);
 
 		Bundle bundle = new Bundle();
-		bundle.putInt(SyncUtils.SYNC_EXTRAS_ITEMS_MASK, SyncUtils.SYNC_PORTS | SyncUtils.SYNC_ROUTES);
+		bundle.putInt(SyncUtils.SYNC_EXTRAS_ITEMS_MASK, SyncUtils.SYNC_PORTS | SyncUtils.SYNC_ROUTES
+				| SyncUtils.SYNC_FRIENDSHIPS);
 		ContentResolver.addPeriodicSync(account, SailHeroContract.CONTENT_AUTHORITY, bundle,
 				PERIODIC_SYNC_POLL_FREQUENCY);
 	}
