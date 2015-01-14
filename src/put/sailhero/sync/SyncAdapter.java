@@ -49,6 +49,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			return;
 		}
 
+		if ((syncItemsMask & SyncUtils.SYNC_USER_DATA) > 0) {
+			RetrieveUserRequestHelper retrieveUserRequestHelper = new RetrieveUserRequestHelper(getContext());
+			performSyncAndHandleErrors(retrieveUserRequestHelper);
+		}
 		if ((syncItemsMask & SyncUtils.SYNC_ALERTS) > 0) {
 			RetrieveAlertsRequestHelper retrieveAlertsRequestHelper = new RetrieveAlertsRequestHelper(getContext());
 			performSyncAndHandleErrors(retrieveAlertsRequestHelper);
@@ -66,10 +70,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			RetrieveRegionsRequestHelper retrieveRegionsRequestHelper = new RetrieveRegionsRequestHelper(getContext());
 			performSyncAndHandleErrors(retrieveRegionsRequestHelper);
 		}
-		if ((syncItemsMask & SyncUtils.SYNC_USER_DATA) > 0) {
-			RetrieveUserRequestHelper retrieveUserRequestHelper = new RetrieveUserRequestHelper(getContext());
-			performSyncAndHandleErrors(retrieveUserRequestHelper);
-		}
 		if ((syncItemsMask & SyncUtils.SYNC_ROUTES) > 0) {
 			RetrieveRoutesRequestHelper retrieveRoutesRequestHelper = new RetrieveRoutesRequestHelper(getContext());
 			performSyncAndHandleErrors(retrieveRoutesRequestHelper);
@@ -77,6 +77,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	}
 
 	private void performSyncAndHandleErrors(final RequestHelper requestHelper) {
+		performSyncAndHandleErrors(requestHelper, 0l);
+	}
+
+	private void performSyncAndHandleErrors(final RequestHelper requestHelper, final long previousDelayInMinutes) {
 		try {
 			SyncUtils.doAuthenticatedRequest(getContext(), requestHelper);
 		} catch (InvalidRegionException e) {
@@ -84,7 +88,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		} catch (Exception e) {
 			e.printStackTrace();
 
-			final long delayMinutes = 15l;
+			final long delayMinutes = calculateNextTimeoutInMinutes(previousDelayInMinutes);
 
 			final Runnable syncCommand = new Runnable() {
 				@Override
@@ -94,5 +98,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			};
 			mScheduler.schedule(syncCommand, delayMinutes, TimeUnit.MINUTES);
 		}
+	}
+
+	private long calculateNextTimeoutInMinutes(long previousTimeoutInMinutes) {
+		return 15l;
 	}
 }
