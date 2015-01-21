@@ -149,8 +149,6 @@ public class PreferenceActivity extends BaseActivity {
 		}
 
 		private void logoutUser() {
-			// TODO: perform clear in background
-
 			PrefUtils.clear(getActivity());
 
 			AccountUtils.removeActiveAccount(getActivity());
@@ -231,17 +229,17 @@ public class PreferenceActivity extends BaseActivity {
 				}
 
 				// assumption - regions cannot be deleted
-				if (currentRegion != null && !isCurrentRegionOnList) {
-					SyncUtils.syncRegions(mContext);
-					mRegionListPreference.setEnabled(false);
-					return;
-				}
+				//	if (currentRegion != null && !isCurrentRegionOnList) {
+				//		SyncUtils.syncRegions(mContext);
+				//		mRegionListPreference.setEnabled(false);
+				//		return;
+				//	}
 
 				mRegionListPreference.setEntries(regionsEntries);
 				mRegionListPreference.setEntryValues(regionsEntryValues);
 
 				// TODO:
-				if (currentRegion == null) {
+				if (!isCurrentRegionOnList) {
 					mRegionListPreference.setValue(null);
 				} else {
 					Log.d(TAG, "current region " + currentRegion.getId());
