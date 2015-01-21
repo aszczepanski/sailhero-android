@@ -79,9 +79,21 @@ public class UserActivityTest extends ActivityInstrumentationTestCase2<UserActiv
 		assertTrue(TextUtils.isEmpty(mPasswordConfirmationEditText.getText().toString()));
 	}
 
-	@UiThreadTest
-	public void testEmailNotEditable() {
-		assertTrue(mEmailEditText.getKeyListener() == null);
+	public void testEmailNotEditable() throws Throwable {
+		final String initialText = "xxx";
+
+		mActivity.runOnUiThread(new Runnable() {
+			public void run() {
+				mEmailEditText.setText(initialText);
+				mEmailEditText.requestFocus();
+			}
+		});
+
+		getInstrumentation().waitForIdleSync();
+		sendKeys("A B C");
+		getInstrumentation().waitForIdleSync();
+
+		assertEquals(mEmailEditText.getText().toString(), initialText);
 	}
 
 	@UiThreadTest
