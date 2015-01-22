@@ -116,9 +116,8 @@ public class MapFragment extends com.google.android.gms.maps.MapFragment impleme
 		if (lastKnownLocation != null) {
 			final float CAMERA_ZOOM = 15.0f;
 
-			CameraUpdate camera = CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder().bearing(
-					lastKnownLocation.getBearing())
-					.target(new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()))
+			CameraUpdate camera = CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder().target(
+					new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()))
 					.zoom(CAMERA_ZOOM)
 					.tilt(0f)
 					.build());
