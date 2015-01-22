@@ -10,32 +10,32 @@ import org.json.simple.parser.ParseException;
 
 import put.sailhero.exception.SystemException;
 import put.sailhero.exception.UnauthorizedException;
+import put.sailhero.model.Region;
 import put.sailhero.model.User;
+import put.sailhero.model.Yacht;
+import put.sailhero.util.PrefUtils;
+import put.sailhero.util.SyncUtils;
 import android.content.Context;
 import android.net.Uri;
 
-public class RetrieveUserRequestHelper extends RequestHelper {
+public class RetrieveCurrentUserRequestHelper extends RequestHelper {
 
 	public final static String TAG = "sailhero";
 
 	private final static String PATH_USERS = "users";
+	private final static String PATH_ME = "me";
 
-	private Integer mSentUserId;
 	private User mRetrievedUser;
+	private Region mRetrievedRegion;
+	private Yacht mRetrievedYacht;
 
-	public RetrieveUserRequestHelper(Context context, Integer sentUserId) {
+	public RetrieveCurrentUserRequestHelper(Context context) {
 		super(context);
-
-		mSentUserId = sentUserId;
-	}
-
-	public User getRetrievedUser() {
-		return mRetrievedUser;
 	}
 
 	@Override
 	protected void createMethodClient() {
-		Uri uri = API_BASE_URI.buildUpon().appendPath(PATH_USERS).appendPath(mSentUserId.toString()).build();
+		Uri uri = API_BASE_URI.buildUpon().appendPath(PATH_USERS).appendPath(PATH_ME).build();
 
 		mHttpUriRequest = new HttpGet(uri.toString());
 	}
@@ -64,6 +64,20 @@ public class RetrieveUserRequestHelper extends RequestHelper {
 				JSONObject userObject = (JSONObject) obj.get("user");
 				mRetrievedUser = new User(userObject);
 
+				JSONObject yachtObject = (JSONObject) userObject.get("yacht");
+				if (yachtObject != null) {
+					mRetrievedYacht = new Yacht(yachtObject);
+				} else {
+					mRetrievedYacht = null;
+				}
+
+				JSONObject regionObject = (JSONObject) userObject.get("region");
+				if (regionObject != null) {
+					mRetrievedRegion = new Region(regionObject);
+				} else {
+					mRetrievedRegion = null;
+				}
+
 			} catch (NullPointerException e) {
 				throw new SystemException(e.getMessage());
 			} catch (NumberFormatException e) {
@@ -82,5 +96,18 @@ public class RetrieveUserRequestHelper extends RequestHelper {
 
 	@Override
 	public void storeData() throws SystemException {
+		User oldUser = PrefUtils.getUser(mContext);
+		PrefUtils.setUser(mContext, mRetrievedUser);
+
+		Region oldRegion = PrefUtils.getRegion(mContext);
+		PrefUtils.setRegion(mContext, mRetrievedRegion);
+
+		PrefUtils.setYacht(mContext, mRetrievedYacht);
+
+		if (oldUser != null && !mRetrievedRegion.getId().equals(oldRegion.getId())) {
+			SyncUtils.syncAlerts(mContext);
+			SyncUtils.syncPorts(mContext);
+			SyncUtils.syncRoutes(mContext);
+		}
 	}
 }

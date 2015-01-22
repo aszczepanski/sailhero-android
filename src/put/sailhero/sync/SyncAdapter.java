@@ -39,7 +39,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		if (extras == null) {
 			extras = new Bundle();
 			extras.putInt(SyncUtils.SYNC_EXTRAS_ITEMS_MASK, SyncUtils.SYNC_ALERTS | SyncUtils.SYNC_FRIENDSHIPS
-					| SyncUtils.SYNC_PORTS | SyncUtils.SYNC_REGIONS | SyncUtils.SYNC_USER_DATA);
+					| SyncUtils.SYNC_PORTS | SyncUtils.SYNC_REGIONS | SyncUtils.SYNC_CURRENT_USER_DATA);
 		}
 
 		int syncItemsMask = extras.getInt(SyncUtils.SYNC_EXTRAS_ITEMS_MASK);
@@ -49,8 +49,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			return;
 		}
 
-		if ((syncItemsMask & SyncUtils.SYNC_USER_DATA) > 0) {
-			RetrieveUserRequestHelper retrieveUserRequestHelper = new RetrieveUserRequestHelper(getContext());
+		if ((syncItemsMask & SyncUtils.SYNC_CURRENT_USER_DATA) > 0) {
+			RetrieveCurrentUserRequestHelper retrieveUserRequestHelper = new RetrieveCurrentUserRequestHelper(getContext());
 			performSyncAndHandleErrors(retrieveUserRequestHelper);
 		}
 		if ((syncItemsMask & SyncUtils.SYNC_ALERTS) > 0) {
