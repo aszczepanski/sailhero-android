@@ -1,13 +1,17 @@
 package put.sailhero.ui;
 
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 import put.sailhero.R;
 import put.sailhero.exception.InvalidRegionException;
 import put.sailhero.model.Message;
+import put.sailhero.model.User;
 import put.sailhero.sync.RequestHelper;
 import put.sailhero.sync.RequestHelperAsyncTask;
 import put.sailhero.sync.RetrieveMessagesRequestHelper;
+import put.sailhero.sync.RetrieveUserRequestHelper;
 import put.sailhero.sync.SendMessageRequestHelper;
 import put.sailhero.util.SyncUtils;
 import android.app.ListFragment;
@@ -40,6 +44,8 @@ public class MessageActivity extends BaseActivity implements SailHeroListFragmen
 	private MessagesAdapter mMessagesAdapter;
 
 	private LinkedList<Message> mMessagesList = new LinkedList<Message>();
+	private LinkedList<User> mRetrievedSenders = new LinkedList<User>();
+	private Set<Integer> mSyncedSendersIds = new HashSet<Integer>();
 
 	private Integer mNextMessageId;
 	private Integer mPreviousMessageId;
@@ -333,6 +339,10 @@ public class MessageActivity extends BaseActivity implements SailHeroListFragmen
 					for (Message msg : mRequestHelper.getRetrievedMessages()) {
 						if (mMessagesList.isEmpty() || !msg.getId().equals(mMessagesList.getLast().getId())) {
 							mMessagesList.addLast(msg);
+							if (!mSyncedSendersIds.contains(msg.getUserId())) {
+								mSyncedSendersIds.add(msg.getUserId());
+								retrieveSender(msg.getUserId());
+							}
 						}
 					}
 
@@ -347,6 +357,10 @@ public class MessageActivity extends BaseActivity implements SailHeroListFragmen
 					for (Message msg : mRequestHelper.getRetrievedMessages()) {
 						if (mMessagesList.isEmpty() || !msg.getId().equals(mMessagesList.getFirst().getId())) {
 							mMessagesList.addFirst(msg);
+							if (!mSyncedSendersIds.contains(msg.getUserId())) {
+								mSyncedSendersIds.add(msg.getUserId());
+								retrieveSender(msg.getUserId());
+							}
 						}
 					}
 
@@ -367,6 +381,48 @@ public class MessageActivity extends BaseActivity implements SailHeroListFragmen
 			} else {
 			}
 		}
+	}
+
+	private void retrieveSender(Integer senderId) {
+		Log.e(TAG, "retrieving sender: " + senderId);
+		RetrieveSender retrieveSenderTask = new RetrieveSender(MessageActivity.this, senderId);
+		retrieveSenderTask.execute();
+	}
+
+	private class RetrieveSender extends AsyncTask<Void, Void, Void> {
+
+		private Context mContext;
+		private Integer mSenderId;
+		private RetrieveUserRequestHelper mRequestHelper;
+		private Exception mException;
+
+		public RetrieveSender(Context context, Integer senderId) {
+			mContext = context;
+			mSenderId = senderId;
+			mRequestHelper = new RetrieveUserRequestHelper(mContext, mSenderId);
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			try {
+				SyncUtils.doAuthenticatedRequest(mContext, mRequestHelper);
+			} catch (Exception e) {
+				mException = e;
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			super.onPostExecute(result);
+			if (mException == null && mRetrievedSenders != null) {
+				mRetrievedSenders.add(mRequestHelper.getRetrievedUser());
+				Log.e(TAG, mRequestHelper.getRetrievedUser().getEmail());
+				mMessagesAdapter.updateSenders(mRetrievedSenders);
+			}
+		}
+
 	}
 
 }
