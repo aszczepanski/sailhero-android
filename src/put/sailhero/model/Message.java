@@ -14,7 +14,7 @@ public class Message {
 	private String mBody;
 
 	private Date mCreatedAt;
-	// TODO: user data
+	private Integer mUserId;
 	private Double mLatitude;
 	private Double mLongitude;
 
@@ -35,6 +35,7 @@ public class Message {
 		}
 
 		setId(Integer.valueOf(messageObject.get("id").toString()));
+		setUserId(Integer.valueOf(messageObject.get("user_id").toString()));
 		setBody((String) messageObject.get("body"));
 		setLatitude(Double.valueOf(messageObject.get("latitude").toString()));
 		setLongitude(Double.valueOf(messageObject.get("longitude").toString()));
@@ -62,6 +63,14 @@ public class Message {
 
 	public void setCreatedAt(Date createdAt) {
 		mCreatedAt = createdAt;
+	}
+	
+	public Integer getUserId() {
+		return mUserId;
+	}
+	
+	public void setUserId(Integer userId) {
+		mUserId = userId;
 	}
 
 	public Double getLatitude() {

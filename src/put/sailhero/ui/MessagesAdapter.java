@@ -4,20 +4,25 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Locale;
-import java.util.TimeZone;
 
 import put.sailhero.Config;
 import put.sailhero.R;
 import put.sailhero.model.Message;
+import put.sailhero.model.User;
+import put.sailhero.util.PrefUtils;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 public class MessagesAdapter implements ListAdapter {
 
@@ -29,6 +34,7 @@ public class MessagesAdapter implements ListAdapter {
 	private Context mContext;
 
 	private ArrayList<Message> mMessageList = new ArrayList<Message>();
+	private SparseArray<User> mSenders = new SparseArray<User>();
 	private ArrayList<DataSetObserver> mObservers = new ArrayList<DataSetObserver>();
 
 	public MessagesAdapter(Context context) {
@@ -92,11 +98,33 @@ public class MessagesAdapter implements ListAdapter {
 
 		convertView.setTag(MY_VIEW_TAG);
 
+		final User currentUser = PrefUtils.getUser(mContext);
 		final Message message = mMessageList.get(position);
 
 		LinearLayout mainBoxView = (LinearLayout) convertView.findViewById(R.id.main_box);
+		ImageView profileLeftImageView = (ImageView) convertView.findViewById(R.id.profile_image_left);
+		profileLeftImageView.setVisibility(View.GONE);
+		ImageView profileRightImageView = (ImageView) convertView.findViewById(R.id.profile_image_right);
+		profileRightImageView.setVisibility(View.GONE);
+		ImageView profileImageView = null;
+		if (message.getUserId().equals(currentUser.getId())) {
+			profileImageView = profileRightImageView;
+		} else {
+			profileImageView = profileLeftImageView;
+		}
+		profileImageView.setVisibility(View.VISIBLE);
+
 		TextView messageBodyTextView = (TextView) convertView.findViewById(R.id.slot_message_body);
 		TextView messageDateTextView = (TextView) convertView.findViewById(R.id.slot_message_date);
+
+		User sender = mSenders.get(message.getUserId());
+		if (sender != null) {
+			Glide.with(mContext)
+					.load(sender.getAvatarUrl())
+					.asBitmap()
+					.error(R.drawable.person_image_empty)
+					.into(profileImageView);
+		}
 
 		messageBodyTextView.setText(message.getBody());
 
@@ -143,6 +171,13 @@ public class MessagesAdapter implements ListAdapter {
 				Log.d(Config.TAG, "Adding message item: " + message.getBody());
 				mMessageList.add(message);
 			}
+		}
+		notifyObservers();
+	}
+
+	public void updateSenders(LinkedList<User> sendersList) {
+		for (User user : sendersList) {
+			mSenders.put(user.getId(), user);
 		}
 		notifyObservers();
 	}

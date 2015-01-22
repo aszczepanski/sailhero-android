@@ -48,7 +48,7 @@ public class GcmIntentService extends IntentService {
 				} else if (message.equals(MESSAGE_SYNC_FRIENDSHIPS)) {
 					SyncUtils.syncFriendships(getApplicationContext());
 				} else if (message.equals(MESSAGE_SYNC_USER_DATA)) {
-					SyncUtils.syncUserData(getApplicationContext());
+					SyncUtils.syncCurrentUserData(getApplicationContext());
 				}
 			}
 		}
