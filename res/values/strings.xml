@@ -63,8 +63,9 @@
 
     <!-- about text -->
     <string name="about_header">Welcome to the SailHero app!</string>
-    <string name="about_text_1">@string/lorem_ipsum_1</string>
-    <string name="about_text_2">@string/lorem_ipsum_2</string>
+    <string name="about_text_1">SailHero application is a part of a BSc thesis. You can find the source code <a href="https://github.com/aszczepanski/sailhero-android">here</a>.</string>
+    <string name="about_text_2"><b>Authors</b>: Mateusz Czajka and Adam Szczepanski</string>
+    <string name="about_text_3"><b>Supervisor</b>: Cezary Sobaniec, PhD</string>
 
     <!-- lorem ipsum -->
     <string name="lorem_ipsum_1">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Proin nibh augue, suscipit a, scelerisque sed, lacinia in, mi. Cras vel lorem. Etiam pellentesque aliquet tellus. Phasellus pharetra nulla ac diam. Quisque semper justo at risus. Donec venenatis, turpis vel hendrerit interdum, dui ligula ultricies purus, sed posuere libero dui id orci. Nam congue, pede vitae dapibus aliquet, elit magna vulputate arcu, vel tempus metus leo non est. Etiam sit amet lectus quis est congue mollis. Phasellus congue lacus eget neque. Phasellus ornare, ante vitae consectetuer consequat, purus sapien ultricies dolor, et mollis pede metus eget nisi. Praesent sodales velit quis augue. Cras suscipit, urna at aliquam rhoncus, urna quam viverra nisi, in interdum massa nibh nec erat.</string>
