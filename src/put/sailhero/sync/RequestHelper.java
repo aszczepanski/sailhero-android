@@ -107,8 +107,8 @@ public abstract class RequestHelper {
 		if (user != null && user.getSharePosition()) {
 			Location lastKnownLocation = PrefUtils.getLastKnownLocation(mContext);
 			if (lastKnownLocation != null) {
-				mHttpUriRequest.addHeader("Latitude", String.valueOf(lastKnownLocation.getLatitude()));
-				mHttpUriRequest.addHeader("longitude", String.valueOf(lastKnownLocation.getLongitude()));
+				mHttpUriRequest.addHeader("X-Sailhero-Latitude", String.valueOf(lastKnownLocation.getLatitude()));
+				mHttpUriRequest.addHeader("X-Sailhero-Longitude", String.valueOf(lastKnownLocation.getLongitude()));
 			}
 		}
 	}
